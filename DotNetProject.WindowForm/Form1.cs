@@ -24,6 +24,27 @@ namespace DotNetProject.WindowForm
             WireUserEvents();
             WireRatingEvents();
             WireWatchListEvents();
+
+            // Set grid formatting and hide unwanted system/internal columns automatically
+            dgvUsers.DataBindingComplete += (s, e) => ConfigureGridColumns(dgvUsers);
+            dgvRatings.DataBindingComplete += (s, e) => ConfigureGridColumns(dgvRatings);
+            dgvWatchList.DataBindingComplete += (s, e) => ConfigureGridColumns(dgvWatchList);
+        }
+
+        private void ConfigureGridColumns(DataGridView dgv)
+        {
+            var colsToHide = new List<string> { "Password", "IsDeleted", "DeletedAt", "CreatedAt", "UpdatedAt", "AddedAt", "CreatedDate" };
+            if (dgv == dgvRatings)
+            {
+                colsToHide.Add("Id"); // Hide Rating ID column as requested
+            }
+            foreach (var colName in colsToHide)
+            {
+                if (dgv.Columns.Contains(colName))
+                {
+                    dgv.Columns[colName].Visible = false;
+                }
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -31,6 +52,10 @@ namespace DotNetProject.WindowForm
             statusLabel.Text = CurrentUser != null
                 ? $"Logged in as {CurrentUser.DisplayName ?? CurrentUser.UserName}"
                 : "Ready";
+
+            // Hide Rating ID inputs from user view in both admin and user modes
+            lblRatingId.Visible = false;
+            txtRatingId.Visible = false;
 
             ApplyRoleBasedUI();
             ApplyTabStyle();
@@ -619,6 +644,7 @@ namespace DotNetProject.WindowForm
         private void RatingPopulateFromGrid()
         {
             if (dgvRatings.CurrentRow?.DataBoundItem is not RatingModel rating) return;
+            txtRatingId.Text = rating.Id.ToString();
             numRatingUserId.Value = Math.Min((decimal)rating.UserId, numRatingUserId.Maximum);
             numRatingMovieId.Value = Math.Min((decimal)rating.MovieID, numRatingMovieId.Maximum);
             numRatingScore.Value = Math.Min(Math.Max((decimal)rating.Score, numRatingScore.Minimum), numRatingScore.Maximum);

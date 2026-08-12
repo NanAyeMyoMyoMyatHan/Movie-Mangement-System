@@ -1,4 +1,4 @@
-﻿using DotNetProject.Database.AppDbModels;
+using DotNetProject.Database.AppDbModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetProject.WebApi.Features.Ratings
@@ -19,6 +19,7 @@ namespace DotNetProject.WebApi.Features.Ratings
                 .Where(x=>x.UserId == userId).
                 Select(x=>new RatingModel
                 {
+                    Id = x.Id,
                     UserId = x.UserId,
                     MovieID = x.MovieId,
                     Score = x.Score,

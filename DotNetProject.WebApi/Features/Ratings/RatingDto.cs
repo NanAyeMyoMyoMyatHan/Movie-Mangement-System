@@ -1,7 +1,8 @@
-﻿namespace DotNetProject.WebApi.Features.Ratings
+namespace DotNetProject.WebApi.Features.Ratings
 {
     public class RatingModel
     {
+        public int Id { get; set; }
         public int UserId { get; set; }
         public int MovieID { get; set; }
         public int Score { get; set; }
