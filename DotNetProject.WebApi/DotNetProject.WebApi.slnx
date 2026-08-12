@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../DotNetProject.Database/DotNetProject.Database.csproj" Id="7d12909f-d639-4221-83b8-a82607c88009" />
+  <Project Path="../DotNetProject.WindowForm/DotNetProject.WindowForm.csproj" Id="853f7437-7b67-4f8b-af38-1f1fe6d32cca" />
+  <Project Path="DotNetProject.WebApi.csproj" />
+</Solution>

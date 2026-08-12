@@ -1,0 +1,15 @@
+## Ignore Visual Studio temporary files, builds, and user settings
+.vs/
+[Db]bin/
+[Db]obj/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Ignore OS-generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
