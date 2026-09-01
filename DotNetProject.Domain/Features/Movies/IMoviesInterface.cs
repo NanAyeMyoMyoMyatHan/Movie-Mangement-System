@@ -1,4 +1,4 @@
-﻿namespace DotNetProject.WebApi.Features.Movies
+namespace DotNetProject.Domain.Features.Movies
 {
     public interface IMoviesInterface
     {

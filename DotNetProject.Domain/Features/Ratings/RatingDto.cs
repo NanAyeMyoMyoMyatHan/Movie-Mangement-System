@@ -1,4 +1,4 @@
-namespace DotNetProject.WebApi.Features.Ratings
+namespace DotNetProject.Domain.Features.Ratings
 {
     public class RatingModel
     {
@@ -12,6 +12,7 @@ namespace DotNetProject.WebApi.Features.Ratings
         public bool IsDeleted { get; set; } = false;
         public DateTime? DeletedAt { get; set; }
     }
+
     public class RatingCreateRequestModel
     {
         public int UserId { get; set; }
@@ -20,11 +21,13 @@ namespace DotNetProject.WebApi.Features.Ratings
         public string Review { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
+
     public class RatingCreateResponseModel
     {
         public bool IsSuccess { get; set; }
         public string Message { get; set; }
     }
+
     public class RatingUpdateRequestModel
     {
         public int Id { get; set; }
@@ -38,6 +41,7 @@ namespace DotNetProject.WebApi.Features.Ratings
         public bool IsSuccess { get; set; }
         public string Message { get; set; }
     }
+
     public class RatingDeleteRequestModel
     {
         public int Id { get; set; }

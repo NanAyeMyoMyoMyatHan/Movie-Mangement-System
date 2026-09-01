@@ -1,4 +1,4 @@
-namespace DotNetProject.WebApi.Features.Users
+namespace DotNetProject.Domain.Features.Users
 {
     public class UserModel
     {

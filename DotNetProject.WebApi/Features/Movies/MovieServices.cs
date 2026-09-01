@@ -1,4 +1,5 @@
 using DotNetProject.Database.AppDbModels;
+using DotNetProject.Domain.Features.Movies;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetProject.WebApi.Features.Movies

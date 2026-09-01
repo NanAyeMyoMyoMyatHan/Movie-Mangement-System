@@ -1,5 +1,6 @@
-﻿using DotNetProject.Database.AppDbModels;
-using Microsoft.EntityFrameworkCore; // <- add this
+using DotNetProject.Database.AppDbModels;
+using DotNetProject.Domain.Features.WatchList;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetProject.WebApi.Features.WatchList
 {

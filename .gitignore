@@ -12,4 +12,4 @@ obj/
 ## Ignore OS-generated files
 Thumbs.db
 ehthumbs.db
-Desktop.ini
+*.zip

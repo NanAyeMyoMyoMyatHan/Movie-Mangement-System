@@ -1,4 +1,5 @@
 using DotNetProject.Database.AppDbModels;
+using DotNetProject.Domain.Features.Ratings;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetProject.WebApi.Features.Ratings

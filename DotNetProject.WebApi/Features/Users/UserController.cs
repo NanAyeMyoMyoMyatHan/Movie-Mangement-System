@@ -1,3 +1,4 @@
+using DotNetProject.Domain.Features.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

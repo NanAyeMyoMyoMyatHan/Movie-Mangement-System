@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="DotNetProject.Console/DotNetProject.Console.csproj" />
+  <Project Path="DotNetProject.Database/DotNetProject.Database.csproj" />
+  <Project Path="DotNetProject.Domain/DotNetProject.Domain.csproj" />
+  <Project Path="DotNetProject.WebApi/DotNetProject.WebApi.csproj" />
+  <Project Path="DotNetProject.WindowForm/DotNetProject.WindowForm.csproj" />
+</Solution>

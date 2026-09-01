@@ -1,4 +1,4 @@
-﻿namespace DotNetProject.WebApi.Features.Ratings
+namespace DotNetProject.Domain.Features.Ratings
 {
     public interface IRatingInterface
     {

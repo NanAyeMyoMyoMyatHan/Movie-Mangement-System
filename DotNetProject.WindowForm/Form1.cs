@@ -1,7 +1,7 @@
-using DotNetProject.WebApi.Features.Movies;
-using DotNetProject.WebApi.Features.Users;
-using DotNetProject.WebApi.Features.Ratings;
-using DotNetProject.WebApi.Features.WatchList;
+using DotNetProject.Domain.Features.Movies;
+using DotNetProject.Domain.Features.Users;
+using DotNetProject.Domain.Features.Ratings;
+using DotNetProject.Domain.Features.WatchList;
 using DotNetProject.WindowForm.Services;
 
 namespace DotNetProject.WindowForm

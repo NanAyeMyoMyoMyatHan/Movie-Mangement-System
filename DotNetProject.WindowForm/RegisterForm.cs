@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using DotNetProject.WebApi.Features.Users;
+using DotNetProject.Domain.Features.Users;
 using DotNetProject.WindowForm.Services;
 
 namespace DotNetProject.WindowForm

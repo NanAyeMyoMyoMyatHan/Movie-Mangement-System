@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+using DotNetProject.Domain.Features.WatchList;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNetProject.WebApi.Features.WatchList

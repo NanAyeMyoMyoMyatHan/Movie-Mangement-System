@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DotNetProject.Database\DotNetProject.Database.csproj" />
+    <ProjectReference Include="..\DotNetProject.Domain\DotNetProject.Domain.csproj" />
   </ItemGroup>
 
 </Project>

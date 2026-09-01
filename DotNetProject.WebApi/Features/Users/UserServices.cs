@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using DotNetProject.Database.AppDbModels;
+using DotNetProject.Domain.Features.Users;
 
 namespace DotNetProject.WebApi.Features.Users
 {
