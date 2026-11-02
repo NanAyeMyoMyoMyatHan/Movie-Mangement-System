@@ -14,6 +14,7 @@ builder.Services.AddHttpClient("Api", client =>
 });
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<HttpClientService>();
+builder.Services.AddSingleton<WatchLaterService>();
 
 var app = builder.Build();
 

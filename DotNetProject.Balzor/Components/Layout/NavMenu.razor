@@ -1,3 +1,7 @@
+@using DotNetProject.Balzor.Components.Shared
+@inject WatchLaterService WatchLaterService
+@implements IDisposable
+
 <aside class="petale-sidebar myflix-sidebar">
     <div class="petale-sidebar-top">
         <!-- Brand Logo -->
@@ -30,7 +34,7 @@
                     </svg>
                     <span>Watch Later</span>
                 </div>
-                <span class="myflix-badge">12</span>
+                <span class="myflix-badge">@WatchCount</span>
             </NavLink>
 
             <NavLink href="favorites" class="myflix-nav-item">
@@ -106,3 +110,24 @@
         </NavLink>
     </div>
 </aside>
+
+@code {
+    private int WatchCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        WatchLaterService.OnChange += HandleChange;
+        WatchCount = await WatchLaterService.GetCountAsync();
+    }
+
+    private async void HandleChange()
+    {
+        WatchCount = await WatchLaterService.GetCountAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        WatchLaterService.OnChange -= HandleChange;
+    }
+}

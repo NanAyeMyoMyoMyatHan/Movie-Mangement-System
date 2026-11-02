@@ -16,6 +16,9 @@ namespace DotNetProject.Balzor.Components.Pages
         [Inject]
         private IJSRuntime JS { get; set; } = default!;
 
+        [Inject]
+        private WatchLaterService WatchLaterService { get; set; } = default!;
+
         [Parameter]
         public long Id { get; set; }
 
@@ -49,6 +52,7 @@ namespace DotNetProject.Balzor.Components.Pages
 
             try
             {
+                IsWatchlisted = await WatchLaterService.IsInWatchLaterAsync(Id, true);
                 var result = await ApiClient.GetContentWithEpisodesAsync(Id);
                 if (result != null && result.IsSuccess && result.Data != null)
                 {
@@ -166,9 +170,25 @@ namespace DotNetProject.Balzor.Components.Pages
             Nav.NavigateTo("/");
         }
 
-        protected void ToggleWatchlist()
+        protected async Task ToggleWatchlist()
         {
-            IsWatchlisted = !IsWatchlisted;
+            if (Drama == null) return;
+
+            var item = new WatchLaterItem
+            {
+                Id = Drama.ContentId,
+                IsContent = true,
+                Title = Drama.Title,
+                PosterUrl = Drama.PosterUrl,
+                Category = DramaLanguage.Contains("Thai", StringComparison.OrdinalIgnoreCase) ? "Thai BL" : "Korean Drama",
+                Description = Drama.Description,
+                TotalEpisodes = Episodes.Count > 0 ? Episodes.Count : 16,
+                CurrentEpisode = ActiveEpisodeNumber,
+                Status = IsPlayingVideo ? "Watching" : "Want to Watch",
+                AddedAt = DateTime.UtcNow
+            };
+
+            IsWatchlisted = await WatchLaterService.ToggleWatchLaterAsync(item);
             StateHasChanged();
         }
 
