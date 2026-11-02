@@ -28,7 +28,7 @@ namespace DotNetProject.Balzor.Components.Pages
             var request = new GetContentPagedListRequest
             {
                 PageNo = 1,
-                PageSize = 6,
+                PageSize = 20,
                 SearchTerm = null
             };
 
@@ -47,7 +47,7 @@ namespace DotNetProject.Balzor.Components.Pages
             var movieRequest = new GetMoviePagedListRequest
             {
                 PageNo = 1,
-                PageSize = 6,
+                PageSize = 20,
                 SearchTerm = null
             };
 
@@ -65,7 +65,7 @@ namespace DotNetProject.Balzor.Components.Pages
             var thaiRequest = new GetThaiPagedListRequest
             {
                 PageNo = 1,
-                PageSize = 6,
+                PageSize = 20,
                 SearchTerm = null,
             };
 
@@ -100,7 +100,11 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public void PlayContent(string title, string? desc, string? posterUrl, int ep = 1, string? videoUrl = null)
         {
-            if (title.Contains("Bad Buddy", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(6);
+            if (title.Contains("Fool In Love", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(20002);
+            else if (title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(20003);
+            else if (title.Contains("Daung", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(20004);
+            else if (title.Contains("Khem", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(20005);
+            else if (title.Contains("Bad Buddy", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(6);
             else if (title.Contains("2gether", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(5);
             else if (title.Contains("KinnPorsche", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(7);
             else if (title.Contains("TharnType", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(8);

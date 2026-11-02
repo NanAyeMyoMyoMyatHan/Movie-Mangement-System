@@ -99,6 +99,28 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new Microsoft.Extensions.FileProviders.CompositeFileProvider(videoProviders),
     RequestPath = "/videos"
 });
+
+// Dedicated routes for each drama to prevent file name collisions (e.g. EP1 1080P.mp4)
+var dramaRouteMap = new Dictionary<string, string>
+{
+    { "/videos/fool-in-love", @"D:\Fool In Love" },
+    { "/videos/kingdom", @"D:\KingDomS1+S2" },
+    { "/videos/daung-with-you", @"D:\Daung With You" },
+    { "/videos/khemjira", @"D:\KhemJira" },
+    { "/videos/alchemy-of-souls", @"D:\Alchemy Of Soule S1+S2" }
+};
+
+foreach (var kvp in dramaRouteMap)
+{
+    if (Directory.Exists(kvp.Value))
+    {
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(kvp.Value),
+            RequestPath = kvp.Key
+        });
+    }
+}
 // ─────────────────────────────────────────────────────────────────────────────
 
 app.UseHttpsRedirection();

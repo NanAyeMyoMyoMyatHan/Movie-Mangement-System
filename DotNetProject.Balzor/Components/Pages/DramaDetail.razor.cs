@@ -202,11 +202,38 @@ namespace DotNetProject.Balzor.Components.Pages
             else if (title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase))
             {
                 DramaYear = "2019";
-                DramaGenres = "Action, Horror, Period";
+                DramaGenres = "Action, Horror, Historical, Mystery";
                 DramaAgeRating = "18+";
                 DramaLanguage = "Korean";
-                DramaStarring = "Ju Ji-hoon, Ryu Seung-ryong, Bae Doona";
+                DramaStarring = "Ju Ji-hoon, Ryu Seung-ryong, Bae Doona, Kim Sung-kyu";
                 DramaCreators = "Kim Eun-hee, Kim Seong-hun";
+            }
+            else if (title.Contains("Fool In Love", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2026";
+                DramaGenres = "Romance, Drama, Comedy";
+                DramaAgeRating = "18+";
+                DramaLanguage = "Thai";
+                DramaStarring = "Bank Artit Tangwiboonpanit, Copter Nuntapong, Guy Wasu";
+                DramaCreators = "Stacy Baek, Shui Qiancheng";
+            }
+            else if (title.Contains("Daung", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2026";
+                DramaGenres = "Romance, Comedy, Youth";
+                DramaAgeRating = "13+";
+                DramaLanguage = "Thai";
+                DramaStarring = "TeeTee Wanpichit, Por Suppakarn, Wave Thanaphat, North Chatchapon";
+                DramaCreators = "Kla Nathawat Piyanonpong, peachhplease";
+            }
+            else if (title.Contains("Khem", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2025";
+                DramaGenres = "Supernatural, Horror, Mystery, Romance";
+                DramaAgeRating = "18+";
+                DramaLanguage = "Thai";
+                DramaStarring = "Namping Napatsakorn, Keng Harit Buayoi";
+                DramaCreators = "Cali, Domundi TV";
             }
             else if (title.Contains("KinnPorsche", StringComparison.OrdinalIgnoreCase))
             {

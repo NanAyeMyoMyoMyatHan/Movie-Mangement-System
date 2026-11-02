@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 
 
 <!-- Top App Header -->
@@ -197,92 +197,38 @@
         <a href="category/thai-bl" class="myflix-see-all">See All</a>
     </div>
 
-    <div class="myflix-poster-grid">
-        <!-- 1: 2gether -->
-        <article class="myflix-poster-card" @onclick='() => PlayContent("2gether: The Series", "A student enters a fake relationship with a popular guy to ward off an unwanted admirer.", "https://upload.wikimedia.org/wikipedia/en/6/68/2gether_The_Series_2020_poster.jpg", 1)'>
-            <img src="https://upload.wikimedia.org/wikipedia/en/6/68/2gether_The_Series_2020_poster.jpg" alt="2gether The Series" class="myflix-poster-img" />
-            <button class="myflix-card-heart" title="Favorite">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-            </button>
-            <div class="myflix-poster-content">
-                <h3>2gether</h3>
-                <p>The Series</p>
-            </div>
-        </article>
-
-        <!-- 2: Bad Buddy -->
-        <article class="myflix-poster-card" @onclick='() => PlayContent("Bad Buddy", "Two rival families live next door, but their sons secretly develop feelings.", "https://upload.wikimedia.org/wikipedia/en/b/b7/Bad_Buddy_Series_2021_poster.jpg", 1)'>
-            <img src="https://upload.wikimedia.org/wikipedia/en/b/b7/Bad_Buddy_Series_2021_poster.jpg" alt="Bad Buddy The Series" class="myflix-poster-img" />
-            <button class="myflix-card-heart" title="Favorite">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-            </button>
-            <div class="myflix-poster-content">
-                <h3>Bad Buddy</h3>
-                <p>The Series</p>
-            </div>
-        </article>
-
-        <!-- 3: KinnPorsche -->
-        <article class="myflix-poster-card" @onclick='PlayKinnPorsche'>
-            <img src="https://upload.wikimedia.org/wikipedia/en/9/9e/KinnPorsche_series_poster.jpg" alt="KinnPorsche The Series" class="myflix-poster-img" />
-            <button class="myflix-card-heart" title="Favorite">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-            </button>
-            <div class="myflix-poster-content">
-                <h3>KinnPorsche</h3>
-                <p>The Series</p>
-            </div>
-        </article>
-
-        <!-- 4: TharnType -->
-        <article class="myflix-poster-card" @onclick='() => PlayContent("TharnType", "A homophobic freshman finds out his college roommate is gay.", "https://upload.wikimedia.org/wikipedia/en/7/73/TharnType_The_Series_2019_poster.jpg", 1)'>
-            <img src="https://upload.wikimedia.org/wikipedia/en/7/73/TharnType_The_Series_2019_poster.jpg" alt="TharnType The Series" class="myflix-poster-img" />
-            <button class="myflix-card-heart" title="Favorite">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-            </button>
-            <div class="myflix-poster-content">
-                <h3>TharnType</h3>
-                <p>The Series</p>
-            </div>
-        </article>
-
-        <!-- 5: SOTUS -->
-        <article class="myflix-poster-card" @onclick='() => PlayContent("SOTUS: The Series", "A freshman stands up to a strict senior leader in the engineering faculty.", "https://upload.wikimedia.org/wikipedia/en/7/76/SOTUS_The_Series_promo.jpg", 1)'>
-            <img src="https://upload.wikimedia.org/wikipedia/en/7/76/SOTUS_The_Series_promo.jpg" alt="SOTUS The Series" class="myflix-poster-img" />
-            <button class="myflix-card-heart" title="Favorite">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-            </button>
-            <div class="myflix-poster-content">
-                <h3>SOTUS</h3>
-                <p>The Series</p>
-            </div>
-        </article>
-
-        <!-- 6: A Tale of Thousand Stars -->
-        <article class="myflix-poster-card" @onclick='() => PlayContent("A Tale of Thousand Stars", "A volunteer teacher receives a heart transplant and promises to fulfill the donor wishes.", "https://upload.wikimedia.org/wikipedia/en/0/0e/A_Tale_of_Thousand_Stars_2021_poster.jpg", 1)'>
-            <img src="https://upload.wikimedia.org/wikipedia/en/0/0e/A_Tale_of_Thousand_Stars_2021_poster.jpg" alt="A Tale of Thousand Stars" class="myflix-poster-img" />
-            <button class="myflix-card-heart" title="Favorite">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-            </button>
-            <div class="myflix-poster-content">
-                <h3>A Tale of Thousand Stars</h3>
-            </div>
-        </article>
-    </div>
+    @if (IsLoading)
+    {
+        <div class="myflix-loading">
+            <p>Loading...</p>
+        </div>
+    }
+    else if (Thais != null && Thais.Any())
+    {
+        <div class="myflix-poster-grid">
+            @foreach (var thai in Thais)
+            {
+                <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => NavigateToDrama(thai.Id)">
+                    <img src="@thai.PosterUrl" alt="@thai.Title" class="myflix-poster-img" />
+                    <button class="myflix-card-heart" title="Favorite">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </button>
+                    <div class="myflix-poster-content">
+                        <h3>@thai.Title</h3>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="myflix-no-data">
+            <p>No Thai series available at the moment.</p>
+        </div>
+    }
 </section>
-
 <!-- Korean Dramas Section -->
 <section class="myflix-section-block">
     <div class="myflix-section-header">
