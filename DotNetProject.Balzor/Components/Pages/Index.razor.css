@@ -310,7 +310,7 @@
 }
 
     .myflix-see-all::after {
-        content: "→";
+        content: "â†’";
         transition: transform 0.15s ease;
     }
 
@@ -468,6 +468,17 @@
         transform: scale(1.12);
         background: rgba(15, 36, 32, 0.85);
         color: #DE7149;
+    }
+
+    .myflix-card-heart.active {
+        background: #DE7149;
+        color: #FFFFFF;
+        border-color: #DE7149;
+    }
+
+    .myflix-card-heart.active svg {
+        fill: #FFFFFF !important;
+        stroke: #FFFFFF !important;
     }
 
 .myflix-poster-content {

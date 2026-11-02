@@ -210,8 +210,11 @@
             {
                 <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => NavigateToDrama(thai.Id)">
                     <img src="@thai.PosterUrl" alt="@thai.Title" class="myflix-poster-img" />
-                    <button class="myflix-card-heart" title="Favorite">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <button class="myflix-card-heart @(FavoriteThaiIds.Contains(thai.Id) ? "active" : "")"
+                            title="@(FavoriteThaiIds.Contains(thai.Id) ? "Remove from Favorites" : "Add to Favorites")"
+                            @onclick:stopPropagation="true"
+                            @onclick="() => ToggleFavoriteThai(thai)">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="@(FavoriteThaiIds.Contains(thai.Id) ? "#DE7149" : "none")" stroke="@(FavoriteThaiIds.Contains(thai.Id) ? "#DE7149" : "currentColor")" stroke-width="2.2">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                         </svg>
                     </button>
@@ -250,10 +253,11 @@
             {
                 <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => PlayDramaAsync(drama.ContentId, drama.Title, drama.Description, drama.PosterUrl)">
                     <img src="@drama.PosterUrl" alt="@drama.Title" class="myflix-poster-img" />
-                    <button class="myflix-card-heart"
-                            title="Favorite">
-
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <button class="myflix-card-heart @(FavoriteDramaIds.Contains(drama.ContentId) ? "active" : "")"
+                            title="@(FavoriteDramaIds.Contains(drama.ContentId) ? "Remove from Favorites" : "Add to Favorites")"
+                            @onclick:stopPropagation="true"
+                            @onclick="() => ToggleFavoriteDrama(drama)">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="@(FavoriteDramaIds.Contains(drama.ContentId) ? "#DE7149" : "none")" stroke="@(FavoriteDramaIds.Contains(drama.ContentId) ? "#DE7149" : "currentColor")" stroke-width="2.2">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                         </svg>
                     </button>
@@ -291,11 +295,13 @@
         {
             @foreach (var movie in Movies)
             {
-                <article class="myflix-poster-card">
+                <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => NavigateToDrama(movie.Id)">
                     <img src="@movie.PosterUrl" alt="@movie.Title" class="myflix-poster-img" />
-                    <button class="myflix-card-heart"
-                            title="Favorite">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <button class="myflix-card-heart @(FavoriteMovieIds.Contains(movie.Id) ? "active" : "")"
+                            title="@(FavoriteMovieIds.Contains(movie.Id) ? "Remove from Favorites" : "Add to Favorites")"
+                            @onclick:stopPropagation="true"
+                            @onclick="() => ToggleFavoriteMovie(movie)">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="@(FavoriteMovieIds.Contains(movie.Id) ? "#DE7149" : "none")" stroke="@(FavoriteMovieIds.Contains(movie.Id) ? "#DE7149" : "currentColor")" stroke-width="2.2">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                         </svg>
                     </button>

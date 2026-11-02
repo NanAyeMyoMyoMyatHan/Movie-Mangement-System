@@ -19,6 +19,9 @@ namespace DotNetProject.Balzor.Components.Pages
         [Inject]
         private WatchLaterService WatchLaterService { get; set; } = default!;
 
+        [Inject]
+        private FavoriteService FavoriteService { get; set; } = default!;
+
         [Parameter]
         public long Id { get; set; }
 
@@ -29,6 +32,7 @@ namespace DotNetProject.Balzor.Components.Pages
 
         protected bool IsPlayingVideo { get; set; } = false;
         protected bool IsWatchlisted { get; set; } = false;
+        protected bool IsFavorited { get; set; } = false;
 
         protected string ActiveVideoTitle { get; set; } = "";
         protected string ActiveVideoDescription { get; set; } = "";
@@ -53,6 +57,7 @@ namespace DotNetProject.Balzor.Components.Pages
             try
             {
                 IsWatchlisted = await WatchLaterService.IsInWatchLaterAsync(Id, true);
+                IsFavorited = await FavoriteService.IsFavoriteAsync(Id, true);
                 var result = await ApiClient.GetContentWithEpisodesAsync(Id);
                 if (result != null && result.IsSuccess && result.Data != null)
                 {
@@ -189,6 +194,28 @@ namespace DotNetProject.Balzor.Components.Pages
             };
 
             IsWatchlisted = await WatchLaterService.ToggleWatchLaterAsync(item);
+            StateHasChanged();
+        }
+
+        protected async Task ToggleFavorite()
+        {
+            if (Drama == null) return;
+
+            var item = new FavoriteItem
+            {
+                Id = Drama.ContentId,
+                IsContent = true,
+                Title = Drama.Title,
+                PosterUrl = Drama.PosterUrl,
+                Category = DramaLanguage.Contains("Thai", StringComparison.OrdinalIgnoreCase) ? "Thai BL" : "Korean Drama",
+                Description = Drama.Description,
+                Year = DramaYear,
+                Rating = 9.4,
+                TotalEpisodes = Episodes.Count > 0 ? Episodes.Count : 16,
+                AddedAt = DateTime.UtcNow
+            };
+
+            IsFavorited = await FavoriteService.ToggleFavoriteAsync(item);
             StateHasChanged();
         }
 

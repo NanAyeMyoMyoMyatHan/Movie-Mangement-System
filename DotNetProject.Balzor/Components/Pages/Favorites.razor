@@ -1,0 +1,205 @@
+@page "/favorites"
+@rendermode InteractiveServer
+
+<PageTitle>Favorites - NangWorld</PageTitle>
+
+<!-- Toast Notification -->
+@if (!string.IsNullOrEmpty(ToastMessage))
+{
+    <div class="fav-toast">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#DE7149" stroke="#DE7149" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+        <span>@ToastMessage</span>
+    </div>
+}
+
+<!-- Top App Header -->
+<header class="myflix-header">
+    <div class="myflix-search-group">
+        <div class="myflix-search-bar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7ea29a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" placeholder="Search within Favorites..." value="@SearchQuery" @oninput="OnSearchChanged" />
+        </div>
+    </div>
+
+    <div class="myflix-header-right">
+        <!-- Notification Bell -->
+        <button class="myflix-notif-btn" aria-label="Notifications" title="Notifications">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="myflix-notif-dot"></span>
+        </button>
+
+        <!-- User Profile Pill -->
+        <div class="myflix-user-profile">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="May Zin" class="myflix-avatar" />
+            <span class="myflix-username">May Zin</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </div>
+    </div>
+</header>
+
+<!-- Favorites Hero Header -->
+<div class="fav-hero">
+    <div class="fav-hero-left">
+        <div class="fav-hero-badge">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="#DE7149" stroke="#DE7149" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            <span>Curated Collection</span>
+        </div>
+        <h1 class="fav-title">My Favorites</h1>
+        <p class="fav-subtitle">Your personal collection of top-rated Asian dramas, Thai series, and cinema masterpieces.</p>
+    </div>
+
+    <div class="fav-hero-stats">
+        <div class="fav-stat-card">
+            <span class="fav-stat-num">@CountAll</span>
+            <span class="fav-stat-label">Favorites</span>
+        </div>
+        <div class="fav-stat-card">
+            <span class="fav-stat-num">★ @TopRating.ToString("0.0")</span>
+            <span class="fav-stat-label">Top Rating</span>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Tabs & Controls -->
+<div class="fav-controls-bar">
+    <div class="fav-filter-pills">
+        <button type="button" class="fav-pill @(SelectedFilter == "All" ? "active" : "")" @onclick='() => SetFilter("All")'>
+            All <span class="fav-pill-count">@CountAll</span>
+        </button>
+        <button type="button" class="fav-pill @(SelectedFilter == "Korean Drama" ? "active" : "")" @onclick='() => SetFilter("Korean Drama")'>
+            Korean Drama <span class="fav-pill-count">@CountKorean</span>
+        </button>
+        <button type="button" class="fav-pill @(SelectedFilter == "Thai BL" ? "active" : "")" @onclick='() => SetFilter("Thai BL")'>
+            Thai BL <span class="fav-pill-count">@CountThai</span>
+        </button>
+        <button type="button" class="fav-pill @(SelectedFilter == "Movies" ? "active" : "")" @onclick='() => SetFilter("Movies")'>
+            Movies <span class="fav-pill-count">@CountMovies</span>
+        </button>
+    </div>
+
+    <div class="fav-sort-group">
+        <label for="fav-sort" class="fav-sort-label">Sort by:</label>
+        <select id="fav-sort" class="fav-sort-select" value="@SortBy" @onchange="OnSortChanged">
+            <option value="rating">Highest Rated</option>
+            <option value="recent">Recently Added</option>
+            <option value="title">Title (A - Z)</option>
+        </select>
+    </div>
+</div>
+
+<!-- Main Cards Grid -->
+@if (IsLoading)
+{
+    <div class="fav-loading">
+        <div class="fav-spinner"></div>
+        <p>Loading your favorite collection...</p>
+    </div>
+}
+else if (FilteredItems.Count == 0)
+{
+    <div class="fav-empty-state">
+        <div class="fav-empty-icon-wrap">
+            <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+        </div>
+        <h3>No favorites found</h3>
+        <p>
+            @(string.IsNullOrWhiteSpace(SearchQuery) && SelectedFilter == "All"
+                ? "Your Favorites list is currently empty. Explore our catalog and tap the heart icon on any title to save it here."
+                : "No favorite titles match your current filter or search criteria.")
+        </p>
+        <button type="button" class="fav-btn-primary" @onclick="ExploreCatalog">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Explore Catalog</span>
+        </button>
+    </div>
+}
+else
+{
+    <div class="fav-grid">
+        @foreach (var item in FilteredItems)
+        {
+            <article class="fav-card">
+                <!-- Thumbnail & Overlay -->
+                <div class="fav-card-poster-wrap" @onclick="() => NavigateToItem(item)">
+                    <img src="@item.PosterUrl" alt="@item.Title" class="fav-card-poster" loading="lazy" />
+
+                    <div class="fav-poster-overlay">
+                        <button type="button" class="fav-play-disc" title="Play Now">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="6 4 19 12 6 20 6 4"></polygon>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Rating pill top-left -->
+                    <span class="fav-rating-tag">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        <span>@item.Rating.ToString("0.0")</span>
+                    </span>
+
+                    <!-- Category tag top-right -->
+                    @if (!string.IsNullOrEmpty(item.Category))
+                    {
+                        <span class="fav-cat-tag">@item.Category</span>
+                    }
+
+                    <!-- Episode count bottom-right -->
+                    <span class="fav-ep-tag">
+                        @(item.TotalEpisodes > 1 ? $"{item.TotalEpisodes} Eps" : "Movie")
+                    </span>
+                </div>
+
+                <!-- Info Body -->
+                <div class="fav-card-body">
+                    <div class="fav-card-top-info">
+                        <span class="fav-year-pill">@item.Year</span>
+                        <span class="fav-added-date">Added @item.AddedAt.ToString("MMM dd")</span>
+                    </div>
+
+                    <h3 class="fav-card-title" title="@item.Title" @onclick="() => NavigateToItem(item)">
+                        @item.Title
+                    </h3>
+
+                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                    {
+                        <p class="fav-card-desc">@item.Description</p>
+                    }
+
+                    <!-- Card Actions -->
+                    <div class="fav-card-actions">
+                        <button type="button" class="fav-btn-watch" @onclick="() => NavigateToItem(item)">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="6 4 19 12 6 20 6 4"></polygon>
+                            </svg>
+                            <span>Watch Now</span>
+                        </button>
+
+                        <button type="button" class="fav-btn-unfav" title="Remove from Favorites" @onclick="() => RemoveFavorite(item)">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#DE7149" stroke="#DE7149" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+}

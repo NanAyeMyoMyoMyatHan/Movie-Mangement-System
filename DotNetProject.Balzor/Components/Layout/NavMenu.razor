@@ -1,5 +1,6 @@
 @using DotNetProject.Balzor.Components.Shared
 @inject WatchLaterService WatchLaterService
+@inject FavoriteService FavoriteService
 @implements IDisposable
 
 <aside class="petale-sidebar myflix-sidebar">
@@ -44,7 +45,7 @@
                     </svg>
                     <span>Favorites</span>
                 </div>
-                <span class="myflix-badge">25</span>
+                <span class="myflix-badge">@FavoriteCount</span>
             </NavLink>
         </nav>
 
@@ -113,21 +114,27 @@
 
 @code {
     private int WatchCount = 0;
+    private int FavoriteCount = 0;
 
     protected override async Task OnInitializedAsync()
     {
         WatchLaterService.OnChange += HandleChange;
+        FavoriteService.OnChange += HandleChange;
+
         WatchCount = await WatchLaterService.GetCountAsync();
+        FavoriteCount = await FavoriteService.GetCountAsync();
     }
 
     private async void HandleChange()
     {
         WatchCount = await WatchLaterService.GetCountAsync();
+        FavoriteCount = await FavoriteService.GetCountAsync();
         await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
         WatchLaterService.OnChange -= HandleChange;
+        FavoriteService.OnChange -= HandleChange;
     }
 }
