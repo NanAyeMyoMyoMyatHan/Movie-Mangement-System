@@ -77,10 +77,21 @@ var videosDir = Path.Combine(storagePath, "videos");
 if (!Directory.Exists(videosDir)) Directory.CreateDirectory(videosDir);
 videoProviders.Add(new Microsoft.Extensions.FileProviders.PhysicalFileProvider(videosDir));
 
-var alchemyFolder = @"D:\Alchemy Of Soule S1+S2";
-if (Directory.Exists(alchemyFolder))
+var extraFolders = new[]
 {
-    videoProviders.Add(new Microsoft.Extensions.FileProviders.PhysicalFileProvider(alchemyFolder));
+    @"D:\Alchemy Of Soule S1+S2",
+    @"D:\KingDomS1+S2",
+    @"D:\Daung With You",
+    @"D:\KhemJira",
+    @"D:\Fool In Love"
+};
+
+foreach (var folder in extraFolders)
+{
+    if (Directory.Exists(folder))
+    {
+        videoProviders.Add(new Microsoft.Extensions.FileProviders.PhysicalFileProvider(folder));
+    }
 }
 
 app.UseStaticFiles(new StaticFileOptions

@@ -104,6 +104,7 @@
                                 <td class="admin-sub-cell">@(c.Country ?? "—")</td>
                                 <td>
                                     <div style="display:flex;gap:.4rem;align-items:center;">
+                                        <a href="admin/episodes?contentId=@c.ContentId" class="btn-admin" style="background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;text-decoration:none;">🎬 Episodes</a>
                                         <a href="admin/contents/edit/@c.ContentId" class="btn-admin btn-admin-edit">Edit</a>
                                         <a href="admin/contents/delete/@c.ContentId" class="btn-admin btn-admin-delete">Delete</a>
                                     </div>

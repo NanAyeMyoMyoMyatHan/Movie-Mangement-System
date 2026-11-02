@@ -29,12 +29,30 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
-var alchemyFolder = @"D:\Alchemy Of Soule S1+S2";
-if (Directory.Exists(alchemyFolder))
+var videoProviders = new List<Microsoft.Extensions.FileProviders.IFileProvider>();
+var dramaFolders = new[]
+{
+    @"D:\AppStorage\videos",
+    @"D:\Alchemy Of Soule S1+S2",
+    @"D:\KingDomS1+S2",
+    @"D:\Daung With You",
+    @"D:\KhemJira",
+    @"D:\Fool In Love"
+};
+
+foreach (var folder in dramaFolders)
+{
+    if (Directory.Exists(folder))
+    {
+        videoProviders.Add(new Microsoft.Extensions.FileProviders.PhysicalFileProvider(folder));
+    }
+}
+
+if (videoProviders.Count > 0)
 {
     app.UseStaticFiles(new StaticFileOptions
     {
-        FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(alchemyFolder),
+        FileProvider = new Microsoft.Extensions.FileProviders.CompositeFileProvider(videoProviders),
         RequestPath = "/videos"
     });
 }
