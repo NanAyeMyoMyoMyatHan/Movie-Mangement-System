@@ -114,7 +114,7 @@ namespace DotNetProject.Balzor.Components.Shared
             PostAsync<Result<DeleteContentResponse>>("api/contents/delete", new DeleteContentRequest { ContentId = id });
 
         public Task<Result<GetThaiPagedListResponse>?> GetThaiPagedAsync(GetThaiPagedListRequest request) =>
-            PostAsync<Result<GetThaiPagedListResponse>>("api/thai/paged-list", request);
+            PostAsync<Result<GetThaiPagedListResponse>>("api/Thai/GetPagedList", request);
     }
 
     public enum EnumHttpMethod { None, Get, Post, Put, Patch, Delete }

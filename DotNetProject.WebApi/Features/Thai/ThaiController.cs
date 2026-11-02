@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using DotNetProject.Domain.Features.Thai;
 
@@ -22,6 +22,7 @@ namespace DotNetProject.WebApi.Features.Thai
         private readonly IWebHostEnvironment _environment;
 
         [HttpPost("GetPagedList")]
+        [HttpPost("paged-list")]
         public async Task<IActionResult> GetPagedList([FromBody] GetThaiPagedListRequest request,
             CancellationToken cancellationToken) =>
             ToActionResult(await _thaiService.GetPagedListAsync(request, cancellationToken));
