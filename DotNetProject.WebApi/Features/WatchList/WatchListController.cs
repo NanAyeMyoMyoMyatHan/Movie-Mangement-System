@@ -11,12 +11,12 @@ namespace DotNetProject.WebApi.Features.WatchList
         private readonly IWatchListInterface _watchListInterface;
         private readonly IWebHostEnvironment _env;
 
-        public WatchListController(IWatchListInterface watchListInterface, IWebHostEnvironment env = null)
+        public WatchListController(IWatchListInterface watchListInterface, IWebHostEnvironment env)
         {
             _watchListInterface = watchListInterface;
             _env = env;
         }
-        [HttpGet("UserId")]
+        [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetAllWatchListByUserId(int userId)
         {
             var watchlist = await _watchListInterface.GetWatchListByUserIdAsync(userId);
@@ -26,7 +26,7 @@ namespace DotNetProject.WebApi.Features.WatchList
             }
             return Ok(watchlist);
         }
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetAllWatchListById(int id)
         {
             var watchlist = await _watchListInterface.GetWatchListByIdAsync(id);
@@ -37,20 +37,20 @@ namespace DotNetProject.WebApi.Features.WatchList
             return Ok(watchlist);
                 
         }
-        [HttpPost("userid")]
-        public async Task<IActionResult> CreateWatchList(int userid,WatchListCreateRequestModel model)
+        [HttpPost("{userid}")]
+        public async Task<IActionResult> CreateWatchList(int userid, [FromBody] WatchListCreateRequestModel model)
         {
             var watchlist = await _watchListInterface.CreateWatchListAsync(userid,model);
             return Ok(watchlist);
         }
-        [HttpPut("id")]
-        public async Task<IActionResult>UpdateWatchList(int id,WatchListUpdateRequestModel model)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateWatchList(int id, [FromBody] WatchListUpdateRequestModel model)
         {
             var watchlist = await _watchListInterface.UpdateWatchListAsync(id,model);
             return Ok(watchlist);
         }
-        [HttpDelete("id")]
-        public async Task<IActionResult>DeleteWatchlist(int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteWatchlist(int id)
         {
             var watchlist = await _watchListInterface.DeleteWatchListAsync(id);
             return Ok(watchlist);

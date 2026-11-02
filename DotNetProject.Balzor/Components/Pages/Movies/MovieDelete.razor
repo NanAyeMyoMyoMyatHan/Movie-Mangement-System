@@ -1,0 +1,65 @@
+﻿@page "/movies/delete/{Id:int}"
+@using DotNetProject.Balzor.Components.Shared
+@inject HttpClientService ApiClient
+@inject NavigationManager Nav
+
+<PageTitle>Delete Movie — MyFlix</PageTitle>
+
+<div class="delete-page">
+    <div class="form-header">
+        <a href="@(ReturnUrl ?? "/movies")" class="back-link">← Back to Movies</a>
+        <h1>Delete Movie</h1>
+    </div>
+
+    @if (_loading)
+    {
+        <p class="state-msg">Loading…</p>
+    }
+    else if (_notFound)
+    {
+        <p class="state-msg state-error">Movie not found.</p>
+    }
+    else
+    {
+        @if (_error != null)
+        {
+            <div class="alert alert-error">@_error</div>
+        }
+
+        <div class="confirm-card">
+            <div class="warning-icon">⚠️</div>
+            <p class="confirm-msg">
+                Are you sure you want to delete <strong>@_movieTitle</strong>?
+            </p>
+            <p class="sub-msg">This action cannot be undone.</p>
+
+            <div class="form-actions">
+                <button class="btn-danger" @onclick="ConfirmDeleteAsync" disabled="@_submitting">
+                    @(_submitting ? "Deleting…" : "Yes, Delete")
+                </button>
+                <a href="@(ReturnUrl ?? "/movies")" class="btn-cancel">Cancel</a>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .delete-page { padding: 2rem; max-width: 500px; margin: 0 auto; }
+    .form-header { margin-bottom: 1.5rem; }
+    .form-header h1 { font-size: 1.6rem; color: #dc2626; margin: .4rem 0 0; }
+    .back-link { color: #aaa; font-size: .85rem; text-decoration: none; }
+    .back-link:hover { color: #eee; }
+    .confirm-card { background: #1a1a2e; border-radius: 10px; padding: 2rem; border: 1px solid #dc262655; text-align: center; }
+    .warning-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .confirm-msg { font-size: 1rem; color: #eee; margin-bottom: .4rem; }
+    .confirm-msg strong { color: #e50914; }
+    .sub-msg { color: #888; font-size: .85rem; margin-bottom: 1.5rem; }
+    .form-actions { display: flex; gap: .8rem; justify-content: center; }
+    .btn-danger { padding: .55rem 1.4rem; background: #dc2626; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: .9rem; }
+    .btn-danger:disabled { opacity: .6; cursor: not-allowed; }
+    .btn-cancel { padding: .55rem 1.4rem; background: #333; color: #eee; border-radius: 6px; text-decoration: none; font-size: .9rem; }
+    .alert { padding: .75rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: .9rem; }
+    .alert-error { background: #7f1d1d33; border: 1px solid #dc2626; color: #fca5a5; }
+    .state-msg { color: #aaa; text-align: center; padding: 3rem 0; }
+    .state-error { color: #e50914; }
+</style>

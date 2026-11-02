@@ -1,0 +1,45 @@
+@page "/contents/delete/{Id:long}"
+@using DotNetProject.Balzor.Components.Shared
+@inject HttpClientService ApiClient
+@inject NavigationManager Nav
+
+<PageTitle>Delete Content — MyFlix</PageTitle>
+
+<div class="delete-page">
+    <div class="form-header">
+        <a href="/contents" class="btn btn-outline btn-sm">? Back to Contents</a>
+        <h2>Delete Content</h2>
+    </div>
+
+    @if (IsLoading)
+    {
+        <div class="loading-state"><div class="spinner"></div><p>Loading...</p></div>
+    }
+    else if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+    else if (_content != null)
+    {
+        <div class="delete-card">
+            <div class="delete-warning">
+                <span class="warning-icon">??</span>
+                <p>Are you sure you want to delete the following content? This action cannot be undone.</p>
+            </div>
+
+            <div class="delete-info">
+                <div class="info-row"><label>Title:</label><span>@_content.Title</span></div>
+                <div class="info-row"><label>Type:</label><span>@_content.ContentType</span></div>
+                <div class="info-row"><label>Country:</label><span>@(_content.Country ?? "—")</span></div>
+                <div class="info-row"><label>Status:</label><span>@_content.Status</span></div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-danger" disabled="@IsSubmitting" @onclick="HandleDeleteAsync">
+                    @(IsSubmitting ? "Deleting..." : "Yes, Delete")
+                </button>
+                <a href="/contents" class="btn btn-outline">Cancel</a>
+            </div>
+        </div>
+    }
+</div>

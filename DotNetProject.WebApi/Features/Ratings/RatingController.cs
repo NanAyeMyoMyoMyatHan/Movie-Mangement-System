@@ -16,22 +16,22 @@ namespace DotNetProject.WebApi.Features.Ratings
             _webHostEnvironment = webHostEnvironment;
             _ratingInterface = ratingInterface;
         }
-        [HttpGet("userid")]
+        [HttpGet("user/{userid}")]
         public async Task<IActionResult> GetRating (int userid)
         {
             var rating =await _ratingInterface.GetRatingAsync(userid);
             return Ok(rating);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateRaing([FromBody]RatingCreateRequestModel model)
+        public async Task<IActionResult> CreateRating([FromBody]RatingCreateRequestModel model)
         {
             var rating = await _ratingInterface.CreateRatingAsync(model);
             return Ok(rating);
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateRating([FromBody]RatingUpdateRequestModel mdoel)
+        public async Task<IActionResult> UpdateRating([FromBody]RatingUpdateRequestModel model)
         {
-            var rating = await _ratingInterface.UpdateRatingAsync(mdoel);
+            var rating = await _ratingInterface.UpdateRatingAsync(model);
             return Ok(rating);
         }
         [HttpDelete]

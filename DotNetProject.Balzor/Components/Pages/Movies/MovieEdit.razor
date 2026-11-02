@@ -1,0 +1,111 @@
+﻿@page "/movies/edit/{Id:int}"
+@using DotNetProject.Balzor.Components.Shared
+@inject HttpClientService ApiClient
+@inject NavigationManager Nav
+
+<PageTitle>Edit Movie — MyFlix</PageTitle>
+
+<div class="form-page">
+    <div class="form-header">
+        <a href="@(ReturnUrl ?? "/movies")" class="back-link">← Back to Movies</a>
+        <h1>Edit Movie</h1>
+    </div>
+
+    @if (_loading)
+    {
+        <p class="state-msg">Loading…</p>
+    }
+    else if (_notFound)
+    {
+        <p class="state-msg state-error">Movie not found.</p>
+    }
+    else
+    {
+        @if (_success != null)
+        {
+            <div class="alert alert-success">@_success</div>
+        }
+        @if (_error != null)
+        {
+            <div class="alert alert-error">@_error</div>
+        }
+
+        <div class="form-card">
+            <div class="form-group">
+                <label for="title">Title <span class="required">*</span></label>
+                <input id="title" @bind="_form.Title" class="form-input @(string.IsNullOrWhiteSpace(_titleError) ? "" : "input-error")" />
+                @if (!string.IsNullOrWhiteSpace(_titleError))
+                {
+                    <span class="field-error">@_titleError</span>
+                }
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="genre">Genre</label>
+                    <input id="genre" @bind="_form.Genre" class="form-input" />
+                </div>
+                <div class="form-group">
+                    <label for="year">Release Year</label>
+                    <input id="year" type="number" @bind="_form.ReleaseYear" class="form-input" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" @bind="_form.Description" rows="4" class="form-input"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="poster">Poster URL</label>
+                <input id="poster" @bind="_form.PosterUrl" class="form-input" />
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="tmdb">TMDB ID</label>
+                    <input id="tmdb" type="number" @bind="_form.TmdbId" class="form-input" />
+                </div>
+                <div class="form-group form-check-group">
+                    <label>
+                        <input type="checkbox" @bind="_form.IsManual" /> Manual entry
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-primary" @onclick="SubmitAsync" disabled="@_submitting">
+                    @(_submitting ? "Saving…" : "Save Changes")
+                </button>
+                <a href="@(ReturnUrl ?? "/movies")" class="btn-cancel">Cancel</a>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .form-page { padding: 2rem; max-width: 680px; margin: 0 auto; }
+    .form-header { margin-bottom: 1.5rem; }
+    .form-header h1 { font-size: 1.6rem; color: #e50914; margin: .4rem 0 0; }
+    .back-link { color: #aaa; font-size: .85rem; text-decoration: none; }
+    .back-link:hover { color: #eee; }
+    .form-card { background: #1a1a2e; border-radius: 10px; padding: 1.8rem; border: 1px solid #2a2a3e; }
+    .form-group { display: flex; flex-direction: column; gap: .3rem; margin-bottom: 1.1rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-check-group { justify-content: flex-end; padding-bottom: .2rem; }
+    label { font-size: .85rem; color: #aaa; }
+    .required { color: #e50914; }
+    .form-input { padding: .55rem .8rem; border-radius: 6px; border: 1px solid #333; background: #0f0f1e; color: #eee; font-size: .9rem; resize: vertical; }
+    .form-input:focus { outline: none; border-color: #e50914; }
+    .input-error { border-color: #dc2626 !important; }
+    .field-error { color: #dc2626; font-size: .78rem; }
+    .form-actions { display: flex; gap: .8rem; margin-top: 1.5rem; }
+    .btn-primary { padding: .55rem 1.2rem; background: #e50914; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: .9rem; }
+    .btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+    .btn-cancel { padding: .55rem 1.2rem; background: #333; color: #eee; border-radius: 6px; text-decoration: none; font-size: .9rem; }
+    .alert { padding: .75rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: .9rem; }
+    .alert-success { background: #14532d33; border: 1px solid #16a34a; color: #4ade80; }
+    .alert-error { background: #7f1d1d33; border: 1px solid #dc2626; color: #fca5a5; }
+    .state-msg { color: #aaa; text-align: center; padding: 3rem 0; }
+    .state-error { color: #e50914; }
+</style>

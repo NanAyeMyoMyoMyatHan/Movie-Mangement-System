@@ -1,0 +1,30 @@
+@page "/admin/users"
+@layout AdminLayout
+@using DotNetProject.Balzor.Components.Layout
+@rendermode InteractiveServer
+
+<PageTitle>Users — NangWorld Admin</PageTitle>
+
+<div class="admin-page-header">
+    <div>
+        <h1>Users</h1>
+        <p>Manage registered user accounts and access levels.</p>
+    </div>
+</div>
+
+<div class="admin-content-area">
+    <div class="admin-card" style="text-align:center;padding:3rem 2rem;">
+        <div style="width:56px;height:56px;border-radius:14px;background:rgba(222, 113, 73, 0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-terracotta)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+        </div>
+        <h2 style="font-size:1.1rem;color:var(--brand-green);margin:0 0 .5rem;">User Management</h2>
+        <p style="font-size:.85rem;color:var(--text-muted);max-width:340px;margin:0 auto;">
+            User management requires authentication and role-based API endpoints.
+            This section will be enabled once the <strong>Users API</strong> is connected.
+        </p>
+    </div>
+</div>

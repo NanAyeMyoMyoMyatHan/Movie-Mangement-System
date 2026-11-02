@@ -1,0 +1,134 @@
+@page "/admin/movies"
+@layout AdminLayout
+@using DotNetProject.Balzor.Components.Shared
+@using DotNetProject.Balzor.Components.Layout
+@rendermode InteractiveServer
+
+<PageTitle>Movies — NangWorld Admin</PageTitle>
+
+<div class="admin-page-header">
+    <div>
+        <h1>Movies</h1>
+        <p>Manage all movie entries, posters, and metadata.</p>
+    </div>
+    <div class="admin-header-actions">
+        <a href="admin/movies/create" class="btn-admin btn-admin-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Movie
+        </a>
+    </div>
+</div>
+
+<div class="admin-content-area">
+    <!-- Filter Bar -->
+    <div class="admin-card" style="padding:1rem 1.4rem;">
+        <div class="admin-filter-bar">
+            <div class="admin-search-wrap">
+                <svg class="admin-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" class="admin-search-input" placeholder="Search movies…"
+                       @bind="_search" @bind:event="oninput" @onkeyup="OnSearchKeyUp" />
+            </div>
+            <select class="admin-select" @onchange="OnPageSizeChange">
+                <option value="10">10 / page</option>
+                <option value="20">20 / page</option>
+                <option value="50">50 / page</option>
+            </select>
+            <button class="btn-admin btn-admin-edit" @onclick="LoadAsync">Search</button>
+            @if (!string.IsNullOrWhiteSpace(_search))
+            {
+                <button class="btn-admin btn-admin-delete" @onclick="ClearSearch">Clear</button>
+            }
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="admin-card">
+        @if (_loading)
+        {
+            <div class="admin-loading">Loading movies…</div>
+        }
+        else if (_error != null)
+        {
+            <div class="admin-alert admin-alert-error" style="margin:1rem 1.4rem;">@_error</div>
+        }
+        else if (_items.Count == 0)
+        {
+            <div class="admin-empty">
+                No movies found.
+                <a href="admin/movies/create" style="color:var(--brand-terracotta);font-weight:700;"> Add your first movie →</a>
+            </div>
+        }
+        else
+        {
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Poster</th>
+                            <th>Title</th>
+                            <th>Year</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int rowNo = (_currentPage - 1) * _pageSize; }
+                        @foreach (var m in _items)
+                        {
+                            rowNo++;
+                            <tr>
+                                <td style="color:#9FB5A0;font-size:.78rem;">@rowNo</td>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(m.PosterUrl))
+                                    {
+                                        <img src="@m.PosterUrl" alt="@m.Title" class="admin-thumb" />
+                                    }
+                                    else
+                                    {
+                                        <div class="admin-no-thumb">—</div>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="admin-title-cell">@m.Title</div>
+                                </td>
+                                <td class="admin-sub-cell">@(m.ReleaseYear?.ToString() ?? "—")</td>
+                                <td>
+                                    <div style="display:flex;gap:.4rem;align-items:center;">
+                                        <a href="admin/movies/edit/@m.Id" class="btn-admin btn-admin-edit">Edit</a>
+                                        <a href="admin/movies/delete/@m.Id" class="btn-admin btn-admin-delete">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.4rem;border-top:1px solid rgba(204,233,220,0.4);flex-wrap:wrap;gap:.5rem;">
+                <span style="font-size:.78rem;color:#7B977D;">
+                    Showing @((_currentPage - 1) * _pageSize + 1)–@(Math.Min(_currentPage * _pageSize, _totalCount)) of @_totalCount
+                </span>
+                <div style="display:flex;gap:.3rem;">
+                    @if (_currentPage > 1)
+                    {
+                        <button class="btn-admin btn-admin-edit" style="padding:.35rem .7rem;font-size:.78rem;" @onclick="() => GoToPage(_currentPage - 1)">‹ Prev</button>
+                    }
+                    @for (int p = Math.Max(1, _currentPage - 2); p <= Math.Min(_totalPages, _currentPage + 2); p++)
+                    {
+                        int pCopy = p;
+                        <button class="btn-admin @(pCopy == _currentPage ? "btn-admin-primary" : "btn-admin-edit")"
+                                style="padding:.35rem .65rem;font-size:.78rem;"
+                                @onclick="() => GoToPage(pCopy)">@pCopy</button>
+                    }
+                    @if (_currentPage < _totalPages)
+                    {
+                        <button class="btn-admin btn-admin-edit" style="padding:.35rem .7rem;font-size:.78rem;" @onclick="() => GoToPage(_currentPage + 1)">Next ›</button>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

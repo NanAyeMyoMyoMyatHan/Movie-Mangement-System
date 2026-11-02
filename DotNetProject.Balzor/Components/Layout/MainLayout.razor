@@ -1,0 +1,20 @@
+@inherits LayoutComponentBase
+
+<div class="petale-layout">
+    <div class="petale-sidebar-container">
+        <NavMenu />
+    </div>
+
+    <main class="petale-main">
+        <div class="petale-content">
+            @Body
+        </div>
+    </main>
+</div>
+
+<!-- Blazor Error UI -->
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>

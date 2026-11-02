@@ -15,6 +15,16 @@ public partial class AppDbContext : DbContext
     {
     }
 
+    public virtual DbSet<Content> Contents { get; set; }
+
+    public virtual DbSet<ContentGenre> ContentGenres { get; set; }
+
+    public virtual DbSet<ContentType> ContentTypes { get; set; }
+
+    public virtual DbSet<Episode> Episodes { get; set; }
+
+    public virtual DbSet<Genre> Genres { get; set; }
+
     public virtual DbSet<Movie> Movies { get; set; }
 
     public virtual DbSet<Rating> Ratings { get; set; }
@@ -25,10 +35,117 @@ public partial class AppDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=localhost;Database=MyFlixDb;User ID=sa; Password=sasa@123;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=.;Database=MyFlixDb;User ID=sa; Password=sasa@123;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Content>(entity =>
+        {
+            entity.HasKey(e => e.ContentId).HasName("PK__Content__2907A81E0665AB0A");
+
+            entity.ToTable("Content");
+
+            entity.Property(e => e.BannerUrl)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.Country)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Language)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.PosterUrl)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.Status)
+                .HasMaxLength(30)
+                .IsUnicode(false)
+                .HasDefaultValue("Active");
+            entity.Property(e => e.Title)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.ContentType).WithMany(p => p.Contents)
+                .HasForeignKey(d => d.ContentTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Content_ContentType");
+        });
+
+        modelBuilder.Entity<ContentGenre>(entity =>
+        {
+            entity.HasKey(e => new { e.ContentId, e.GenreId });
+
+            entity.ToTable("ContentGenre");
+
+            entity.HasOne(d => d.Content).WithMany(p => p.ContentGenres)
+                .HasForeignKey(d => d.ContentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ContentGenre_Content");
+
+            entity.HasOne(d => d.Genre).WithMany(p => p.ContentGenres)
+                .HasForeignKey(d => d.GenreId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ContentGenre_Genre");
+        });
+
+        modelBuilder.Entity<ContentType>(entity =>
+        {
+            entity.HasKey(e => e.ContentTypeId).HasName("PK__ContentT__2026064A6773585F");
+
+            entity.ToTable("ContentType");
+
+            entity.HasIndex(e => e.Name, "UQ_ContentType_Name").IsUnique();
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<Episode>(entity =>
+        {
+            entity.HasKey(e => e.EpisodeId).HasName("PK__Episode__AC6609F5606ECBA7");
+
+            entity.ToTable("Episode");
+
+            entity.HasIndex(e => new { e.ContentId, e.EpisodeNumber }, "UQ_Episode_Content_EpisodeNumber").IsUnique();
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Status)
+                .HasMaxLength(30)
+                .IsUnicode(false)
+                .HasDefaultValue("Active");
+            entity.Property(e => e.ThumbnailUrl)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+            entity.Property(e => e.Title)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.VideoUrl)
+                .HasMaxLength(500)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Content).WithMany(p => p.Episodes)
+                .HasForeignKey(d => d.ContentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Episode_Content");
+        });
+
+        modelBuilder.Entity<Genre>(entity =>
+        {
+            entity.HasKey(e => e.GenreId).HasName("PK__Genre__0385057ED7C96ED8");
+
+            entity.ToTable("Genre");
+
+            entity.HasIndex(e => e.Name, "UQ_Genre_Name").IsUnique();
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<Movie>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Movies__3214EC07C32E54B7");

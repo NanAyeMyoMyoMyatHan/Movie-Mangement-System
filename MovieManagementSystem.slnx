@@ -1,7 +1,11 @@
 <Solution>
+  <Folder Name="/Shared/">
+    <Project Path="Common/Common.csproj" Id="ea4f23d1-44fe-471b-b003-b51c115c5724" />
+  </Folder>
+  <Project Path="DotNetProject.Balzor/DotNetProject.Balzor.csproj" Id="99e3e27b-1ea2-4d56-af40-ac6b7df21753" />
   <Project Path="DotNetProject.Console/DotNetProject.Console.csproj" />
   <Project Path="DotNetProject.Database/DotNetProject.Database.csproj" />
   <Project Path="DotNetProject.Domain/DotNetProject.Domain.csproj" />
+  <Project Path="DotNetProject.MVC/DotNetProject.MVC.csproj" Id="c70a7fb9-f086-4028-8441-96aaaaa3e01c" />
   <Project Path="DotNetProject.WebApi/DotNetProject.WebApi.csproj" />
-  <Project Path="DotNetProject.WindowForm/DotNetProject.WindowForm.csproj" />
 </Solution>

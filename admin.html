@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SereneFlix Admin — Content Management Dashboard</title>
+  <meta name="description" content="SereneFlix admin panel for managing movies, dramas, episodes, users and analytics.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            mint:     { 50:'#F4FAF6',100:'#E5F4EC',200:'#CCE9DC',300:'#A7D7C1',400:'#7EC2A2',500:'#58AC85',600:'#418F6B',700:'#327255',800:'#285843',900:'#1F4233' },
+            sage:     { 50:'#F7F9F7',100:'#EEF3EE',200:'#DCE5DC',300:'#C2D1C3',400:'#9FB5A0',500:'#7B977D',600:'#5F7961',700:'#485C4A',800:'#344136',900:'#232C24' },
+            cream:    { 50:'#FCFBF8',100:'#FAF7F0',200:'#F4EFE4',300:'#EBE2D2',400:'#DDD0BC' },
+            warmgray: { 50:'#FAFAFA',100:'#F5F5F3',200:'#ECEBE6',300:'#DDDCD3',400:'#BDBBB0',500:'#8E8B7F',600:'#646257',700:'#4A483E',800:'#333129',900:'#22211A' },
+            blush:    { 50:'#FDF7F7',100:'#F9ECEC',200:'#F3D9D9',300:'#E8BCBC',400:'#D99898' },
+            honey: '#E0A96D'
+          },
+          fontFamily: { sans:["'Plus Jakarta Sans'","sans-serif"], serif:["'Playfair Display'","serif"] },
+          boxShadow: {
+            'soft':       '0 8px 30px rgba(95,121,97,0.08)',
+            'soft-lg':    '0 16px 40px rgba(72,92,74,0.12)',
+            'card':       '0 4px 20px -2px rgba(95,121,97,0.06),0 2px 6px -1px rgba(95,121,97,0.04)',
+            'card-hover': '0 20px 35px -5px rgba(65,143,107,0.15),0 8px 16px -3px rgba(65,143,107,0.08)',
+            'inner-glow': 'inset 0 1px 2px rgba(255,255,255,0.9)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar{width:7px;height:7px}
+    ::-webkit-scrollbar-track{background:#F4FAF6}
+    ::-webkit-scrollbar-thumb{background:#CCE9DC;border-radius:9999px}
+    ::-webkit-scrollbar-thumb:hover{background:#A7D7C1}
+    .glass-panel{background:rgba(252,251,248,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(220,229,220,0.8)}
+    .glass-card{background:rgba(255,255,255,0.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(204,233,220,0.5)}
+    @keyframes modalFadeIn{from{opacity:0;transform:scale(0.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .animate-modal{animation:modalFadeIn 0.25s cubic-bezier(0.16,1,0.3,1) forwards}
+    @keyframes toastSlide{from{opacity:0;transform:translateY(20px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .animate-toast{animation:toastSlide 0.3s cubic-bezier(0.16,1,0.3,1) forwards}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    .animate-fade-up{animation:fadeUp 0.35s cubic-bezier(0.16,1,0.3,1) both}
+    .stat-card{transition:all 0.22s ease}
+    .stat-card:hover{transform:translateY(-3px)}
+    .nav-item-admin{transition:all 0.18s ease}
+    .nav-item-admin.active{background:rgba(229,244,236,0.9);color:#285843;border:1px solid rgba(167,215,193,0.7);box-shadow:0 2px 8px rgba(65,143,107,0.08)}
+    .table-row{transition:background 0.15s ease}
+    .table-row:hover{background:rgba(244,250,246,0.8)}
+    .badge-active{background:#E5F4EC;color:#285843;border:1px solid #A7D7C1}
+    .badge-inactive{background:#F9ECEC;color:#9a5c5c;border:1px solid #E8BCBC}
+    .badge-pending{background:#FEF9EC;color:#92650a;border:1px solid #f0d78b}
+    .upload-zone{border:2px dashed #A7D7C1;transition:all 0.2s ease}
+    .upload-zone:hover,.upload-zone.drag-over{border-color:#58AC85;background:rgba(229,244,236,0.5)}
+  </style>
+</head>
+<body class="bg-[#F8FAF7] text-sage-900 font-sans antialiased min-h-screen flex flex-col md:flex-row selection:bg-mint-200 selection:text-sage-900">
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="w-full md:w-72 lg:w-80 bg-cream-50/90 border-r border-sage-200/80 p-5 flex flex-col justify-between shrink-0 z-30 md:min-h-screen sticky top-0 backdrop-blur-md">
+  <div>
+    <div class="flex items-center justify-between pb-6 border-b border-sage-200/60 mb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-mint-300 to-sage-200 flex items-center justify-center shadow-soft border border-white/80">
+          <i data-lucide="sprout" class="w-6 h-6 text-mint-700"></i>
+        </div>
+        <div>
+          <span class="font-serif text-2xl font-bold tracking-tight text-sage-800 flex items-center gap-1.5">SereneFlix<span class="inline-block w-2 h-2 rounded-full bg-mint-400"></span></span>
+          <p class="text-[11px] uppercase tracking-wider text-blush-400 font-bold mt-0.5 flex items-center gap-1"><i data-lucide="shield-check" class="w-3 h-3"></i> Admin Panel</p>
+        </div>
+      </div>
+      <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-xl text-sage-600 hover:bg-mint-100 transition"><i data-lucide="menu" class="w-5 h-5"></i></button>
+    </div>
+
+    <nav id="navLinks" class="space-y-1 hidden md:block">
+      <p class="text-[11px] font-bold uppercase tracking-widest text-sage-400 px-3.5 mb-2.5">Overview</p>
+      <button onclick="showSection('dashboard')" id="nav-dashboard" class="nav-item-admin active w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium">
+        <div class="flex items-center gap-3"><i data-lucide="layout-dashboard" class="w-4 h-4 text-mint-600"></i><span>Dashboard</span></div>
+        <span class="text-[10px] bg-mint-200/80 text-mint-800 px-2 py-0.5 rounded-full font-semibold">Home</span>
+      </button>
+      <button onclick="showSection('analytics')" id="nav-analytics" class="nav-item-admin w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70">
+        <i data-lucide="bar-chart-3" class="w-4 h-4 text-sage-500"></i><span>Analytics</span>
+      </button>
+
+      <p class="text-[11px] font-bold uppercase tracking-widest text-sage-400 px-3.5 pt-5 mb-2.5">Content Management</p>
+      <button onclick="showSection('movies')" id="nav-movies" class="nav-item-admin w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70">
+        <div class="flex items-center gap-3"><i data-lucide="film" class="w-4 h-4 text-sage-500"></i><span>Movies</span></div>
+        <span class="text-[10px] bg-white border border-sage-200 text-sage-600 px-2 py-0.5 rounded-full font-semibold">24</span>
+      </button>
+      <button onclick="showSection('dramas')" id="nav-dramas" class="nav-item-admin w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70">
+        <div class="flex items-center gap-3"><i data-lucide="tv-2" class="w-4 h-4 text-sage-500"></i><span>Dramas &amp; Series</span></div>
+        <span class="text-[10px] bg-white border border-sage-200 text-sage-600 px-2 py-0.5 rounded-full font-semibold">18</span>
+      </button>
+      <button onclick="showSection('episodes')" id="nav-episodes" class="nav-item-admin w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70">
+        <i data-lucide="clapperboard" class="w-4 h-4 text-sage-500"></i><span>Episodes</span>
+      </button>
+      <button onclick="showSection('genres')" id="nav-genres" class="nav-item-admin w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70">
+        <i data-lucide="tags" class="w-4 h-4 text-sage-500"></i><span>Genres</span>
+      </button>
+
+      <p class="text-[11px] font-bold uppercase tracking-widest text-sage-400 px-3.5 pt-5 mb-2.5">Users &amp; System</p>
+      <button onclick="showSection('users')" id="nav-users" class="nav-item-admin w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70">
+        <div class="flex items-center gap-3"><i data-lucide="users" class="w-4 h-4 text-sage-500"></i><span>Users</span></div>
+        <span class="text-[10px] bg-blush-100 text-blush-400 px-2 py-0.5 rounded-full font-semibold">3.2k</span>
+      </button>
+      <button onclick="showSection('ratings')" id="nav-ratings" class="nav-item-admin w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70">
+        <i data-lucide="star" class="w-4 h-4 text-sage-500"></i><span>Ratings &amp; Reviews</span>
+      </button>
+      <button onclick="showSection('settings')" id="nav-settings" class="nav-item-admin w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70">
+        <i data-lucide="settings-2" class="w-4 h-4 text-sage-500"></i><span>Settings</span>
+      </button>
+
+      <div class="mt-6 p-4 rounded-2xl bg-gradient-to-br from-mint-50/90 to-cream-100 border border-mint-200/60">
+        <div class="flex items-center gap-2 text-mint-700 mb-1.5"><i data-lucide="sparkles" class="w-4 h-4"></i><span class="text-xs font-bold uppercase tracking-wider">System Status</span></div>
+        <div class="flex items-center gap-2 mt-2"><span class="w-2 h-2 rounded-full bg-mint-500 animate-pulse"></span><p class="text-xs font-semibold text-mint-800">All services running</p></div>
+        <p class="text-[11px] text-sage-500 mt-1">API &middot; DB &middot; Storage healthy</p>
+      </div>
+    </nav>
+  </div>
+
+  <div class="pt-6 border-t border-sage-200/60 mt-6 hidden md:block">
+    <div class="flex items-center justify-between p-2.5 rounded-2xl bg-white/70 border border-sage-200/50 shadow-sm hover:shadow-soft transition">
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-mint-300 to-sage-300 flex items-center justify-center text-white font-bold text-sm ring-2 ring-mint-200">SA</div>
+          <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-mint-500 ring-2 ring-white"></span>
+        </div>
+        <div>
+          <h4 class="text-sm font-semibold text-sage-800">Super Admin</h4>
+          <p class="text-[11px] text-blush-400 font-medium flex items-center gap-1"><i data-lucide="shield" class="w-3 h-3"></i> Admin Access</p>
+        </div>
+      </div>
+      <a href="index.html" class="p-2 text-sage-400 hover:text-mint-700 rounded-xl hover:bg-mint-50 transition" title="View Client Side"><i data-lucide="external-link" class="w-4 h-4"></i></a>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main class="flex-1 flex flex-col min-w-0 pb-16">
+  <header class="sticky top-0 z-20 glass-panel border-b border-sage-200/70 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 id="pageTitle" class="font-serif text-xl font-bold text-sage-900">Dashboard Overview</h1>
+      <p id="pageSubtitle" class="text-xs text-sage-500 mt-0.5">Welcome back, Admin. Here's what's happening today.</p>
+    </div>
+    <div class="flex items-center gap-3 self-end sm:self-center">
+      <div class="relative">
+        <i data-lucide="search" class="w-4 h-4 text-sage-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        <input type="text" placeholder="Search content, users..." class="pl-10 pr-4 py-2 text-sm bg-white/80 border border-sage-200/80 rounded-2xl placeholder:text-sage-400 text-sage-800 focus:outline-none focus:ring-2 focus:ring-mint-300 transition-all shadow-inner-glow w-48 lg:w-64">
+      </div>
+      <button onclick="openAddModal()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-mint-600 hover:bg-mint-700 text-white font-semibold text-sm transition-all shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5">
+        <i data-lucide="plus" class="w-4 h-4"></i><span class="hidden sm:inline">Add Content</span>
+      </button>
+      <button class="relative p-2 rounded-xl bg-white border border-sage-200/80 text-sage-600 hover:bg-mint-50 transition shadow-sm">
+        <i data-lucide="bell" class="w-4 h-4"></i>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blush-400 ring-2 ring-white"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="px-6 lg:px-10 py-8 max-w-7xl mx-auto w-full">
+
+<!-- === DASHBOARD === -->
+<section id="section-dashboard" class="space-y-8 animate-fade-up">
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="stat-card glass-card rounded-2xl p-5 shadow-card cursor-pointer" onclick="showSection('movies')">
+      <div class="flex items-center justify-between mb-3"><div class="w-10 h-10 rounded-xl bg-mint-100 flex items-center justify-center"><i data-lucide="film" class="w-5 h-5 text-mint-700"></i></div><span class="text-[11px] font-bold text-mint-700 bg-mint-100 px-2 py-0.5 rounded-full">+3 new</span></div>
+      <p class="text-2xl font-bold font-serif text-sage-900">24</p><p class="text-xs text-sage-500 font-medium mt-0.5">Total Movies</p>
+      <div class="mt-3 h-1 rounded-full bg-mint-100 overflow-hidden"><div class="h-full w-3/4 bg-gradient-to-r from-mint-400 to-mint-600 rounded-full"></div></div>
+    </div>
+    <div class="stat-card glass-card rounded-2xl p-5 shadow-card cursor-pointer" onclick="showSection('dramas')">
+      <div class="flex items-center justify-between mb-3"><div class="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center"><i data-lucide="tv-2" class="w-5 h-5 text-sage-700"></i></div><span class="text-[11px] font-bold text-sage-700 bg-sage-100 px-2 py-0.5 rounded-full">+1 new</span></div>
+      <p class="text-2xl font-bold font-serif text-sage-900">18</p><p class="text-xs text-sage-500 font-medium mt-0.5">Dramas &amp; Series</p>
+      <div class="mt-3 h-1 rounded-full bg-sage-100 overflow-hidden"><div class="h-full w-1/2 bg-gradient-to-r from-sage-400 to-sage-600 rounded-full"></div></div>
+    </div>
+    <div class="stat-card glass-card rounded-2xl p-5 shadow-card cursor-pointer" onclick="showSection('users')">
+      <div class="flex items-center justify-between mb-3"><div class="w-10 h-10 rounded-xl bg-blush-100 flex items-center justify-center"><i data-lucide="users" class="w-5 h-5 text-blush-400"></i></div><span class="text-[11px] font-bold text-blush-400 bg-blush-100 px-2 py-0.5 rounded-full">+142</span></div>
+      <p class="text-2xl font-bold font-serif text-sage-900">3,241</p><p class="text-xs text-sage-500 font-medium mt-0.5">Registered Users</p>
+      <div class="mt-3 h-1 rounded-full bg-blush-100 overflow-hidden"><div class="h-full w-4/5 bg-gradient-to-r from-blush-300 to-blush-400 rounded-full"></div></div>
+    </div>
+    <div class="stat-card glass-card rounded-2xl p-5 shadow-card cursor-pointer" onclick="showSection('ratings')">
+      <div class="flex items-center justify-between mb-3"><div class="w-10 h-10 rounded-xl bg-cream-200 flex items-center justify-center"><i data-lucide="star" class="w-5 h-5 text-honey"></i></div><span class="text-[11px] font-bold text-warmgray-600 bg-cream-200 px-2 py-0.5 rounded-full">This week</span></div>
+      <p class="text-2xl font-bold font-serif text-sage-900">9.1</p><p class="text-xs text-sage-500 font-medium mt-0.5">Avg. Content Rating</p>
+      <div class="mt-3 h-1 rounded-full bg-cream-200 overflow-hidden"><div class="h-full w-[91%] bg-gradient-to-r from-honey to-amber-400 rounded-full"></div></div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 glass-card rounded-2xl shadow-card overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-sage-100">
+        <div><h2 class="font-serif text-lg font-bold text-sage-900">Recent Content</h2><p class="text-xs text-sage-500 mt-0.5">Latest movies &amp; dramas added</p></div>
+        <button onclick="showSection('movies')" class="text-xs font-semibold text-mint-700 hover:text-mint-900 flex items-center gap-1">View all <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></button>
+      </div>
+      <div id="recentContentTable" class="divide-y divide-sage-100/80"></div>
+    </div>
+    <div class="space-y-4">
+      <div class="glass-card rounded-2xl shadow-card p-5">
+        <h3 class="font-serif text-base font-bold text-sage-900 mb-4">Quick Actions</h3>
+        <div class="space-y-2.5">
+          <button onclick="openAddModal('movie')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-mint-50 hover:bg-mint-100 border border-mint-200/70 text-sage-800 text-sm font-medium transition group"><div class="w-8 h-8 rounded-lg bg-mint-100 group-hover:bg-mint-200 flex items-center justify-center"><i data-lucide="film" class="w-4 h-4 text-mint-700"></i></div><span>Add New Movie</span></button>
+          <button onclick="openAddModal('drama')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-sage-50 hover:bg-sage-100 border border-sage-200/70 text-sage-800 text-sm font-medium transition group"><div class="w-8 h-8 rounded-lg bg-sage-100 group-hover:bg-sage-200 flex items-center justify-center"><i data-lucide="tv-2" class="w-4 h-4 text-sage-700"></i></div><span>Add Drama / Series</span></button>
+          <button onclick="openAddModal('episode')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-cream-50 hover:bg-cream-100 border border-cream-300/70 text-sage-800 text-sm font-medium transition group"><div class="w-8 h-8 rounded-lg bg-cream-200 group-hover:bg-cream-300 flex items-center justify-center"><i data-lucide="clapperboard" class="w-4 h-4 text-warmgray-600"></i></div><span>Add Episode</span></button>
+          <button onclick="showSection('users')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-blush-50 hover:bg-blush-100 border border-blush-200/70 text-sage-800 text-sm font-medium transition group"><div class="w-8 h-8 rounded-lg bg-blush-100 group-hover:bg-blush-200 flex items-center justify-center"><i data-lucide="users" class="w-4 h-4 text-blush-400"></i></div><span>Manage Users</span></button>
+        </div>
+      </div>
+      <div class="glass-card rounded-2xl shadow-card p-5">
+        <h3 class="font-serif text-base font-bold text-sage-900 mb-3 flex items-center gap-2"><i data-lucide="trophy" class="w-4 h-4 text-honey"></i>Top Rated</h3>
+        <div id="topRatedList" class="space-y-2.5"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === MOVIES === -->
+<section id="section-movies" class="hidden space-y-6 animate-fade-up">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div><h2 class="font-serif text-2xl font-bold text-sage-900">Movies</h2><p class="text-xs text-sage-500 mt-1">Manage all movie entries, posters, and metadata.</p></div>
+    <button onclick="openAddModal('movie')" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-mint-600 hover:bg-mint-700 text-white font-semibold text-sm transition shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5"><i data-lucide="plus" class="w-4 h-4"></i>Add Movie</button>
+  </div>
+  <div class="glass-card rounded-2xl p-4 flex flex-col sm:flex-row gap-3">
+    <div class="relative flex-1"><i data-lucide="search" class="w-4 h-4 text-sage-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i><input type="text" id="movieSearch" oninput="filterMovies()" placeholder="Search movies..." class="w-full pl-10 pr-4 py-2 text-sm bg-white border border-sage-200/80 rounded-xl placeholder:text-sage-400 focus:outline-none focus:ring-2 focus:ring-mint-300 transition"></div>
+    <select id="movieStatusFilter" onchange="filterMovies()" class="px-4 py-2 text-sm bg-white border border-sage-200/80 rounded-xl text-sage-700 focus:outline-none focus:ring-2 focus:ring-mint-300"><option value="">All Status</option><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
+  </div>
+  <div class="glass-card rounded-2xl shadow-card overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm">
+    <thead><tr class="bg-cream-50/80 border-b border-sage-100">
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Poster</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Title</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500 hidden md:table-cell">Year</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500 hidden lg:table-cell">Genre</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Status</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Actions</th>
+    </tr></thead>
+    <tbody id="movieTableBody" class="divide-y divide-sage-100/60"></tbody>
+  </table></div></div>
+</section>
+
+<!-- === DRAMAS === -->
+<section id="section-dramas" class="hidden space-y-6 animate-fade-up">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div><h2 class="font-serif text-2xl font-bold text-sage-900">Dramas &amp; Series</h2><p class="text-xs text-sage-500 mt-1">Manage drama series, banners, and episode counts.</p></div>
+    <button onclick="openAddModal('drama')" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-mint-600 hover:bg-mint-700 text-white font-semibold text-sm transition shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5"><i data-lucide="plus" class="w-4 h-4"></i>Add Drama</button>
+  </div>
+  <div class="glass-card rounded-2xl shadow-card overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm">
+    <thead><tr class="bg-cream-50/80 border-b border-sage-100">
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Poster</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Title</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500 hidden md:table-cell">Episodes</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500 hidden lg:table-cell">Country</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Status</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Actions</th>
+    </tr></thead>
+    <tbody id="dramaTableBody" class="divide-y divide-sage-100/60"></tbody>
+  </table></div></div>
+</section>
+
+<!-- === EPISODES === -->
+<section id="section-episodes" class="hidden space-y-6 animate-fade-up">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div><h2 class="font-serif text-2xl font-bold text-sage-900">Episodes</h2><p class="text-xs text-sage-500 mt-1">Manage episode videos, thumbnails, and descriptions.</p></div>
+    <button onclick="openAddModal('episode')" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-mint-600 hover:bg-mint-700 text-white font-semibold text-sm transition shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5"><i data-lucide="plus" class="w-4 h-4"></i>Add Episode</button>
+  </div>
+  <div class="glass-card rounded-2xl shadow-card overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm">
+    <thead><tr class="bg-cream-50/80 border-b border-sage-100">
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Thumb</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Title</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500 hidden md:table-cell">Drama</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500 hidden md:table-cell">Ep #</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500 hidden lg:table-cell">Duration</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Video</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Actions</th>
+    </tr></thead>
+    <tbody id="episodeTableBody" class="divide-y divide-sage-100/60"></tbody>
+  </table></div></div>
+</section>
+
+<!-- === GENRES === -->
+<section id="section-genres" class="hidden space-y-6 animate-fade-up">
+  <div><h2 class="font-serif text-2xl font-bold text-sage-900">Genres</h2><p class="text-xs text-sage-500 mt-1">Manage genre categories used across all content.</p></div>
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4" id="genreGrid"></div>
+</section>
+
+<!-- === USERS === -->
+<section id="section-users" class="hidden space-y-6 animate-fade-up">
+  <div><h2 class="font-serif text-2xl font-bold text-sage-900">Users</h2><p class="text-xs text-sage-500 mt-1">Manage registered user accounts and access levels.</p></div>
+  <div class="glass-card rounded-2xl shadow-card overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm">
+    <thead><tr class="bg-cream-50/80 border-b border-sage-100">
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">User</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500 hidden md:table-cell">Email</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500 hidden lg:table-cell">Joined</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Status</th>
+      <th class="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-sage-500">Actions</th>
+    </tr></thead>
+    <tbody id="userTableBody" class="divide-y divide-sage-100/60"></tbody>
+  </table></div></div>
+</section>
+
+<!-- === RATINGS === -->
+<section id="section-ratings" class="hidden space-y-6 animate-fade-up">
+  <div><h2 class="font-serif text-2xl font-bold text-sage-900">Ratings &amp; Reviews</h2><p class="text-xs text-sage-500 mt-1">Overview of user ratings and review activity.</p></div>
+  <div id="ratingsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+</section>
+
+<!-- === ANALYTICS === -->
+<section id="section-analytics" class="hidden space-y-6 animate-fade-up">
+  <div><h2 class="font-serif text-2xl font-bold text-sage-900">Analytics</h2><p class="text-xs text-sage-500 mt-1">Platform performance and user engagement metrics.</p></div>
+  <div id="analyticsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+</section>
+
+<!-- === SETTINGS === -->
+<section id="section-settings" class="hidden space-y-6 animate-fade-up">
+  <div><h2 class="font-serif text-2xl font-bold text-sage-900">Settings</h2><p class="text-xs text-sage-500 mt-1">Configure platform preferences and API connections.</p></div>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="glass-card rounded-2xl p-6 shadow-card space-y-4">
+      <h3 class="font-serif text-lg font-bold text-sage-800 flex items-center gap-2"><i data-lucide="database" class="w-5 h-5 text-mint-600"></i>API Configuration</h3>
+      <div class="space-y-3">
+        <div><label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-1.5">API Base URL</label><input type="text" value="https://localhost:7001" class="w-full px-4 py-2.5 text-sm bg-white border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint-300"></div>
+        <div><label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-1.5">Storage Root Path</label><input type="text" value="D:\AppStorage" class="w-full px-4 py-2.5 text-sm bg-white border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint-300"></div>
+        <button onclick="showToast('Configuration saved!','success')" class="w-full py-2.5 rounded-xl bg-mint-600 hover:bg-mint-700 text-white text-sm font-semibold transition shadow-card">Save Configuration</button>
+      </div>
+    </div>
+    <div class="glass-card rounded-2xl p-6 shadow-card space-y-4">
+      <h3 class="font-serif text-lg font-bold text-sage-800 flex items-center gap-2"><i data-lucide="shield-check" class="w-5 h-5 text-mint-600"></i>Admin Account</h3>
+      <div class="space-y-3">
+        <div><label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-1.5">Display Name</label><input type="text" value="Super Admin" class="w-full px-4 py-2.5 text-sm bg-white border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint-300"></div>
+        <div><label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-1.5">Email Address</label><input type="email" value="admin@sereneflix.com" class="w-full px-4 py-2.5 text-sm bg-white border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint-300"></div>
+        <button onclick="showToast('Account updated!','success')" class="w-full py-2.5 rounded-xl bg-sage-700 hover:bg-sage-800 text-white text-sm font-semibold transition shadow-card">Update Account</button>
+      </div>
+    </div>
+  </div>
+</section>
+  </div><!-- end px-6 container -->
+</main>
+
+<!-- === ADD / EDIT MODAL === -->
+<div id="addModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-6 bg-sage-900/40 backdrop-blur-md">
+  <div class="relative w-full max-w-2xl bg-cream-50 rounded-3xl border border-sage-200/80 shadow-2xl overflow-hidden animate-modal flex flex-col max-h-[90vh]">
+    <div class="flex items-center justify-between px-7 py-5 border-b border-sage-100">
+      <div class="flex items-center gap-3">
+        <div id="modalIconWrap" class="w-9 h-9 rounded-xl bg-mint-100 flex items-center justify-center"><i data-lucide="film" class="w-4 h-4 text-mint-700"></i></div>
+        <div><h3 id="modalHeading" class="font-serif text-lg font-bold text-sage-900">Add New Movie</h3><p id="modalDesc" class="text-xs text-sage-500">Fill in the details below</p></div>
+      </div>
+      <button onclick="closeAddModal()" class="w-9 h-9 rounded-full bg-white hover:bg-cream-100 text-sage-500 hover:text-sage-800 border border-sage-200 flex items-center justify-center transition"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+
+    <div class="overflow-y-auto flex-1 px-7 py-6 space-y-5">
+      <!-- Type Switcher -->
+      <div class="flex gap-2 p-1 bg-cream-100 rounded-2xl border border-cream-300/60">
+        <button id="typeBtn-movie" onclick="switchModalType('movie')" class="flex-1 py-2 px-3 rounded-xl text-sm font-semibold transition bg-white text-mint-800 shadow-sm border border-mint-200/70">&#127916; Movie</button>
+        <button id="typeBtn-drama" onclick="switchModalType('drama')" class="flex-1 py-2 px-3 rounded-xl text-sm font-semibold transition text-sage-600 hover:text-sage-900">&#128250; Drama</button>
+        <button id="typeBtn-episode" onclick="switchModalType('episode')" class="flex-1 py-2 px-3 rounded-xl text-sm font-semibold transition text-sage-600 hover:text-sage-900">&#127902; Episode</button>
+      </div>
+
+      <!-- Fields Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="sm:col-span-2">
+          <label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-1.5">Title <span class="text-blush-400">*</span></label>
+          <input type="text" id="formTitle" placeholder="Enter content title..." class="w-full px-4 py-2.5 text-sm bg-white border border-sage-200 rounded-xl placeholder:text-sage-400 focus:outline-none focus:ring-2 focus:ring-mint-300 focus:border-mint-400">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-1.5">Description</label>
+          <textarea id="formDescription" rows="3" placeholder="Write a brief synopsis..." class="w-full px-4 py-2.5 text-sm bg-white border border-sage-200 rounded-xl placeholder:text-sage-400 resize-none focus:outline-none focus:ring-2 focus:ring-mint-300 focus:border-mint-400"></textarea>
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-1.5">Release Date</label>
+          <input type="date" id="formReleaseDate" class="w-full px-4 py-2.5 text-sm bg-white border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint-300 focus:border-mint-400">
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-1.5">Status</label>
+          <select id="formStatus" class="w-full px-4 py-2.5 text-sm bg-white border border-sage-200 rounded-xl text-sage-700 focus:outline-none focus:ring-2 focus:ring-mint-300 focus:border-mint-400">
+            <option value="Active">Active</option><option value="Inactive">Inactive</option><option value="Upcoming">Upcoming</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-1.5">Country</label>
+          <input type="text" id="formCountry" placeholder="e.g. South Korea" class="w-full px-4 py-2.5 text-sm bg-white border border-sage-200 rounded-xl placeholder:text-sage-400 focus:outline-none focus:ring-2 focus:ring-mint-300">
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-1.5">Language</label>
+          <input type="text" id="formLanguage" placeholder="e.g. Korean" class="w-full px-4 py-2.5 text-sm bg-white border border-sage-200 rounded-xl placeholder:text-sage-400 focus:outline-none focus:ring-2 focus:ring-mint-300">
+        </div>
+      </div>
+
+      <!-- Episode-only fields -->
+      <div id="episodeFields" class="hidden grid grid-cols-2 gap-4">
+        <div><label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-1.5">Episode Number</label><input type="number" id="formEpNumber" min="1" placeholder="1" class="w-full px-4 py-2.5 text-sm bg-white border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint-300"></div>
+        <div><label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-1.5">Duration (min)</label><input type="number" id="formDuration" min="1" placeholder="45" class="w-full px-4 py-2.5 text-sm bg-white border border-sage-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-mint-300"></div>
+      </div>
+
+      <!-- Poster Upload -->
+      <div>
+        <label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-2">Poster Image <span class="text-sage-400 font-normal normal-case">(jpg/png/webp, max 10 MB)</span></label>
+        <div onclick="document.getElementById('posterFileInput').click()" ondragover="handleDragOver(event,'poster')" ondragleave="handleDragLeave(event,'poster')" ondrop="handleDrop(event,'poster')" id="posterDropZone" class="upload-zone rounded-2xl p-6 text-center cursor-pointer flex flex-col items-center gap-2">
+          <div class="w-12 h-12 rounded-xl bg-mint-100 flex items-center justify-center mb-1"><i data-lucide="image" class="w-6 h-6 text-mint-600"></i></div>
+          <p class="text-sm font-medium text-sage-700">Click to upload poster</p><p class="text-xs text-sage-400">or drag &amp; drop here</p>
+          <input type="file" id="posterFileInput" accept="image/*" class="hidden" onchange="previewImage(event,'posterPreview')">
+        </div>
+        <img id="posterPreview" src="" alt="Poster preview" class="hidden mt-3 w-32 h-44 object-cover rounded-xl border border-sage-200 shadow-sm">
+      </div>
+
+      <!-- Banner Upload (hidden for episodes) -->
+      <div id="bannerUploadSection">
+        <label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-2">Banner Image <span class="text-sage-400 font-normal normal-case">(wide 16:9, max 10 MB)</span></label>
+        <div onclick="document.getElementById('bannerFileInput').click()" ondragover="handleDragOver(event,'banner')" ondragleave="handleDragLeave(event,'banner')" ondrop="handleDrop(event,'banner')" id="bannerDropZone" class="upload-zone rounded-2xl p-6 text-center cursor-pointer flex flex-col items-center gap-2">
+          <div class="w-12 h-12 rounded-xl bg-sage-100 flex items-center justify-center mb-1"><i data-lucide="layout-panel-top" class="w-6 h-6 text-sage-600"></i></div>
+          <p class="text-sm font-medium text-sage-700">Click to upload banner</p><p class="text-xs text-sage-400">Wide 16:9 format recommended</p>
+          <input type="file" id="bannerFileInput" accept="image/*" class="hidden" onchange="previewImage(event,'bannerPreview')">
+        </div>
+        <img id="bannerPreview" src="" alt="Banner preview" class="hidden mt-3 w-full h-28 object-cover rounded-xl border border-sage-200 shadow-sm">
+      </div>
+
+      <!-- Video Upload (episodes only) -->
+      <div id="videoUploadSection" class="hidden">
+        <label class="text-xs font-bold uppercase tracking-wider text-sage-500 block mb-2">Video File <span class="text-sage-400 font-normal normal-case">(mp4/mkv/webm, max 500 MB)</span></label>
+        <div onclick="document.getElementById('videoFileInput').click()" ondragover="handleDragOver(event,'video')" ondragleave="handleDragLeave(event,'video')" ondrop="handleDrop(event,'video')" id="videoDropZone" class="upload-zone rounded-2xl p-6 text-center cursor-pointer flex flex-col items-center gap-2">
+          <div class="w-12 h-12 rounded-xl bg-cream-200 flex items-center justify-center mb-1"><i data-lucide="video" class="w-6 h-6 text-warmgray-600"></i></div>
+          <p class="text-sm font-medium text-sage-700">Click to upload video</p><p class="text-xs text-sage-400">mp4, mkv, webm supported</p>
+          <input type="file" id="videoFileInput" accept="video/*" class="hidden" onchange="handleVideoSelect(event)">
+        </div>
+        <div id="videoFileName" class="hidden mt-2 flex items-center gap-2 text-xs text-mint-700 font-medium bg-mint-50 px-3 py-2 rounded-xl border border-mint-200">
+          <i data-lucide="check-circle-2" class="w-4 h-4"></i><span id="videoFileNameText"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between px-7 py-5 border-t border-sage-100 bg-cream-50/80">
+      <button onclick="closeAddModal()" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-sage-600 hover:text-sage-900 hover:bg-sage-100 transition">Cancel</button>
+      <button onclick="submitForm()" class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-mint-600 hover:bg-mint-700 text-white text-sm font-semibold transition shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5"><i data-lucide="save" class="w-4 h-4"></i>Save Content</button>
+    </div>
+  </div>
+</div>
+
+<!-- === DELETE CONFIRM MODAL === -->
+<div id="deleteModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-sage-900/40 backdrop-blur-md">
+  <div class="w-full max-w-sm bg-cream-50 rounded-3xl border border-sage-200 shadow-2xl p-7 animate-modal text-center">
+    <div class="w-14 h-14 rounded-2xl bg-blush-100 flex items-center justify-center mx-auto mb-4"><i data-lucide="trash-2" class="w-7 h-7 text-blush-400"></i></div>
+    <h3 class="font-serif text-xl font-bold text-sage-900 mb-2">Delete Content?</h3>
+    <p class="text-sm text-sage-600 mb-6">This action will soft-delete the record. It can be restored from the database later.</p>
+    <div class="flex gap-3">
+      <button onclick="closeDeleteModal()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-sage-700 bg-white border border-sage-200 hover:bg-sage-50 transition">Cancel</button>
+      <button onclick="confirmDelete()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-blush-400 hover:bg-red-500 transition shadow-card">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const MOVIES = [
+  {id:1,title:"Hometown Cha-Cha-Cha",year:2021,genre:"Romance",status:"Active",rating:9.4,poster:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=120&q=60"},
+  {id:2,title:"Hidden Love",year:2023,genre:"Romance",status:"Active",rating:9.3,poster:"https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=120&q=60"},
+  {id:3,title:"Spirited Away",year:2001,genre:"Anime",status:"Active",rating:9.6,poster:"https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=120&q=60"},
+  {id:4,title:"Crash Landing on You",year:2019,genre:"Romance",status:"Active",rating:9.5,poster:"https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=120&q=60"},
+  {id:5,title:"Whisper of the Heart",year:1995,genre:"Anime",status:"Inactive",rating:9.2,poster:"https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=120&q=60"},
+  {id:6,title:"Summer Strike",year:2022,genre:"Slice of Life",status:"Active",rating:8.9,poster:"https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?auto=format&fit=crop&w=120&q=60"},
+];
+const DRAMAS = [
+  {id:23,title:"Alchemy of Souls",episodes:30,country:"South Korea",status:"Active",poster:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:1,title:"Queen of Tears",episodes:16,country:"South Korea",status:"Active",poster:"https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=120&q=60"},
+  {id:2,title:"Our Beloved Summer",episodes:16,country:"South Korea",status:"Active",poster:"https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=120&q=60"},
+  {id:3,title:"Extraordinary Attorney Woo",episodes:16,country:"South Korea",status:"Active",poster:"https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=120&q=60"},
+  {id:4,title:"Twenty-Five Twenty-One",episodes:16,country:"South Korea",status:"Inactive",poster:"https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=120&q=60"},
+];
+const EPISODES = [
+  {id:101,title:"S1: Episode 1 - The Soul Switch",drama:"Alchemy of Souls",epNum:1,duration:70,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-33.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:102,title:"S1: Episode 2 - Master and Pupil",drama:"Alchemy of Souls",epNum:2,duration:72,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-35.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:103,title:"S1: Episode 3 - Energy Gate",drama:"Alchemy of Souls",epNum:3,duration:76,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-37.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:104,title:"S1: Episode 4 - Ignite the Fire",drama:"Alchemy of Souls",epNum:4,duration:74,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-39.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:105,title:"S1: Episode 5 - Danhyanggok Training",drama:"Alchemy of Souls",epNum:5,duration:74,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-41.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:106,title:"S1: Episode 6 - Friends and Rivals",drama:"Alchemy of Souls",epNum:6,duration:73,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-43.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:107,title:"S1: Episode 7 - The Crown Prince Duel",drama:"Alchemy of Souls",epNum:7,duration:76,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-46.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:108,title:"S1: Episode 8 - Blade of Daeho",drama:"Alchemy of Souls",epNum:8,duration:75,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-47.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:109,title:"S1: Episode 9 - Songrim Barrier",drama:"Alchemy of Souls",epNum:9,duration:76,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-49.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:110,title:"S1: Episode 10 - Inside the Fortress",drama:"Alchemy of Souls",epNum:10,duration:74,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-50.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:111,title:"S1: Episode 11 - Mastery of Chisu",drama:"Alchemy of Souls",epNum:11,duration:80,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-53.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:112,title:"S1: Episode 12 - Cheonbugwan Secrets",drama:"Alchemy of Souls",epNum:12,duration:78,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-56.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:113,title:"S1: Episode 13 - Soul Shifter Trail",drama:"Alchemy of Souls",epNum:13,duration:74,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-57.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:114,title:"S1: Episode 14 - High Mage Challenges",drama:"Alchemy of Souls",epNum:14,duration:70,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-49-59.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:115,title:"S1: Episode 15 - Hidden Betrothal",drama:"Alchemy of Souls",epNum:15,duration:69,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-50-01.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:116,title:"S1: Episode 16 - Shaman Choi Lineage",drama:"Alchemy of Souls",epNum:16,duration:69,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-50-03.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:117,title:"S1: Episode 17 - Ice Stone Revelation",drama:"Alchemy of Souls",epNum:17,duration:74,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-50-05.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:118,title:"S1: Episode 18 - Power Sacrifice",drama:"Alchemy of Souls",epNum:18,duration:73,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-50-07.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:119,title:"S1: Episode 19 - King's Star",drama:"Alchemy of Souls",epNum:19,duration:87,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-50-09.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:120,title:"S1: Episode 20 - Season Finale: Blood Oath",drama:"Alchemy of Souls",epNum:20,duration:88,hasVideo:true,videoUrl:"/videos/video_2026-08-04_13-50-11.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:121,title:"S2: Episode 1 - Light and Shadow Returns",drama:"Alchemy of Souls",epNum:21,duration:86,hasVideo:true,videoUrl:"/videos/video_2026-08-04_15-37-54.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:122,title:"S2: Episode 2 - The Priestess and the Monster",drama:"Alchemy of Souls",epNum:22,duration:79,hasVideo:true,videoUrl:"/videos/video_2026-08-04_15-37-56.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:123,title:"S2: Episode 3 - Firefly Lanterns",drama:"Alchemy of Souls",epNum:23,duration:81,hasVideo:true,videoUrl:"/videos/video_2026-08-04_15-37-57.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:124,title:"S2: Episode 4 - Divine Energy Awakens",drama:"Alchemy of Souls",epNum:24,duration:77,hasVideo:true,videoUrl:"/videos/video_2026-08-04_15-37-59.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:125,title:"S2: Episode 5 - Blood Parasite",drama:"Alchemy of Souls",epNum:25,duration:78,hasVideo:true,videoUrl:"/videos/video_2026-08-04_15-38-01.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:126,title:"S2: Episode 6 - Prison of Danhyanggok",drama:"Alchemy of Souls",epNum:26,duration:77,hasVideo:true,videoUrl:"/videos/video_2026-08-04_15-38-04.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:127,title:"S2: Episode 7 - Remembering the Blue Mark",drama:"Alchemy of Souls",epNum:27,duration:72,hasVideo:true,videoUrl:"/videos/video_2026-08-04_15-38-06.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:128,title:"S2: Episode 8 - Lovers in the Shadows",drama:"Alchemy of Souls",epNum:28,duration:75,hasVideo:true,videoUrl:"/videos/video_2026-08-04_15-38-11.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:129,title:"S2: Episode 9 - The Fire Bird Awakens",drama:"Alchemy of Souls",epNum:29,duration:78,hasVideo:true,videoUrl:"/videos/video_2026-08-04_15-38-17.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:130,title:"S2: Episode 10 - Grand Series Finale",drama:"Alchemy of Souls",epNum:30,duration:84,hasVideo:true,videoUrl:"/videos/video_2026-08-04_15-38-19.mp4",thumb:"https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg"},
+  {id:1,title:"A Fresh Start",drama:"Queen of Tears",epNum:1,duration:70,hasVideo:true,thumb:"https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=120&q=60"},
+  {id:2,title:"Old Memories",drama:"Our Beloved Summer",epNum:1,duration:65,hasVideo:true,thumb:"https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=120&q=60"},
+  {id:3,title:"First Day at Work",drama:"Extraordinary Attorney Woo",epNum:1,duration:68,hasVideo:false,thumb:"https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=120&q=60"},
+];
+const GENRES = ["Romance","K-Drama","Slice of Life","Anime","Melodrama","Fantasy","Youth","Adventure","Comedy","Mystery"];
+const USERS = [
+  {id:1,name:"Evelyn Harper",email:"evelyn@example.com",joined:"2024-01-10",status:"Active",av:"EH"},
+  {id:2,name:"Mia Tanaka",email:"mia@example.com",joined:"2024-03-22",status:"Active",av:"MT"},
+  {id:3,name:"Sophie Laurent",email:"sophie@example.com",joined:"2024-05-05",status:"Inactive",av:"SL"},
+  {id:4,name:"Aria Williams",email:"aria@example.com",joined:"2024-06-18",status:"Active",av:"AW"},
+  {id:5,name:"Yuna Kim",email:"yuna@example.com",joined:"2024-07-01",status:"Active",av:"YK"},
+];
+const RATINGS_DATA = [
+  {content:"Crash Landing on You",avg:9.5,total:1240,trend:"up"},
+  {content:"Spirited Away",avg:9.6,total:3812,trend:"stable"},
+  {content:"Extraordinary Attorney Woo",avg:9.3,total:867,trend:"up"},
+  {content:"Hidden Love",avg:9.1,total:542,trend:"up"},
+  {content:"Queen of Tears",avg:9.2,total:1104,trend:"stable"},
+  {content:"Summer Strike",avg:8.9,total:413,trend:"down"},
+];
+const ANALYTICS_DATA = [
+  {label:"Total Views",value:"48,291",icon:"eye",color:"mint",change:"+12% this week"},
+  {label:"Watch Time",value:"12,840h",icon:"clock",color:"sage",change:"+8% this week"},
+  {label:"New Signups",value:"142",icon:"user-plus",color:"blush",change:"+23% this week"},
+  {label:"Watchlist Adds",value:"3,412",icon:"bookmark",color:"cream",change:"+5% this week"},
+  {label:"Top Genre",value:"K-Drama",icon:"heart",color:"mint",change:"All time leader"},
+  {label:"Storage Used",value:"84 GB",icon:"hard-drive",color:"sage",change:"of 500 GB total"},
+];
+
+// ── SECTION ROUTING ───────────────────────────────────────────────────────────
+const SECTIONS = ['dashboard','movies','dramas','episodes','genres','users','ratings','analytics','settings'];
+const PAGE_TITLES = {dashboard:'Dashboard Overview',movies:'Movies',dramas:'Dramas & Series',episodes:'Episodes',genres:'Genres',users:'Users',ratings:'Ratings & Reviews',analytics:'Analytics',settings:'Settings'};
+const PAGE_SUBS   = {dashboard:"Welcome back, Admin. Here's what's happening today.",movies:'Manage all movie entries, posters, and metadata.',dramas:'Manage drama series, banners, and episode counts.',episodes:'Manage episode videos, thumbnails, and descriptions.',genres:'Manage genre categories used across all content.',users:'Manage registered user accounts and access levels.',ratings:'Overview of user ratings and review activity.',analytics:'Platform performance and user engagement metrics.',settings:'Configure platform preferences and API connections.'};
+
+function showSection(name) {
+  SECTIONS.forEach(s => {
+    document.getElementById('section-' + s)?.classList.add('hidden');
+    document.getElementById('nav-' + s)?.classList.remove('active');
+  });
+  document.getElementById('section-' + name)?.classList.remove('hidden');
+  document.getElementById('nav-' + name)?.classList.add('active');
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[name] || name;
+  document.getElementById('pageSubtitle').textContent = PAGE_SUBS[name] || '';
+}
+
+// ── RENDERS ───────────────────────────────────────────────────────────────────
+function badgeCls(s) { return s==='Active'?'badge-active':s==='Inactive'?'badge-inactive':'badge-pending'; }
+
+function renderRecentContent() {
+  document.getElementById('recentContentTable').innerHTML = MOVIES.slice(0,5).map(m => `
+    <div class="table-row flex items-center gap-4 px-6 py-3.5">
+      <img src="${m.poster}" class="w-10 h-14 object-cover rounded-lg border border-sage-100 shrink-0" alt="${m.title}">
+      <div class="flex-1 min-w-0"><p class="font-semibold text-sm text-sage-900 truncate">${m.title}</p><p class="text-xs text-sage-500">${m.genre} &middot; ${m.year}</p></div>
+      <div class="flex items-center gap-1.5 shrink-0"><i data-lucide="star" class="w-3.5 h-3.5 fill-honey text-honey"></i><span class="text-xs font-bold text-sage-700">${m.rating}</span></div>
+      <span class="text-[11px] px-2.5 py-1 rounded-full font-semibold shrink-0 ${badgeCls(m.status)}">${m.status}</span>
+    </div>`).join('');
+  lucide.createIcons();
+}
+
+function renderTopRated() {
+  const top = [...MOVIES].sort((a,b)=>b.rating-a.rating).slice(0,3);
+  document.getElementById('topRatedList').innerHTML = top.map((m,i) => `
+    <div class="flex items-center gap-3">
+      <span class="text-xs font-bold text-sage-400 w-4">${i+1}</span>
+      <img src="${m.poster}" class="w-8 h-11 object-cover rounded-lg border border-sage-100 shrink-0" alt="${m.title}">
+      <div class="flex-1 min-w-0"><p class="text-xs font-semibold text-sage-800 truncate">${m.title}</p><p class="text-[10px] text-sage-400">${m.year}</p></div>
+      <span class="text-xs font-bold text-honey">${m.rating}</span>
+    </div>`).join('');
+}
+
+function renderMovieTable(data=MOVIES) {
+  document.getElementById('movieTableBody').innerHTML = data.map(m => `
+    <tr class="table-row">
+      <td class="px-5 py-3.5"><img src="${m.poster}" class="w-10 h-14 object-cover rounded-lg border border-sage-100" alt="${m.title}"></td>
+      <td class="px-5 py-3.5"><p class="font-semibold text-sm text-sage-900">${m.title}</p><p class="text-xs text-sage-500">${m.genre}</p></td>
+      <td class="px-5 py-3.5 hidden md:table-cell text-sm text-sage-700">${m.year}</td>
+      <td class="px-5 py-3.5 hidden lg:table-cell"><span class="text-xs px-2.5 py-1 rounded-full bg-mint-100 text-mint-800 font-medium">${m.genre}</span></td>
+      <td class="px-5 py-3.5"><span class="text-[11px] px-2.5 py-1 rounded-full font-semibold ${badgeCls(m.status)}">${m.status}</span></td>
+      <td class="px-5 py-3.5"><div class="flex items-center gap-2">
+        <button onclick="editItem('movie',${m.id})" class="p-1.5 rounded-lg text-sage-500 hover:text-mint-700 hover:bg-mint-50 transition"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+        <button onclick="openDeleteModal(${m.id},'movie')" class="p-1.5 rounded-lg text-sage-500 hover:text-blush-500 hover:bg-blush-50 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+      </div></td>
+    </tr>`).join('');
+  lucide.createIcons();
+}
+
+function renderDramaTable() {
+  document.getElementById('dramaTableBody').innerHTML = DRAMAS.map(d => `
+    <tr class="table-row">
+      <td class="px-5 py-3.5"><img src="${d.poster}" class="w-10 h-14 object-cover rounded-lg border border-sage-100" alt="${d.title}"></td>
+      <td class="px-5 py-3.5"><p class="font-semibold text-sm text-sage-900">${d.title}</p></td>
+      <td class="px-5 py-3.5 hidden md:table-cell text-sm text-sage-700">${d.episodes} eps</td>
+      <td class="px-5 py-3.5 hidden lg:table-cell text-sm text-sage-700">${d.country}</td>
+      <td class="px-5 py-3.5"><span class="text-[11px] px-2.5 py-1 rounded-full font-semibold ${badgeCls(d.status)}">${d.status}</span></td>
+      <td class="px-5 py-3.5"><div class="flex items-center gap-2">
+        <button onclick="editItem('drama',${d.id})" class="p-1.5 rounded-lg text-sage-500 hover:text-mint-700 hover:bg-mint-50 transition"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+        <button onclick="openDeleteModal(${d.id},'drama')" class="p-1.5 rounded-lg text-sage-500 hover:text-blush-500 hover:bg-blush-50 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+      </div></td>
+    </tr>`).join('');
+  lucide.createIcons();
+}
+
+function renderEpisodeTable() {
+  document.getElementById('episodeTableBody').innerHTML = EPISODES.map(e => `
+    <tr class="table-row">
+      <td class="px-5 py-3.5"><img src="${e.thumb}" class="w-14 h-9 object-cover rounded-lg border border-sage-100" alt="${e.title}"></td>
+      <td class="px-5 py-3.5"><p class="font-semibold text-sm text-sage-900">${e.title}</p></td>
+      <td class="px-5 py-3.5 hidden md:table-cell text-sm text-sage-700">${e.drama}</td>
+      <td class="px-5 py-3.5 hidden md:table-cell text-sm text-sage-700">Ep ${e.epNum}</td>
+      <td class="px-5 py-3.5 hidden lg:table-cell text-sm text-sage-700">${e.duration}m</td>
+      <td class="px-5 py-3.5">${e.hasVideo?'<span class="badge-active text-[11px] px-2.5 py-1 rounded-full font-semibold flex items-center gap-1 w-fit"><i data-lucide="check" class="w-3 h-3"></i>Uploaded</span>':'<span class="badge-pending text-[11px] px-2.5 py-1 rounded-full font-semibold w-fit">Pending</span>'}</td>
+      <td class="px-5 py-3.5"><div class="flex items-center gap-2">
+        <button class="p-1.5 rounded-lg text-sage-500 hover:text-mint-700 hover:bg-mint-50 transition"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+        <button onclick="openDeleteModal(${e.id},'episode')" class="p-1.5 rounded-lg text-sage-500 hover:text-blush-500 hover:bg-blush-50 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+      </div></td>
+    </tr>`).join('');
+  lucide.createIcons();
+}
+
+function renderGenreGrid() {
+  const palettes = ['bg-mint-100 text-mint-800 border-mint-200','bg-sage-100 text-sage-800 border-sage-200','bg-blush-100 text-blush-500 border-blush-200','bg-cream-200 text-warmgray-700 border-cream-300'];
+  document.getElementById('genreGrid').innerHTML = GENRES.map((g,i) => {
+    const p = palettes[i%palettes.length].split(' ');
+    return `<div class="glass-card rounded-2xl p-5 shadow-card flex flex-col items-center gap-3 hover:shadow-card-hover transition-all duration-200 cursor-pointer">
+      <div class="w-12 h-12 rounded-xl ${p[0]} flex items-center justify-center"><i data-lucide="tag" class="w-5 h-5 ${p[1]}"></i></div>
+      <p class="font-semibold text-sm text-sage-800 text-center">${g}</p>
+      <span class="text-[11px] px-2.5 py-0.5 rounded-full border font-medium ${p.slice(1).join(' ')}">${Math.floor(Math.random()*12)+3} titles</span>
+    </div>`;
+  }).join('');
+  lucide.createIcons();
+}
+
+function renderUserTable() {
+  const avatarGrads = ['from-mint-300 to-sage-300','from-blush-300 to-cream-300','from-sage-400 to-mint-400','from-cream-300 to-warmgray-300','from-mint-400 to-blush-300'];
+  document.getElementById('userTableBody').innerHTML = USERS.map((u,i) => `
+    <tr class="table-row">
+      <td class="px-5 py-3.5"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-gradient-to-tr ${avatarGrads[i%avatarGrads.length]} flex items-center justify-center text-white text-xs font-bold shrink-0">${u.av}</div><p class="font-semibold text-sm text-sage-900">${u.name}</p></div></td>
+      <td class="px-5 py-3.5 hidden md:table-cell text-sm text-sage-600">${u.email}</td>
+      <td class="px-5 py-3.5 hidden lg:table-cell text-xs text-sage-500">${u.joined}</td>
+      <td class="px-5 py-3.5"><span class="text-[11px] px-2.5 py-1 rounded-full font-semibold ${badgeCls(u.status)}">${u.status}</span></td>
+      <td class="px-5 py-3.5"><div class="flex items-center gap-2">
+        <button class="p-1.5 rounded-lg text-sage-500 hover:text-mint-700 hover:bg-mint-50 transition"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>
+        <button class="p-1.5 rounded-lg text-sage-500 hover:text-blush-500 hover:bg-blush-50 transition"><i data-lucide="user-x" class="w-3.5 h-3.5"></i></button>
+      </div></td>
+    </tr>`).join('');
+  lucide.createIcons();
+}
+
+function renderRatings() {
+  const icon={up:'trending-up',stable:'minus',down:'trending-down'};
+  const clr={up:'text-mint-600',stable:'text-sage-500',down:'text-blush-400'};
+  document.getElementById('ratingsGrid').innerHTML = RATINGS_DATA.map(r => `
+    <div class="glass-card rounded-2xl p-5 shadow-card hover:shadow-card-hover transition-all duration-200">
+      <div class="flex items-start justify-between mb-3"><p class="font-semibold text-sm text-sage-900 leading-snug pr-2">${r.content}</p><i data-lucide="${icon[r.trend]}" class="w-4 h-4 ${clr[r.trend]} shrink-0 mt-0.5"></i></div>
+      <div class="flex items-baseline gap-1 mb-1"><span class="text-3xl font-bold font-serif text-sage-900">${r.avg}</span><span class="text-xs text-sage-400">/ 10</span></div>
+      <p class="text-xs text-sage-500">${r.total.toLocaleString()} ratings</p>
+      <div class="mt-3 h-1.5 rounded-full bg-cream-200 overflow-hidden"><div class="h-full bg-gradient-to-r from-honey to-amber-400 rounded-full" style="width:${r.avg*10}%"></div></div>
+    </div>`).join('');
+  lucide.createIcons();
+}
+
+function renderAnalytics() {
+  const bgMap={mint:'bg-mint-100 text-mint-700',sage:'bg-sage-100 text-sage-700',blush:'bg-blush-100 text-blush-400',cream:'bg-cream-200 text-warmgray-600'};
+  document.getElementById('analyticsGrid').innerHTML = ANALYTICS_DATA.map(s => `
+    <div class="glass-card rounded-2xl p-5 shadow-card hover:shadow-card-hover transition-all duration-200 stat-card">
+      <div class="flex items-center justify-between mb-4"><div class="w-10 h-10 rounded-xl ${bgMap[s.color]} flex items-center justify-center"><i data-lucide="${s.icon}" class="w-5 h-5"></i></div><span class="text-[11px] text-sage-500 font-medium">${s.change}</span></div>
+      <p class="text-2xl font-bold font-serif text-sage-900">${s.value}</p><p class="text-xs text-sage-500 mt-0.5">${s.label}</p>
+    </div>`).join('');
+  lucide.createIcons();
+}
+
+// ── FILTER ────────────────────────────────────────────────────────────────────
+function filterMovies() {
+  const q = document.getElementById('movieSearch').value.toLowerCase();
+  const s = document.getElementById('movieStatusFilter').value;
+  renderMovieTable(MOVIES.filter(m => (m.title.toLowerCase().includes(q)||m.genre.toLowerCase().includes(q)) && (!s||m.status===s)));
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────────
+let currentModalType = 'movie';
+
+function openAddModal(type='movie') { currentModalType=type; document.getElementById('addModal').classList.remove('hidden'); switchModalType(type); }
+function closeAddModal() {
+  document.getElementById('addModal').classList.add('hidden');
+  ['posterPreview','bannerPreview'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  document.getElementById('videoFileName').classList.add('hidden');
+  document.getElementById('formTitle').value='';
+  document.getElementById('formDescription').value='';
+}
+
+function switchModalType(type) {
+  currentModalType=type;
+  ['movie','drama','episode'].forEach(t => {
+    const b=document.getElementById('typeBtn-'+t);
+    b.className='flex-1 py-2 px-3 rounded-xl text-sm font-semibold transition '+(t===type?'bg-white text-mint-800 shadow-sm border border-mint-200/70':'text-sage-600 hover:text-sage-900');
+  });
+  const heads={movie:'Add New Movie',drama:'Add New Drama / Series',episode:'Add New Episode'};
+  const descs={movie:'Fill in movie details and upload a poster.',drama:'Fill in drama details, poster, and banner.',episode:'Upload episode video and thumbnail.'};
+  document.getElementById('modalHeading').textContent=heads[type];
+  document.getElementById('modalDesc').textContent=descs[type];
+  document.getElementById('episodeFields').classList.toggle('hidden',type!=='episode');
+  document.getElementById('bannerUploadSection').classList.toggle('hidden',type==='episode');
+  document.getElementById('videoUploadSection').classList.toggle('hidden',type!=='episode');
+}
+
+function previewImage(event,previewId) {
+  const file=event.target.files[0]; if(!file) return;
+  const r=new FileReader(); r.onload=e=>{const img=document.getElementById(previewId);img.src=e.target.result;img.classList.remove('hidden');}; r.readAsDataURL(file);
+}
+
+function handleVideoSelect(event) {
+  const file=event.target.files[0]; if(!file) return;
+  document.getElementById('videoFileNameText').textContent=file.name+' ('+(file.size/1024/1024).toFixed(1)+' MB)';
+  document.getElementById('videoFileName').classList.remove('hidden'); lucide.createIcons();
+}
+
+function handleDragOver(e,zone){e.preventDefault();document.getElementById(zone+'DropZone')?.classList.add('drag-over');}
+function handleDragLeave(e,zone){document.getElementById(zone+'DropZone')?.classList.remove('drag-over');}
+function handleDrop(e,zone){
+  e.preventDefault(); handleDragLeave(e,zone);
+  const file=e.dataTransfer.files[0]; if(!file) return;
+  if(zone==='video'){document.getElementById('videoFileNameText').textContent=file.name;document.getElementById('videoFileName').classList.remove('hidden');}
+  else{const r=new FileReader();r.onload=ev=>{const p=document.getElementById(zone+'Preview');p.src=ev.target.result;p.classList.remove('hidden');};r.readAsDataURL(file);}
+  lucide.createIcons();
+}
+
+function submitForm() {
+  const title=document.getElementById('formTitle').value.trim();
+  if(!title){showToast('Title is required.','error');return;}
+  showToast(currentModalType.charAt(0).toUpperCase()+currentModalType.slice(1)+' "'+title+'" saved! ✨','success');
+  closeAddModal();
+}
+
+// ── DELETE MODAL ──────────────────────────────────────────────────────────────
+let deleteTarget=null;
+function openDeleteModal(id,type){deleteTarget={id,type};document.getElementById('deleteModal').classList.remove('hidden');}
+function closeDeleteModal(){document.getElementById('deleteModal').classList.add('hidden');deleteTarget=null;}
+function confirmDelete(){if(!deleteTarget)return;showToast('Content #'+deleteTarget.id+' deleted.','success');closeDeleteModal();}
+function editItem(type,id){openAddModal(type);showToast('Editing '+type+' #'+id+' — pre-fill coming soon.','info');}
+
+// ── MOBILE MENU ───────────────────────────────────────────────────────────────
+function toggleMobileMenu(){document.getElementById('navLinks').classList.toggle('hidden');}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(msg,type='success'){
+  const clrs={success:'bg-mint-50 border-mint-300 text-mint-900',error:'bg-blush-50 border-blush-300 text-red-800',info:'bg-cream-100 border-cream-300 text-sage-800'};
+  const icons={success:'check-circle-2',error:'alert-circle',info:'info'};
+  const t=document.createElement('div');
+  t.className='pointer-events-auto animate-toast flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-soft '+clrs[type]+' text-sm font-medium max-w-xs';
+  t.innerHTML='<i data-lucide="'+icons[type]+'" class="w-4 h-4 shrink-0"></i><span>'+msg+'</span>';
+  document.getElementById('toastContainer').appendChild(t);
+  lucide.createIcons();
+  setTimeout(()=>t.remove(),3500);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  lucide.createIcons();
+  renderRecentContent(); renderTopRated();
+  renderMovieTable(); renderDramaTable(); renderEpisodeTable();
+  renderGenreGrid(); renderUserTable(); renderRatings(); renderAnalytics();
+});
+document.getElementById('addModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeAddModal();});
+document.getElementById('deleteModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeDeleteModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeAddModal();closeDeleteModal();}});
+</script>
+</body>
+</html>

@@ -1,0 +1,426 @@
+@page "/"
+
+
+<!-- Top App Header -->
+<header class="myflix-header">
+    <div class="myflix-search-group">
+        <div class="myflix-search-bar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7ea29a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" placeholder="Search for movies, series, genres...">
+        </div>
+        <button type="button" class="myflix-search-btn">
+            Search
+        </button>
+    </div>
+
+    <div class="myflix-header-right">
+        <!-- Notification Bell -->
+        <button class="myflix-notif-btn" aria-label="Notifications" title="Notifications">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="myflix-notif-dot"></span>
+        </button>
+
+        <!-- User Profile Pill -->
+        <div class="myflix-user-profile">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="May Zin" class="myflix-avatar" />
+            <span class="myflix-username">May Zin</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </div>
+    </div>
+</header>
+
+<!-- Featured Hero Banner -->
+<section class="myflix-hero-banner">
+    <div class="myflix-hero-backdrop">
+        <div class="myflix-hero-img-wrapper">
+            <img src="https://upload.wikimedia.org/wikipedia/en/9/9e/KinnPorsche_series_poster.jpg" alt="KinnPorsche Featured" class="myflix-hero-bg-img" />
+        </div>
+        <div class="myflix-hero-overlay"></div>
+    </div>
+
+    <div class="myflix-hero-content">
+        <div class="myflix-hero-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" stroke="#10b981">
+                <path d="M12 2c0 4-4 6-4 10a5 5 0 0 0 10 0c0-4-6-6-6-10z" />
+            </svg>
+            <span>Trending Now</span>
+        </div>
+
+        <h1 class="myflix-hero-title">
+            KinnPorsche
+            <span class="myflix-hero-script">The Series</span>
+        </h1>
+
+        <p class="myflix-hero-desc">
+            The second son of a mafia family, Kinn, is assigned a bodyguard, Porsche. Their relationship starts with distrust and slowly develops into something more.
+        </p>
+
+        <div class="myflix-hero-actions">
+            <button class="myflix-btn myflix-btn-primary" @onclick="PlayKinnPorsche">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span>Play Now</span>
+            </button>
+
+            <button class="myflix-btn myflix-btn-secondary" @onclick="PlayKinnPorsche">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>My List</span>
+            </button>
+        </div>
+
+        <!-- Carousel Dots -->
+        <div class="myflix-carousel-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+</section>
+
+<!-- Continue Watching Section -->
+<section class="myflix-section-block">
+    <div class="myflix-section-header">
+        <h2>Continue Watching</h2>
+        <a href="continue-watching" class="myflix-see-all">See All</a>
+    </div>
+
+    <div class="myflix-continue-grid">
+        <!-- Item 1: Bad Buddy -->
+        <article class="myflix-continue-card" @onclick='() => PlayContent("Bad Buddy", "Two rival families live next door to each other, but their sons secretly develop feelings.", "https://upload.wikimedia.org/wikipedia/en/b/b7/Bad_Buddy_Series_2021_poster.jpg", 6)'>
+            <div class="myflix-continue-thumb">
+                <img src="https://upload.wikimedia.org/wikipedia/en/b/b7/Bad_Buddy_Series_2021_poster.jpg" alt="Bad Buddy" />
+                <div class="myflix-thumb-overlay">
+                    <button class="myflix-play-icon-btn" aria-label="Play Bad Buddy">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="6 4 19 12 6 20 6 4"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="myflix-continue-info">
+                <h3>Bad Buddy</h3>
+                <p>Episode 6</p>
+            </div>
+        </article>
+
+        <!-- Item 2: Crash Landing on You -->
+        <article class="myflix-continue-card" @onclick='() => PlayContent("Crash Landing on You", "A paragliding mishap drops a South Korean heiress in North Korea - and into the life of an army officer.", "https://upload.wikimedia.org/wikipedia/en/5/5e/Crash_Landing_on_You_poster.png", 12)'>
+            <div class="myflix-continue-thumb">
+                <img src="https://upload.wikimedia.org/wikipedia/en/5/5e/Crash_Landing_on_You_poster.png" alt="Crash Landing on You" />
+                <div class="myflix-thumb-overlay">
+                    <button class="myflix-play-icon-btn" aria-label="Play Crash Landing on You">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="6 4 19 12 6 20 6 4"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="myflix-continue-info">
+                <h3>Crash Landing on You</h3>
+                <p>Episode 12</p>
+            </div>
+        </article>
+
+        <!-- Item 3: Lovely Runner -->
+        <article class="myflix-continue-card" @onclick='() => PlayContent("Lovely Runner", "A passionate fan travels back in time to save her favorite idol from a tragic fate.", "https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png", 8)'>
+            <div class="myflix-continue-thumb">
+                <img src="https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png" alt="Lovely Runner" />
+                <div class="myflix-thumb-overlay">
+                    <button class="myflix-play-icon-btn" aria-label="Play Lovely Runner">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="6 4 19 12 6 20 6 4"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="myflix-continue-info">
+                <h3>Lovely Runner</h3>
+                <p>Episode 8</p>
+            </div>
+        </article>
+
+        <!-- Item 4: Vincenzo -->
+        <article class="myflix-continue-card" @onclick='() => PlayContent("Vincenzo", "During a visit to his motherland, a Korean-Italian mafia lawyer gives a conglomerate a taste of its own medicine.", "https://upload.wikimedia.org/wikipedia/en/5/5b/Vincenzo_TV_series.jpg", 4)'>
+            <div class="myflix-continue-thumb">
+                <img src="https://upload.wikimedia.org/wikipedia/en/5/5b/Vincenzo_TV_series.jpg" alt="Vincenzo" />
+                <div class="myflix-thumb-overlay">
+                    <button class="myflix-play-icon-btn" aria-label="Play Vincenzo">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="6 4 19 12 6 20 6 4"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="myflix-continue-info">
+                <h3>Vincenzo</h3>
+                <p>Episode 4</p>
+            </div>
+        </article>
+
+        <!-- Item 5: The Glory -->
+        <article class="myflix-continue-card" @onclick='() => PlayContent("The Glory", "Years after surviving horrific high school bullying, a woman puts an elaborate revenge scheme into motion.", "https://upload.wikimedia.org/wikipedia/en/7/79/The_Glory_TV_series.jpg", 10)'>
+            <div class="myflix-continue-thumb">
+                <img src="https://upload.wikimedia.org/wikipedia/en/7/79/The_Glory_TV_series.jpg" alt="The Glory" />
+                <div class="myflix-thumb-overlay">
+                    <button class="myflix-play-icon-btn" aria-label="Play The Glory">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="6 4 19 12 6 20 6 4"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="myflix-continue-info">
+                <h3>The Glory</h3>
+                <p>Episode 10</p>
+            </div>
+        </article>
+    </div>
+</section>
+
+<!-- Thai BL Series Section -->
+<section class="myflix-section-block">
+    <div class="myflix-section-header">
+        <h2>Thai BL Series</h2>
+        <a href="category/thai-bl" class="myflix-see-all">See All</a>
+    </div>
+
+    <div class="myflix-poster-grid">
+        <!-- 1: 2gether -->
+        <article class="myflix-poster-card" @onclick='() => PlayContent("2gether: The Series", "A student enters a fake relationship with a popular guy to ward off an unwanted admirer.", "https://upload.wikimedia.org/wikipedia/en/6/68/2gether_The_Series_2020_poster.jpg", 1)'>
+            <img src="https://upload.wikimedia.org/wikipedia/en/6/68/2gether_The_Series_2020_poster.jpg" alt="2gether The Series" class="myflix-poster-img" />
+            <button class="myflix-card-heart" title="Favorite">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </button>
+            <div class="myflix-poster-content">
+                <h3>2gether</h3>
+                <p>The Series</p>
+            </div>
+        </article>
+
+        <!-- 2: Bad Buddy -->
+        <article class="myflix-poster-card" @onclick='() => PlayContent("Bad Buddy", "Two rival families live next door, but their sons secretly develop feelings.", "https://upload.wikimedia.org/wikipedia/en/b/b7/Bad_Buddy_Series_2021_poster.jpg", 1)'>
+            <img src="https://upload.wikimedia.org/wikipedia/en/b/b7/Bad_Buddy_Series_2021_poster.jpg" alt="Bad Buddy The Series" class="myflix-poster-img" />
+            <button class="myflix-card-heart" title="Favorite">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </button>
+            <div class="myflix-poster-content">
+                <h3>Bad Buddy</h3>
+                <p>The Series</p>
+            </div>
+        </article>
+
+        <!-- 3: KinnPorsche -->
+        <article class="myflix-poster-card" @onclick='PlayKinnPorsche'>
+            <img src="https://upload.wikimedia.org/wikipedia/en/9/9e/KinnPorsche_series_poster.jpg" alt="KinnPorsche The Series" class="myflix-poster-img" />
+            <button class="myflix-card-heart" title="Favorite">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </button>
+            <div class="myflix-poster-content">
+                <h3>KinnPorsche</h3>
+                <p>The Series</p>
+            </div>
+        </article>
+
+        <!-- 4: TharnType -->
+        <article class="myflix-poster-card" @onclick='() => PlayContent("TharnType", "A homophobic freshman finds out his college roommate is gay.", "https://upload.wikimedia.org/wikipedia/en/7/73/TharnType_The_Series_2019_poster.jpg", 1)'>
+            <img src="https://upload.wikimedia.org/wikipedia/en/7/73/TharnType_The_Series_2019_poster.jpg" alt="TharnType The Series" class="myflix-poster-img" />
+            <button class="myflix-card-heart" title="Favorite">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </button>
+            <div class="myflix-poster-content">
+                <h3>TharnType</h3>
+                <p>The Series</p>
+            </div>
+        </article>
+
+        <!-- 5: SOTUS -->
+        <article class="myflix-poster-card" @onclick='() => PlayContent("SOTUS: The Series", "A freshman stands up to a strict senior leader in the engineering faculty.", "https://upload.wikimedia.org/wikipedia/en/7/76/SOTUS_The_Series_promo.jpg", 1)'>
+            <img src="https://upload.wikimedia.org/wikipedia/en/7/76/SOTUS_The_Series_promo.jpg" alt="SOTUS The Series" class="myflix-poster-img" />
+            <button class="myflix-card-heart" title="Favorite">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </button>
+            <div class="myflix-poster-content">
+                <h3>SOTUS</h3>
+                <p>The Series</p>
+            </div>
+        </article>
+
+        <!-- 6: A Tale of Thousand Stars -->
+        <article class="myflix-poster-card" @onclick='() => PlayContent("A Tale of Thousand Stars", "A volunteer teacher receives a heart transplant and promises to fulfill the donor wishes.", "https://upload.wikimedia.org/wikipedia/en/0/0e/A_Tale_of_Thousand_Stars_2021_poster.jpg", 1)'>
+            <img src="https://upload.wikimedia.org/wikipedia/en/0/0e/A_Tale_of_Thousand_Stars_2021_poster.jpg" alt="A Tale of Thousand Stars" class="myflix-poster-img" />
+            <button class="myflix-card-heart" title="Favorite">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </button>
+            <div class="myflix-poster-content">
+                <h3>A Tale of Thousand Stars</h3>
+            </div>
+        </article>
+    </div>
+</section>
+
+<!-- Korean Dramas Section -->
+<section class="myflix-section-block">
+    <div class="myflix-section-header">
+        <h2>Korean Dramas</h2>
+        <a href="category/korean-drama" class="myflix-see-all">See All</a>
+    </div>
+
+    <!--Using Db Section-->
+    @if (IsLoading)
+    {
+        <div class="myflix-loading">
+            <p>Loading...</p>
+        </div>
+    }
+    else if (Dramas != null && Dramas.Any())
+    {
+        <div class="myflix-poster-grid">
+            @foreach (var drama in Dramas)
+            {
+                <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => PlayDramaAsync(drama.ContentId, drama.Title, drama.Description, drama.PosterUrl)">
+                    <img src="@drama.PosterUrl" alt="@drama.Title" class="myflix-poster-img" />
+                    <button class="myflix-card-heart"
+                            title="Favorite">
+
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </button>
+                    <div class="myflix-poster-content">
+                        <h3>@drama.Title</h3>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="myflix-no-data">
+            <p>No Korean dramas available at the moment.</p>
+        </div>
+    }
+
+</section>
+
+<!--Movie Section -->
+<section class="myflix-section-block">
+    <div class="myflix-section-header">
+        <h2>Movies</h2>
+        <a href="category/korean-drama" class="myflix-see-all">See All</a>
+    </div>
+
+    <div class="myflix-poster-grid">
+        @if (IsLoading)
+        {
+            <div class="myflix-loading">
+                <p>Loading...</p>
+            </div>
+        }
+        else if (Movies != null && Movies.Any())
+        {
+            @foreach (var movie in Movies)
+            {
+                <article class="myflix-poster-card">
+                    <img src="@movie.PosterUrl" alt="@movie.Title" class="myflix-poster-img" />
+                    <button class="myflix-card-heart"
+                            title="Favorite">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </button>
+                    <div class="myflix-poster-content">
+                        <h3>@movie.Title</h3>
+                    </div>
+                </article>
+            }
+        }
+        else
+        {
+            <div class="myflix-no-data">
+                <p>No movies available at the moment.</p>
+            </div>
+        }
+
+    </div>
+</section>
+
+<!-- ========================================================
+     CINEMATIC VIDEO PLAYER MODAL
+     ======================================================== -->
+@if (IsVideoModalOpen)
+{
+    <div class="video-modal-backdrop" @onclick="CloseVideoPlayer">
+        <div class="video-modal-container" @onclick:stopPropagation="true">
+            <div class="video-modal-header">
+                <h3 class="video-modal-title">
+                    <span>@ActiveVideoTitle</span>
+                    <span class="video-modal-badge">EP @ActiveEpisodeNumber</span>
+                </h3>
+                <button class="video-modal-close" @onclick="CloseVideoPlayer" title="Close Video">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="video-player-frame">
+                <video src="@ActiveVideoUrl" controls autoplay poster="@ActiveVideoPoster" preload="auto">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="video-modal-footer">
+                <p class="video-modal-info">@ActiveVideoDescription</p>
+                <div class="video-episode-pills" style="display:flex; flex-wrap:wrap; gap:6px; max-height:120px; overflow-y:auto;">
+                    <span style="font-size:12px;font-weight:700;color:#F4EFEA;margin-right:6px;align-self:center;">Episodes:</span>
+                    @if (ActiveEpisodes != null && ActiveEpisodes.Any())
+                    {
+                        @foreach (var ep in ActiveEpisodes)
+                        {
+                            var epCopy = ep;
+                            <button class="video-ep-pill @(epCopy.EpisodeNumber == ActiveEpisodeNumber ? "active" : "")" @onclick="() => SelectDramaEpisode(epCopy)">
+                                EP @epCopy.EpisodeNumber
+                            </button>
+                        }
+                    }
+                    else
+                    {
+                        @for (int ep = 1; ep <= 14; ep++)
+                        {
+                            int epCopy = ep;
+                            <button class="video-ep-pill @(epCopy == ActiveEpisodeNumber ? "active" : "")" @onclick="() => SelectEpisode(epCopy)">
+                                EP @epCopy
+                            </button>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

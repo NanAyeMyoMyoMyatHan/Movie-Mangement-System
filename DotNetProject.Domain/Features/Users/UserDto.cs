@@ -3,21 +3,21 @@ namespace DotNetProject.Domain.Features.Users
     public class UserModel
     {
         public int Id { get; set; }
-        public string UserName { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string DisplayName { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string? DisplayName { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; } = false;
-        public bool DeletedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
     }
 
     public class UserCreateRequestModel
     {
-        public string UserName { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string DisplayName { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string? DisplayName { get; set; }
     }
 
     public class UserCreateResponseModel
@@ -29,10 +29,10 @@ namespace DotNetProject.Domain.Features.Users
     public class UserUpdateRequestModel
     {
         public int Id { get; set; }
-        public string UserName { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string DisplayName { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string? DisplayName { get; set; }
     }
 
     public class UserUpdateResponseModel
@@ -43,8 +43,8 @@ namespace DotNetProject.Domain.Features.Users
 
     public class UserLoginRequestModel
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 
     public class UserLoginResponseModel
@@ -53,7 +53,7 @@ namespace DotNetProject.Domain.Features.Users
         public string Message { get; set; } = string.Empty;
         public int Id { get; set; }
         public string UserName { get; set; } = string.Empty;
-        public string DisplayName { get; set; } = string.Empty;
+        public string? DisplayName { get; set; }
         public string Email { get; set; } = string.Empty;
     }
 }

@@ -441,7 +441,7 @@ namespace DotNetProject.WindowForm
                 };
                 var result = await _httpClientServices.ExectueAsync<MovieCreateResponseModel>(
                     $"{ApiBaseUrl}/Movie", request, EnumHttpMethod.Post);
-                SetStatus(result?.Message ?? "Movie added.", result?.IsSuccess != "true");
+                SetStatus(result?.Message ?? "Movie added.", result?.IsSuccess != true);
                 await MovieLoadAll();
             }
             catch (Exception ex)
@@ -472,7 +472,7 @@ namespace DotNetProject.WindowForm
                 };
                 var result = await _httpClientServices.ExectueAsync<MovieUpdateResponseModel>(
                     $"{ApiBaseUrl}/Movie", request, EnumHttpMethod.Put);
-                SetStatus(result?.Message ?? "Movie updated.", result?.IsSuccess != "true");
+                SetStatus(result?.Message ?? "Movie updated.", result?.IsSuccess != true);
                 await MovieLoadAll();
             }
             catch (Exception ex)
@@ -495,7 +495,7 @@ namespace DotNetProject.WindowForm
                 var request = new MovieDeleteRequestModel { Id = id };
                 var result = await _httpClientServices.ExectueAsync<MovieDeleteResponseModel>(
                     $"{ApiBaseUrl}/Movie", request, EnumHttpMethod.Delete);
-                SetStatus(result?.Message ?? "Movie deleted.", result?.IsSuccess != "true");
+                SetStatus(result?.Message ?? "Movie deleted.", result?.IsSuccess != true);
                 await MovieLoadAll();
             }
             catch (Exception ex)

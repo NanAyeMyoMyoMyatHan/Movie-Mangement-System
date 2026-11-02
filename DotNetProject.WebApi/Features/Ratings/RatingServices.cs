@@ -17,7 +17,7 @@ namespace DotNetProject.WebApi.Features.Ratings
         public async Task<List<RatingModel>> GetRatingAsync(int userId)
         {
             var rating =await _context.Ratings
-                .Where(x=>x.UserId == userId).
+                .Where(x=>x.UserId == userId && !x.IsDeleted).
                 Select(x=>new RatingModel
                 {
                     Id = x.Id,
@@ -65,7 +65,7 @@ namespace DotNetProject.WebApi.Features.Ratings
             rating.Review = model.Review;
             rating.UpdatedAt = model.UpdatedAt ?? DateTime.UtcNow;
             _context.Ratings.Update(rating);
-            var result = await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return new RatingUpdateResponseModel
             {
                 IsSuccess = true,

@@ -1,0 +1,108 @@
+<aside class="petale-sidebar myflix-sidebar">
+    <div class="petale-sidebar-top">
+        <!-- Brand Logo -->
+        <div class="myflix-logo">
+            <svg class="myflix-logo-icon" width="26" height="26" viewBox="0 0 24 24" fill="#10b981">
+                <path d="M6 3.5c0-.9 1-.1.4.1l13.5 7.5c.8.5.8 1.6 0 2.1L7.4 20.6c-.6.4-1.4 0-1.4-.8V3.5z" />
+            </svg>
+            <span class="myflix-logo-text">
+                <span class="myflix-text-white">Nang</span><span class="myflix-text-green">World</span>
+            </span>
+        </div>
+
+        <!-- Main Navigation -->
+        <nav class="myflix-nav">
+            <NavLink href="" Match="NavLinkMatch.All" class="myflix-nav-item">
+                <div class="myflix-nav-left">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span>Home</span>
+                </div>
+            </NavLink>
+
+            <NavLink href="watch-later" class="myflix-nav-item">
+                <div class="myflix-nav-left">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>Watch Later</span>
+                </div>
+                <span class="myflix-badge">12</span>
+            </NavLink>
+
+            <NavLink href="favorites" class="myflix-nav-item">
+                <div class="myflix-nav-left">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    <span>Favorites</span>
+                </div>
+                <span class="myflix-badge">25</span>
+            </NavLink>
+        </nav>
+
+        <!-- Divider -->
+        <div class="myflix-divider"></div>
+
+        <!-- Special Categories -->
+        <div class="myflix-category-links">
+            <NavLink href="category/new-releases" class="myflix-category-link">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4-6.3-4.6-6.3 4.6 2.3-7.4-6-4.6h7.6z"/>
+                </svg>
+                <span>New Releases</span>
+            </NavLink>
+
+            <NavLink href="category/bl-series" class="myflix-category-link">
+                <span class="myflix-badge-icon">BL</span>
+                <span>BL Series</span>
+            </NavLink>
+
+            <NavLink href="category/korean-drama" class="myflix-category-link">
+                <span class="myflix-badge-icon">KR</span>
+                <span>Korean Drama</span>
+            </NavLink>
+
+            <NavLink href="category/movies" class="myflix-category-link">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2.5"></rect>
+                    <line x1="2" y1="9" x2="22" y2="9"></line>
+                    <line x1="7" y1="4" x2="7" y2="9"></line>
+                    <line x1="12" y1="4" x2="12" y2="9"></line>
+                    <line x1="17" y1="4" x2="17" y2="9"></line>
+                </svg>
+                <span>Movies</span>
+            </NavLink>
+        </div>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="myflix-bottom-nav">
+        <NavLink href="admin" class="myflix-category-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <span>Admin Panel</span>
+        </NavLink>
+
+        <NavLink href="settings" class="myflix-category-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Settings</span>
+        </NavLink>
+
+        <NavLink href="logout" class="myflix-category-link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Log Out</span>
+        </NavLink>
+    </div>
+</aside>

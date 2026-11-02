@@ -1,0 +1,149 @@
+﻿@page "/movies"
+@using DotNetProject.Balzor.Components.Shared
+@inject HttpClientService ApiClient
+@inject NavigationManager Nav
+
+<PageTitle>Movies — MyFlix</PageTitle>
+
+<div class="movies-page">
+    <div class="movies-header">
+        <h1>🎬 Movies</h1>
+
+        <a href="/movies/create" class="btn-primary">+ Add Movie</a>
+    </div>
+
+    <!-- Search Form -->
+    <form method="get" action="/movies" class="search-bar">
+        <input type="text"
+               name="search"
+               value="@Search"
+               placeholder="Search by title or genre…"
+               class="search-input" />
+        <select name="pageSize" class="page-size-select">
+            @foreach (var s in new[] { 10, 20, 50 })
+            {
+                <option value="@s" selected="@(PageSize == s)">@s / page</option>
+            }
+        </select>
+        <input type="hidden" name="page" value="1" />
+        <button type="submit" class="btn-search">Search</button>
+        @if (!string.IsNullOrWhiteSpace(Search))
+        {
+            <a href="/movies" class="btn-clear">Clear</a>
+        }
+    </form>
+
+    <!-- Results -->
+    @if (_loading)
+    {
+        <p class="state-msg">Loading…</p>
+    }
+    else if (_error != null)
+    {
+        <p class="state-msg state-error">@_error</p>
+    }
+    else if (_items.Count == 0)
+    {
+        <p class="state-msg">No movies found.</p>
+    }
+    else
+    {
+        <div class="movies-table-wrap">
+            <table class="movies-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Poster</th>
+                        <th>Title</th>
+                        <th>Genre</th>
+                        <th>Year</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int rowNo = (_currentPage - 1) * PageSize;}
+                    @foreach (var m in _items)
+                    {
+                        rowNo++;
+                        <tr>
+                            <td>@rowNo</td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(m.PosterUrl))
+                                {
+                                    <img src="@m.PosterUrl" alt="@m.Title" class="poster-thumb" />
+                                }
+                                else
+                                {
+                                    <span class="no-poster">—</span>
+                                }
+                            </td>
+                            <td class="title-cell">@m.Title</td>
+                            
+                            <td>@(m.ReleaseYear?.ToString() ?? "—")</td>
+                            <td class="action-cell">
+                                <a href="/movies/edit/@m.Id?returnUrl=@ReturnUrl" class="btn-edit">Edit</a>
+                                <a href="/movies/delete/@m.Id?returnUrl=@ReturnUrl" class="btn-delete">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <span class="page-info">
+                Showing @((_currentPage - 1) * PageSize + 1)–@(Math.Min(_currentPage * PageSize, _totalCount))
+                of @_totalCount
+            </span>
+            <div class="page-links">
+                @if (_currentPage > 1)
+                {
+                    <a href="@PageUrl(_currentPage - 1)" class="page-link">‹ Prev</a>
+                }
+                @for (int p = Math.Max(1, _currentPage - 2); p <= Math.Min(_totalPages, _currentPage + 2); p++)
+                {
+                    int pCopy = p;
+                    <a href="@PageUrl(pCopy)"
+                       class="page-link @(pCopy == _currentPage ? "active" : "")">@pCopy</a>
+                }
+                @if (_currentPage < _totalPages)
+                {
+                    <a href="@PageUrl(_currentPage + 1)" class="page-link">Next ›</a>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .movies-page { padding: 2rem; max-width: 1100px; margin: 0 auto; }
+    .movies-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .movies-header h1 { font-size: 1.8rem; color: #e50914; margin: 0; }
+    .search-bar { display: flex; gap: .6rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .search-input { flex: 1; min-width: 200px; padding: .5rem .8rem; border-radius: 6px; border: 1px solid #444; background: #1a1a2e; color: #eee; }
+    .page-size-select { padding: .5rem; border-radius: 6px; border: 1px solid #444; background: #1a1a2e; color: #eee; }
+    .btn-primary, .btn-search, .btn-clear, .btn-edit, .btn-delete { padding: .45rem .9rem; border-radius: 6px; border: none; cursor: pointer; font-size: .88rem; text-decoration: none; display: inline-block; }
+    .btn-primary { background: #e50914; color: #fff; }
+    .btn-search { background: #e50914; color: #fff; }
+    .btn-clear { background: #444; color: #eee; }
+    .btn-edit { background: #2563eb; color: #fff; margin-right: .3rem; }
+    .btn-delete { background: #dc2626; color: #fff; }
+    .movies-table-wrap { overflow-x: auto; }
+    .movies-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    .movies-table th, .movies-table td { padding: .65rem .9rem; border-bottom: 1px solid #2a2a3e; text-align: left; }
+    .movies-table th { background: #1a1a2e; color: #aaa; font-weight: 600; }
+    .movies-table tr:hover td { background: #0f0f1e; }
+    .poster-thumb { width: 40px; height: 56px; object-fit: cover; border-radius: 4px; }
+    .no-poster { color: #555; }
+    .title-cell { font-weight: 500; color: #eee; }
+    .action-cell { white-space: nowrap; }
+    .state-msg { color: #aaa; text-align: center; padding: 3rem 0; }
+    .state-error { color: #e50914; }
+    .pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 1.5rem; flex-wrap: wrap; gap: .5rem; }
+    .page-info { color: #aaa; font-size: .85rem; }
+    .page-links { display: flex; gap: .3rem; }
+    .page-link { padding: .35rem .65rem; border-radius: 5px; background: #1a1a2e; color: #eee; text-decoration: none; font-size: .85rem; }
+    .page-link.active { background: #e50914; color: #fff; }
+    .page-link:hover:not(.active) { background: #2a2a3e; }
+</style>

@@ -1,0 +1,922 @@
+html, body {
+    font-family: 'Plus Jakarta Sans', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #F4EFEA;
+    color: #183B36;
+    margin: 0;
+    padding: 0;
+}
+
+a, .btn-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem #F4EFEA, 0 0 0 0.25rem #DE7149;
+}
+
+/* ========================================================
+   REELORA LAYOUT
+   ======================================================== */
+.petale-layout {
+    min-height: 100vh;
+    background: #F4EFEA !important;
+    color: #183B36 !important;
+}
+
+.petale-sidebar-container {
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+.petale-main {
+    min-height: 100vh;
+    margin-left: 250px;
+    background: #F4EFEA !important;
+}
+
+.petale-content {
+    padding: 24px 36px 50px !important;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+/* ========================================================
+   SIDEBAR STYLES (WARM ALMOND SAND)
+   ======================================================== */
+.myflix-sidebar,
+.petale-sidebar {
+    width: 250px;
+    min-height: 100vh;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    padding: 24px 16px 20px 16px !important;
+    background: #EFE6DC !important;
+    border-right: 1px solid rgba(44, 62, 53, 0.08) !important;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
+    font-family: "Plus Jakarta Sans", "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    z-index: 1000;
+}
+
+.petale-sidebar-top {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Brand Logo */
+.myflix-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 26px;
+    padding-left: 6px;
+}
+
+.myflix-logo-icon {
+    flex-shrink: 0;
+    color: #DE7149 !important;
+    fill: #DE7149 !important;
+}
+
+.myflix-logo-text {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.myflix-text-white {
+    color: #183B36;
+}
+
+.myflix-text-green {
+    color: #DE7149;
+}
+
+/* Top Navigation */
+.myflix-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+a.myflix-nav-item,
+.myflix-nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-radius: 12px;
+    color: #4A554E !important;
+    text-decoration: none !important;
+    font-size: 14.5px;
+    font-weight: 500;
+    transition: all 0.18s ease;
+}
+
+.myflix-nav-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+a.myflix-nav-item:hover,
+.myflix-nav-item:hover {
+    background: rgba(222, 113, 73, 0.08);
+    color: #183B36 !important;
+}
+
+/* Active Nav Item (Terracotta Pill) */
+a.myflix-nav-item.active,
+.myflix-nav-item.active {
+    background: #DE7149 !important;
+    color: #FFFFFF !important;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(222, 113, 73, 0.25);
+}
+
+a.myflix-nav-item.active svg,
+.myflix-nav-item.active svg {
+    color: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+}
+
+/* Badges */
+.myflix-badge {
+    background: #E2D7CB !important;
+    color: #DE7149 !important;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 9999px;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Divider */
+.myflix-divider {
+    height: 1px;
+    background: rgba(44, 62, 53, 0.08);
+    margin: 18px 8px;
+}
+
+/* Special Category Links */
+.myflix-category-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+a.myflix-category-link,
+.myflix-category-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    color: #4A554E !important;
+    text-decoration: none !important;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 10px;
+    transition: all 0.15s ease;
+}
+
+a.myflix-category-link:hover,
+.myflix-category-link:hover {
+    background: rgba(222, 113, 73, 0.08);
+    color: #183B36 !important;
+}
+
+a.myflix-category-link.active,
+.myflix-category-link.active {
+    background: #DE7149 !important;
+    color: #FFFFFF !important;
+    font-weight: 700;
+}
+
+a.myflix-category-link.active svg,
+.myflix-category-link.active svg {
+    stroke: #FFFFFF !important;
+}
+
+.myflix-badge-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 18px;
+    border: 1.5px solid #8A958F;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #8A958F;
+    line-height: 1;
+}
+
+/* Bottom Nav */
+.myflix-bottom-nav {
+    margin-top: 24px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(44, 62, 53, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* ========================================================
+   TOP HEADER
+   ======================================================== */
+.myflix-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.myflix-search-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.myflix-search-bar {
+    width: 400px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #FFFFFF;
+    border: 1px solid rgba(44, 62, 53, 0.1);
+    border-radius: 9999px !important;
+    padding: 10px 18px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.myflix-search-bar svg {
+    color: #8A958F !important;
+}
+
+.myflix-search-bar input {
+    border: 0 !important;
+    outline: 0 !important;
+    width: 100% !important;
+    background: transparent !important;
+    font: inherit;
+    font-size: 13.5px;
+    color: #183B36 !important;
+}
+
+.myflix-search-bar input::placeholder {
+    color: #9AA39E !important;
+}
+
+.myflix-search-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 22px !important;
+    border-radius: 9999px !important;
+    background: #183B36 !important;
+    color: #F4EFEA !important;
+    font-size: 13.5px;
+    font-weight: 700;
+    border: 0 !important;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(24, 59, 54, 0.15);
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.myflix-search-btn:hover {
+    background: #DE7149 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(222, 113, 73, 0.3);
+}
+
+.myflix-header-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.myflix-notif-btn {
+    background: transparent !important;
+    border: 0 !important;
+    color: #183B36 !important;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.myflix-notif-btn:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+.myflix-notif-dot {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 7px;
+    height: 7px;
+    background: #DE7149;
+    border-radius: 50%;
+    border: 1.5px solid #F4EFEA;
+}
+
+.myflix-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    color: #183B36;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.myflix-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #DE7149;
+}
+
+/* ========================================================
+   HERO BANNER
+   ======================================================== */
+.myflix-hero-banner {
+    position: relative;
+    border-radius: 24px !important;
+    overflow: hidden;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    padding: 38px 44px !important;
+    margin-bottom: 34px !important;
+    background: #E6DACB !important;
+    box-shadow: 0 14px 32px rgba(44, 62, 53, 0.12);
+}
+
+.myflix-hero-backdrop {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.myflix-hero-img-wrapper {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 58%;
+}
+
+.myflix-hero-bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+}
+
+.myflix-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #E6DACB 0%, #E6DACB 34%, rgba(230, 218, 203, 0.88) 60%, rgba(230, 218, 203, 0.15) 100%), linear-gradient(180deg, rgba(230, 218, 203, 0) 65%, #E6DACB 100%);
+}
+
+.myflix-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 440px;
+}
+
+.myflix-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(24, 59, 54, 0.12);
+    color: #183B36;
+    padding: 5px 12px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.myflix-hero-title {
+    font-family: 'Playfair Display', Georgia, serif !important;
+    font-size: clamp(32px, 3.4vw, 44px) !important;
+    font-weight: 800 !important;
+    color: #183B36 !important;
+    margin: 0 0 8px !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.myflix-hero-script {
+    font-family: 'Caveat', cursive, sans-serif !important;
+    font-size: 32px !important;
+    font-weight: 700 !important;
+    color: #DE7149 !important;
+    line-height: 0.95 !important;
+    margin-top: 4px;
+}
+
+.myflix-hero-desc {
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+    color: #5C6B64 !important;
+    margin: 0 0 22px !important;
+    max-width: 390px;
+}
+
+.myflix-hero-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.myflix-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px !important;
+    border-radius: 9999px !important;
+    font-size: 13.5px;
+    font-weight: 700;
+    border: 0 !important;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.myflix-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.95;
+}
+
+.myflix-btn-primary {
+    background: #DE7149 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(222, 113, 73, 0.35);
+}
+
+.myflix-btn-secondary {
+    background: rgba(24, 59, 54, 0.08) !important;
+    border: 1.5px solid rgba(24, 59, 54, 0.25) !important;
+    color: #183B36 !important;
+}
+
+.myflix-carousel-dots {
+    display: flex;
+    gap: 6px;
+    margin-top: 24px;
+    align-items: center;
+}
+
+.myflix-carousel-dots .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #C8B9A6;
+    transition: all 0.2s ease;
+}
+
+.myflix-carousel-dots .dot.active {
+    width: 22px;
+    border-radius: 9999px;
+    background: #DE7149;
+}
+
+/* ========================================================
+   SECTIONS & GRIDS
+   ======================================================== */
+.myflix-section-block {
+    margin-bottom: 32px !important;
+}
+
+.myflix-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.myflix-section-header h2 {
+    font-family: 'Playfair Display', Georgia, serif !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #183B36 !important;
+    margin: 0 !important;
+    letter-spacing: -0.3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.myflix-see-all {
+    font-size: 13px;
+    font-weight: 700;
+    color: #8A958F !important;
+    text-decoration: none !important;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.myflix-see-all::after {
+    content: "→";
+    transition: transform 0.15s ease;
+}
+
+.myflix-see-all:hover {
+    color: #DE7149 !important;
+}
+
+.myflix-see-all:hover::after {
+    transform: translateX(3px);
+}
+
+/* Continue Watching Grid */
+.myflix-continue-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+}
+
+.myflix-continue-card {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    border-radius: 14px !important;
+    overflow: hidden;
+    background: #0F2420 !important;
+    box-shadow: 0 6px 18px rgba(15, 36, 32, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.myflix-continue-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(15, 36, 32, 0.25);
+}
+
+.myflix-continue-thumb {
+    aspect-ratio: 16 / 9;
+    position: relative;
+    overflow: hidden;
+    background: #0F2420;
+}
+
+.myflix-continue-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.myflix-thumb-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 36, 32, 0.25);
+    transition: background 0.2s ease;
+}
+
+.myflix-continue-card:hover .myflix-thumb-overlay {
+    background: rgba(15, 36, 32, 0.45);
+}
+
+.myflix-play-icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(15, 36, 32, 0.7) !important;
+    backdrop-filter: blur(6px);
+    border: 1.5px solid rgba(244, 239, 234, 0.8) !important;
+    color: #F4EFEA !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.myflix-play-icon-btn:hover {
+    transform: scale(1.12);
+}
+
+.myflix-continue-info {
+    padding: 10px 12px 12px !important;
+    background: #0F2420 !important;
+}
+
+.myflix-continue-info h3 {
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    color: #F4EFEA !important;
+    margin: 0 0 2px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.myflix-continue-info p {
+    font-size: 11.5px !important;
+    color: #8FA9AA !important;
+    margin: 0 !important;
+}
+
+/* Poster Grid */
+.myflix-poster-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+}
+
+.myflix-poster-card {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    border-radius: 14px !important;
+    overflow: hidden;
+    background: #0F2420 !important;
+    box-shadow: 0 8px 24px rgba(15, 36, 32, 0.16);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.myflix-poster-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 32px rgba(15, 36, 32, 0.28);
+}
+
+.myflix-poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.myflix-card-heart {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(15, 36, 32, 0.55) !important;
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(222, 113, 73, 0.3) !important;
+    color: #DE7149 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 3;
+    transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.myflix-card-heart:hover {
+    transform: scale(1.12);
+    background: rgba(15, 36, 32, 0.85) !important;
+    color: #DE7149 !important;
+}
+
+.myflix-poster-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 28px 12px 12px;
+    background: linear-gradient(180deg, rgba(15, 36, 32, 0) 0%, rgba(15, 36, 32, 0.85) 55%, #0F2420 100%);
+    z-index: 2;
+}
+
+.myflix-poster-content h3 {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #F4EFEA !important;
+    margin: 0 0 2px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.myflix-poster-content p {
+    font-size: 11px !important;
+    color: #8FA9AA !important;
+    margin: 0 !important;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .myflix-continue-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .myflix-poster-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .petale-sidebar-container,
+    .myflix-sidebar {
+        display: none !important;
+    }
+
+    .petale-main {
+        margin-left: 0 !important;
+    }
+
+    .petale-content {
+        padding: 16px 18px 40px !important;
+    }
+
+    .myflix-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .myflix-search-bar {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .myflix-header-right {
+        justify-content: space-between;
+    }
+
+    .myflix-hero-img-wrapper {
+        width: 100%;
+        opacity: 0.25;
+    }
+
+    .myflix-continue-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .myflix-poster-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ========================================================
+   CINEMATIC VIDEO MODAL
+   ======================================================== */
+.video-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 36, 32, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: modalFade 0.2s ease-out;
+}
+
+.video-modal-container {
+    width: 100%;
+    max-width: 960px;
+    background: #0F2420;
+    border: 1px solid rgba(222, 113, 73, 0.25);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+}
+
+.video-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 22px;
+    background: #183B36;
+    border-bottom: 1px solid rgba(244, 239, 234, 0.1);
+}
+
+.video-modal-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #F4EFEA;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.video-modal-badge {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    background: #DE7149;
+    color: #FFFFFF;
+    padding: 2px 8px;
+    border-radius: 9999px;
+}
+
+.video-modal-close {
+    background: rgba(244, 239, 234, 0.1);
+    border: 0;
+    color: #F4EFEA;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.video-modal-close:hover {
+    background: #DE7149;
+    color: #FFFFFF;
+    transform: scale(1.1);
+}
+
+.video-player-frame {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000000;
+    position: relative;
+}
+
+.video-player-frame video,
+.video-player-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}
+
+.video-modal-footer {
+    padding: 16px 22px;
+    background: #0F2420;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.video-modal-info {
+    font-size: 13px;
+    color: #8FA9AA;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.video-episode-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.video-ep-pill {
+    padding: 6px 14px;
+    border-radius: 9999px;
+    background: rgba(24, 59, 54, 0.6);
+    border: 1px solid rgba(244, 239, 234, 0.15);
+    color: #F4EFEA;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.video-ep-pill:hover,
+.video-ep-pill.active {
+    background: #DE7149;
+    border-color: #DE7149;
+    color: #FFFFFF;
+}
+
+@keyframes modalFade {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+}
+

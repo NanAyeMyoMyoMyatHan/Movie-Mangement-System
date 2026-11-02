@@ -1,0 +1,82 @@
+.petale-layout {
+    min-height: 100vh;
+    background: #F4EFEA;
+    color: #183B36;
+}
+
+/* ================================
+   Sidebar Container
+   ================================ */
+
+.petale-sidebar-container {
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+/* ================================
+   Main Content
+   ================================ */
+
+.petale-main {
+    min-height: 100vh;
+    margin-left: 250px;
+    background: #F4EFEA;
+}
+
+/* ================================
+   Page Content
+   ================================ */
+
+.petale-content {
+    padding: 24px 36px 50px;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+/* ================================
+   Blazor Error
+   ================================ */
+
+#blazor-error-ui {
+    background: #EFE6DC;
+    color: #183B36;
+    bottom: 0;
+    box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.1);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem;
+    position: fixed;
+    width: 100%;
+    z-index: 2000;
+    border-top: 1px solid #DE7149;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+        color: #DE7149;
+    }
+
+/* ================================
+   Responsive
+   ================================ */
+
+@media (max-width: 900px) {
+    .petale-sidebar-container {
+        display: none;
+    }
+
+    .petale-main {
+        margin-left: 0;
+    }
+
+    .petale-content {
+        padding: 16px 18px 40px;
+    }
+}

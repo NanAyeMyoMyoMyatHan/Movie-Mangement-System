@@ -1,0 +1,124 @@
+@page "/contents"
+@using DotNetProject.Balzor.Components.Shared
+@inject HttpClientService ApiClient
+@inject NavigationManager Nav
+
+<PageTitle>Contents Management — MyFlix</PageTitle>
+
+<div class="contents-page">
+    <div class="contents-header">
+        <div>
+            <h2>Contents Management</h2>
+            <p class="subtitle">Browse, search, and manage all video contents</p>
+        </div>
+        <a href="/contents/create" class="btn btn-primary">
+            + Add Content
+        </a>
+    </div>
+
+    <div class="filter-bar">
+        <div class="search-box">
+            <input type="text"
+                   class="form-control"
+                   placeholder="Search content title..."
+                   @bind="SearchTerm"
+                   @bind:event="oninput"
+                   @onkeyup="HandleKeyUp" />
+            <button class="btn btn-secondary" @onclick="SearchAsync">Search</button>
+            @if (!string.IsNullOrEmpty(SearchTerm))
+            {
+                <button class="btn btn-outline" @onclick="ClearSearchAsync">Clear</button>
+            }
+        </div>
+    </div>
+
+    @if (IsLoading)
+    {
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading contents...</p>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+    else if (Items == null || Items.Count == 0)
+    {
+        <div class="empty-state">
+            <p>No contents found.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Poster</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Country</th>
+                        <th>Language</th>
+                        <th>Release Date</th>
+                        <th>Status</th>
+                        <th class="actions-col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Items)
+                    {
+                        <tr>
+                            <td class="poster-col">
+                                @if (!string.IsNullOrEmpty(item.PosterUrl))
+                                {
+                                    <img src="@item.PosterUrl" alt="@item.Title" class="poster-thumb" />
+                                }
+                                else
+                                {
+                                    <div class="poster-placeholder">No Img</div>
+                                }
+                            </td>
+                            <td>
+                                <strong>@item.Title</strong>
+                                @if (!string.IsNullOrEmpty(item.Description))
+                                {
+                                    <div class="text-muted small text-truncate" style="max-width:250px;">@item.Description</div>
+                                }
+                            </td>
+                            <td><span class="badge badge-info">@item.ContentType</span></td>
+                            <td>@(item.Country ?? "—")</td>
+                            <td>@(item.Language ?? "—")</td>
+                            <td>@(item.ReleaseDate?.ToString("yyyy-MM-dd") ?? "—")</td>
+                            <td><span class="badge badge-success">@item.Status</span></td>
+                            <td class="actions-col">
+                                <a href="/contents/edit/@item.ContentId" class="btn btn-sm btn-edit">Edit</a>
+                                <a href="/contents/delete/@item.ContentId" class="btn btn-sm btn-delete">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-bar">
+            <span class="page-info">
+                Showing @((CurrentPage - 1) * PageSize + 1) to @Math.Min(CurrentPage * PageSize, TotalCount) of @TotalCount items
+            </span>
+            <div class="page-buttons">
+                <button class="btn btn-sm" disabled="@(CurrentPage <= 1)" @onclick="PrevPageAsync">‹ Previous</button>
+
+                @for (int p = 1; p <= TotalPages; p++)
+                {
+                    var pageNum = p;
+                    <button class="btn btn-sm @(pageNum == CurrentPage ? "active" : "")"
+                            @onclick="() => GoToPageAsync(pageNum)">
+                        @pageNum
+                    </button>
+                }
+
+                <button class="btn btn-sm" disabled="@(CurrentPage >= TotalPages)" @onclick="NextPageAsync">Next ›</button>
+            </div>
+        </div>
+    }
+</div>

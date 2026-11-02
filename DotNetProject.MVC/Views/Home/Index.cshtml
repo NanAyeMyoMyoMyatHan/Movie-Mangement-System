@@ -1,0 +1,7 @@
+@{
+    Layout = null;
+    var htmlPath = System.IO.Path.Combine(
+        Directory.GetCurrentDirectory(), "wwwroot", "index.html");
+    var htmlContent = System.IO.File.ReadAllText(htmlPath);
+}
+@Html.Raw(htmlContent)

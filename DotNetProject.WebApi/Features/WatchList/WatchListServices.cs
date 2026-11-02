@@ -9,7 +9,7 @@ namespace DotNetProject.WebApi.Features.WatchList
         private readonly AppDbContext _db;
         private readonly IWebHostEnvironment _env;
 
-        public WatchListServices(IWebHostEnvironment env, AppDbContext db = null)
+        public WatchListServices(IWebHostEnvironment env, AppDbContext db)
         {
             _env = env;
             _db = db;
@@ -17,9 +17,8 @@ namespace DotNetProject.WebApi.Features.WatchList
 
         public async Task<WatchListModel> GetWatchListByUserIdAsync(int userId)
         {
-            if (_db == null) throw new InvalidOperationException("AppDbContext is not provided.");
-
-            var watchList = await _db.WatchlistItems.FirstOrDefaultAsync(w => w.UserId == userId);
+            var watchList = await _db.WatchlistItems
+                .FirstOrDefaultAsync(w => w.UserId == userId && !w.IsDeleted);
             if (watchList == null)
             {
                 throw new Exception("Watch list not found for the given user ID.");
@@ -36,7 +35,6 @@ namespace DotNetProject.WebApi.Features.WatchList
         }
         public async Task<WatchListModel?> GetWatchListByIdAsync(int id)
         {
-            if (_db == null) throw new InvalidOperationException("AppDbContext is not provided.");
             var watchList = await _db.WatchlistItems.FindAsync(id);
             if (watchList == null || watchList.IsDeleted)
             {
@@ -54,7 +52,6 @@ namespace DotNetProject.WebApi.Features.WatchList
         }
         public async Task<WatchListCreateResponseModel> CreateWatchListAsync(int userId, WatchListCreateRequestModel model)
         {
-            if (_db == null) throw new InvalidOperationException("AppDbContext is not provided.");
             var watchList = new WatchlistItem
             {
                 UserId = userId,
@@ -67,13 +64,12 @@ namespace DotNetProject.WebApi.Features.WatchList
             await _db.SaveChangesAsync();
             return new WatchListCreateResponseModel
             {
-               IsSuccess = true,
+                IsSuccess = true,
                 Message = "Watch list created successfully."
             };
         }
         public async Task<WatchListUpdateResponseModel> UpdateWatchListAsync(int id, WatchListUpdateRequestModel model)
         {
-            if (_db == null) throw new InvalidOperationException("AppDbContext is not provided.");
             var watchList = await _db.WatchlistItems.FindAsync(id);
             if (watchList == null)
             {
@@ -95,7 +91,6 @@ namespace DotNetProject.WebApi.Features.WatchList
         }
         public async Task<WatchListDeleteResponseModel> DeleteWatchListAsync(int id)
         {
-            if (_db == null) throw new InvalidOperationException("AppDbContext is not provided.");
             var watchList = await _db.WatchlistItems.FindAsync(id);
             if (watchList == null)
             {

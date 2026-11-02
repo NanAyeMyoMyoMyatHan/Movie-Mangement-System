@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SereneFlix — Elegant Pastel Drama & Movie Streaming Dashboard</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Playfair Display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            mint: {
+              50: '#F4FAF6',
+              100: '#E5F4EC',
+              200: '#CCE9DC',
+              300: '#A7D7C1',
+              400: '#7EC2A2',
+              500: '#58AC85',
+              600: '#418F6B',
+              700: '#327255',
+              800: '#285843',
+              900: '#1F4233',
+            },
+            sage: {
+              50: '#F7F9F7',
+              100: '#EEF3EE',
+              200: '#DCE5DC',
+              300: '#C2D1C3',
+              400: '#9FB5A0',
+              500: '#7B977D',
+              600: '#5F7961',
+              700: '#485C4A',
+              800: '#344136',
+              900: '#232C24',
+            },
+            cream: {
+              50: '#FCFBF8',
+              100: '#FAF7F0',
+              200: '#F4EFE4',
+              300: '#EBE2D2',
+              400: '#DDD0BC',
+            },
+            warmgray: {
+              50: '#FAFAFA',
+              100: '#F5F5F3',
+              200: '#ECEBE6',
+              300: '#DDDCD3',
+              400: '#BDBBB0',
+              500: '#8E8B7F',
+              600: '#646257',
+              700: '#4A483E',
+              800: '#333129',
+              900: '#22211A',
+            },
+            blush: {
+              50: '#FDF7F7',
+              100: '#F9ECEC',
+              200: '#F3D9D9',
+              300: '#E8BCBC',
+              400: '#D99898',
+            },
+            honey: '#E0A96D'
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'serif'],
+          },
+          boxShadow: {
+            'soft': '0 8px 30px rgba(95, 121, 97, 0.08)',
+            'soft-lg': '0 16px 40px rgba(72, 92, 74, 0.12)',
+            'card': '0 4px 20px -2px rgba(95, 121, 97, 0.06), 0 2px 6px -1px rgba(95, 121, 97, 0.04)',
+            'card-hover': '0 20px 35px -5px rgba(65, 143, 107, 0.15), 0 8px 16px -3px rgba(65, 143, 107, 0.08)',
+            'inner-glow': 'inset 0 1px 2px rgba(255, 255, 255, 0.9)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Elegant Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F4FAF6;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CCE9DC;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #A7D7C1;
+    }
+
+    /* Subtle Glassmorphism */
+    .glass-panel {
+      background: rgba(252, 251, 248, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(220, 229, 220, 0.8);
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(204, 233, 220, 0.5);
+    }
+
+    /* Modal Animation */
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.96) translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    .animate-modal {
+      animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Toast animation */
+    @keyframes toastSlide {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .animate-toast {
+      animation: toastSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Subtle pulse on like/bookmark */
+    .heart-bounce {
+      animation: bounce 0.35s ease-in-out;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+    }
+  </style>
+</head>
+
+<body class="bg-[#F8FAF7] text-sage-900 font-sans antialiased min-h-screen flex flex-col md:flex-row selection:bg-mint-200 selection:text-sage-900">
+
+  <!-- ==================== SIDEBAR NAVIGATION ==================== -->
+  <aside id="sidebar" class="w-full md:w-72 lg:w-80 bg-cream-50/90 border-r border-sage-200/80 p-5 flex flex-col justify-between shrink-0 z-30 transition-all duration-300 md:min-h-screen sticky top-0 backdrop-blur-md">
+    
+    <!-- Brand Logo & Header -->
+    <div>
+      <div class="flex items-center justify-between pb-6 border-b border-sage-200/60 mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-mint-300 to-sage-200 flex items-center justify-center text-sage-800 shadow-soft border border-white/80">
+            <i data-lucide="sprout" class="w-6 h-6 text-mint-700"></i>
+          </div>
+          <div>
+            <span class="font-serif text-2xl font-bold tracking-tight text-sage-800 flex items-center gap-1.5">
+              SereneFlix
+              <span class="inline-block w-2 h-2 rounded-full bg-mint-400"></span>
+            </span>
+            <p class="text-[11px] uppercase tracking-wider text-sage-500 font-semibold mt-0.5">Cozy Drama Sanctuary</p>
+          </div>
+        </div>
+        
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobileMenuBtn" class="md:hidden p-2 rounded-xl text-sage-600 hover:bg-mint-100 transition" aria-label="Toggle menu">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Main Navigation Links -->
+      <nav id="navLinks" class="space-y-1.5 hidden md:block">
+        <p class="text-[11px] font-bold uppercase tracking-widest text-sage-400 px-3.5 mb-2.5">Discover & Curate</p>
+        
+        <button onclick="setFilter('all')" class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 bg-mint-100/90 text-mint-800 shadow-sm border border-mint-200/70" data-filter="all">
+          <div class="flex items-center gap-3">
+            <i data-lucide="compass" class="w-4 h-4 text-mint-600"></i>
+            <span>Explore All Picks</span>
+          </div>
+          <span id="allBadgeCount" class="text-xs bg-white/90 text-sage-600 px-2 py-0.5 rounded-full font-semibold border border-mint-200/50">12</span>
+        </button>
+
+        <button onclick="setFilter('watchlist')" class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70 transition-all duration-200" data-filter="watchlist">
+          <div class="flex items-center gap-3">
+            <i data-lucide="bookmark" class="w-4 h-4 text-sage-500"></i>
+            <span>Watch Later</span>
+          </div>
+          <span id="watchlistBadgeCount" class="text-xs bg-mint-200/70 text-sage-800 px-2 py-0.5 rounded-full font-semibold">0</span>
+        </button>
+
+        <button onclick="setFilter('favorites')" class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70 transition-all duration-200" data-filter="favorites">
+          <div class="flex items-center gap-3">
+            <i data-lucide="heart" class="w-4 h-4 text-blush-400"></i>
+            <span>My Favorites</span>
+          </div>
+          <span id="favoritesBadgeCount" class="text-xs bg-blush-100 text-blush-400 px-2 py-0.5 rounded-full font-semibold">0</span>
+        </button>
+
+        <p class="text-[11px] font-bold uppercase tracking-widest text-sage-400 px-3.5 pt-5 mb-2.5">Mood & Genres</p>
+
+        <button onclick="setFilter('K-Drama')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70 transition-all duration-200" data-filter="K-Drama">
+          <span class="w-2 h-2 rounded-full bg-mint-400"></span>
+          <span>K-Drama & Romance</span>
+        </button>
+
+        <button onclick="setFilter('Slice of Life')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70 transition-all duration-200" data-filter="Slice of Life">
+          <span class="w-2 h-2 rounded-full bg-sage-400"></span>
+          <span>Slice of Life & Cozy</span>
+        </button>
+
+        <button onclick="setFilter('Anime')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70 transition-all duration-200" data-filter="Anime">
+          <span class="w-2 h-2 rounded-full bg-cream-400"></span>
+          <span>Wholesome Anime</span>
+        </button>
+
+        <button onclick="setFilter('Melodrama')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm font-medium text-sage-700 hover:text-sage-900 hover:bg-sage-100/70 transition-all duration-200" data-filter="Melodrama">
+          <span class="w-2 h-2 rounded-full bg-blush-300"></span>
+          <span>Heartfelt Drama</span>
+        </button>
+
+        <!-- Cozy Aesthetic Ambient Box -->
+        <div class="mt-6 p-4 rounded-2xl bg-gradient-to-br from-mint-50/90 to-cream-100 border border-mint-200/60 shadow-inner-glow">
+          <div class="flex items-center gap-2 text-mint-700 mb-1.5">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span class="text-xs font-bold uppercase tracking-wider">Today's Cozy Quote</span>
+          </div>
+          <p class="text-xs font-serif italic text-sage-700 leading-relaxed">
+            "Warm tea, gentle rain outside, and a story that touches your heart."
+          </p>
+        </div>
+      </nav>
+    </div>
+
+    <!-- User Profile Footer -->
+    <div class="pt-6 border-t border-sage-200/60 mt-6 hidden md:block">
+      <div class="flex items-center justify-between p-2.5 rounded-2xl bg-white/70 border border-sage-200/50 shadow-sm hover:shadow-soft transition">
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=140&q=80" alt="Emma user avatar" class="w-10 h-10 rounded-full object-cover ring-2 ring-mint-200" />
+            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-mint-500 ring-2 ring-white"></span>
+          </div>
+          <div>
+            <h4 class="text-sm font-semibold text-sage-800">Evelyn Harper</h4>
+            <p class="text-[11px] text-sage-500 font-medium">🌸 Cozy Member</p>
+          </div>
+        </div>
+        <button class="p-2 text-sage-400 hover:text-sage-700 rounded-xl hover:bg-sage-100/80 transition" title="Preferences">
+          <i data-lucide="settings-2" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==================== MAIN CONTENT AREA ==================== -->
+  <main class="flex-1 flex flex-col min-w-0 pb-16">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-20 glass-panel border-b border-sage-200/70 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      
+      <!-- Search Input Container -->
+      <div class="relative flex-1 max-w-lg">
+        <i data-lucide="search" class="w-4 h-4 text-sage-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        <input 
+          type="text" 
+          id="searchInput"
+          placeholder="Search romantic dramas, cozy anime, titles, or tags..." 
+          class="w-full pl-10 pr-9 py-2.5 text-sm bg-white/80 border border-sage-200/80 rounded-2xl placeholder:text-sage-400 text-sage-800 focus:outline-none focus:ring-2 focus:ring-mint-300 focus:border-mint-400 transition-all shadow-inner-glow"
+        />
+        <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-sage-400 hover:text-sage-700">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Quick Action Badges / Status -->
+      <div class="flex items-center gap-3 self-end sm:self-center">
+        <!-- Quick View Filter Buttons -->
+        <button onclick="setFilter('watchlist')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-sage-200/80 text-sage-700 hover:bg-mint-50 hover:border-mint-300 transition shadow-sm">
+          <i data-lucide="bookmark" class="w-3.5 h-3.5 text-sage-500"></i>
+          <span>Watchlist</span>
+          <span id="quickWatchlistBadge" class="bg-mint-100 text-mint-800 px-1.5 py-0.2 rounded-md text-[10px]">0</span>
+        </button>
+
+        <button onclick="setFilter('favorites')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-sage-200/80 text-sage-700 hover:bg-blush-50 hover:border-blush-200 transition shadow-sm">
+          <i data-lucide="heart" class="w-3.5 h-3.5 text-blush-400"></i>
+          <span>Favorites</span>
+          <span id="quickFavoritesBadge" class="bg-blush-100 text-blush-400 px-1.5 py-0.2 rounded-md text-[10px]">0</span>
+        </button>
+
+        <!-- Notification Bell -->
+        <button class="relative p-2 rounded-xl bg-white border border-sage-200/80 text-sage-600 hover:text-sage-800 hover:bg-mint-50 transition shadow-sm" title="Notifications">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-mint-400 ring-2 ring-white"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Page Body Container -->
+    <div class="px-6 lg:px-10 py-8 max-w-7xl mx-auto w-full space-y-10">
+
+      <!-- ==================== FEATURED HERO BANNER ==================== -->
+      <section class="relative rounded-3xl overflow-hidden border border-sage-200/80 shadow-soft-lg group">
+        <!-- Background Artwork / Poster with Gentle Gradient Overlay -->
+        <div class="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80" 
+            alt="Hometown Cha-Cha-Cha Scenic coastal hero backdrop" 
+            class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out filter brightness-[0.92]"
+          />
+          <!-- Multi-stop Pastel Gradient Overlays (Cream + Mint Green, strictly no dark/purple) -->
+          <div class="absolute inset-0 bg-gradient-to-r from-cream-100/95 via-cream-100/85 to-transparent sm:w-3/4"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-cream-100/95 via-transparent to-transparent sm:hidden"></div>
+          <div class="absolute inset-0 bg-mint-200/20 mix-blend-overlay"></div>
+        </div>
+
+        <!-- Banner Content -->
+        <div class="relative z-10 p-7 sm:p-10 lg:p-12 max-w-2xl">
+          <!-- Season Tag & Rating -->
+          <div class="flex flex-wrap items-center gap-2.5 mb-3.5">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-mint-200/90 text-mint-900 border border-mint-300 shadow-sm backdrop-blur-sm">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-mint-700"></i>
+              Editor's Serene Pick
+            </span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/90 text-sage-700 border border-sage-200/80 shadow-sm">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-honey text-honey"></i>
+              9.4 Rating
+            </span>
+            <span class="text-xs text-sage-600 font-medium bg-white/80 px-2.5 py-1 rounded-full border border-sage-200/60">
+              16 Episodes • 2021
+            </span>
+          </div>
+
+          <!-- Main Title -->
+          <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-sage-900 leading-tight mb-3">
+            Hometown Cha-Cha-Cha
+          </h1>
+          
+          <p class="font-serif italic text-sage-600 text-sm sm:text-base mb-4">
+            갯마울 차차차 • "A seaside village where gentle waves heal wounded hearts."
+          </p>
+
+          <!-- Synopsis snippet -->
+          <p class="text-sage-700 text-sm leading-relaxed mb-6 line-clamp-3">
+            A pragmatist dentist moves to the picturesque seaside village of Gongjin, where she meets a versatile handyman who is the heart and soul of the quirky community. A heartwarming, slow-paced romantic slice-of-life full of laughter and gentle coastal breezes.
+          </p>
+
+          <!-- Banner Action Buttons -->
+          <div class="flex flex-wrap items-center gap-3">
+            <button 
+              onclick="openHeroPreview()" 
+              class="flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-mint-600 hover:bg-mint-700 text-white font-medium text-sm transition-all duration-200 shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5 active:translate-y-0"
+            >
+              <i data-lucide="play" class="w-4 h-4 fill-white"></i>
+              <span>Watch Preview</span>
+            </button>
+
+            <button 
+              id="heroWatchlistBtn"
+              onclick="toggleHeroWatchlist()" 
+              class="flex items-center gap-2 px-4 py-3 rounded-2xl bg-white/90 hover:bg-white text-sage-800 font-medium text-sm border border-sage-200 hover:border-mint-300 transition-all duration-200 shadow-sm"
+            >
+              <i data-lucide="bookmark" class="w-4 h-4 text-sage-500"></i>
+              <span id="heroWatchlistText">Add to Watchlist</span>
+            </button>
+
+            <button 
+              id="heroFavoriteBtn"
+              onclick="toggleHeroFavorite()" 
+              class="p-3 rounded-2xl bg-white/90 hover:bg-white text-sage-700 border border-sage-200 hover:border-blush-300 transition-all duration-200 shadow-sm"
+              title="Add to Favorites"
+            >
+              <i data-lucide="heart" class="w-5 h-5 text-sage-400"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== FILTER BAR & CONTROLS ==================== -->
+      <section class="space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-sage-200/60">
+          <div>
+            <h2 id="sectionTitle" class="font-serif text-2xl font-bold text-sage-900 flex items-center gap-2">
+              <span>Curated Collection</span>
+              <span class="text-xs font-sans font-semibold text-mint-700 bg-mint-100/90 px-2.5 py-0.5 rounded-full border border-mint-200">
+                Fresh & Handpicked
+              </span>
+            </h2>
+            <p id="sectionSubtitle" class="text-xs text-sage-500 mt-1">Explore gentle romance, peaceful coastal villages, and cozy animations.</p>
+          </div>
+
+          <!-- Filter Pills -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1.5 scrollbar-none">
+            <button onclick="setFilter('all')" class="category-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-mint-200 text-mint-900 border border-mint-300 transition shadow-sm whitespace-nowrap" data-pill="all">
+              All Titles
+            </button>
+            <button onclick="setFilter('K-Drama')" class="category-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-sage-700 hover:bg-sage-100/70 border border-sage-200 transition shadow-sm whitespace-nowrap" data-pill="K-Drama">
+              K-Drama Romance
+            </button>
+            <button onclick="setFilter('Slice of Life')" class="category-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-sage-700 hover:bg-sage-100/70 border border-sage-200 transition shadow-sm whitespace-nowrap" data-pill="Slice of Life">
+              Slice of Life & Cozy
+            </button>
+            <button onclick="setFilter('Anime')" class="category-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-sage-700 hover:bg-sage-100/70 border border-sage-200 transition shadow-sm whitespace-nowrap" data-pill="Anime">
+              Anime & Fantasy
+            </button>
+            <button onclick="setFilter('Melodrama')" class="category-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-sage-700 hover:bg-sage-100/70 border border-sage-200 transition shadow-sm whitespace-nowrap" data-pill="Melodrama">
+              Melodrama
+            </button>
+          </div>
+        </div>
+
+        <!-- Secondary Filter & Sort Options -->
+        <div class="flex items-center justify-between text-xs text-sage-500 pt-1">
+          <div id="resultCount" class="font-medium">
+            Showing 12 lovely titles
+          </div>
+          <div class="flex items-center gap-2">
+            <label for="sortSelect" class="text-sage-500 font-medium">Sort by:</label>
+            <select id="sortSelect" onchange="sortCards()" class="bg-white border border-sage-200/80 rounded-xl px-2.5 py-1 text-sage-700 font-medium focus:outline-none focus:ring-1 focus:ring-mint-300">
+              <option value="featured">Featured Picks</option>
+              <option value="rating">Highest Rating</option>
+              <option value="year">Newest First</option>
+              <option value="title">Alphabetical (A-Z)</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== MOVIE / DRAMA CARD GRID ==================== -->
+      <section id="movieGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Javascript renders card components here -->
+      </section>
+
+      <!-- Empty State Container (Hidden by default) -->
+      <div id="emptyState" class="hidden py-16 text-center max-w-md mx-auto">
+        <div class="w-16 h-16 rounded-full bg-mint-100 text-mint-600 flex items-center justify-center mx-auto mb-4 border border-mint-200 shadow-inner-glow">
+          <i data-lucide="flower-2" class="w-8 h-8"></i>
+        </div>
+        <h3 class="font-serif text-xl font-bold text-sage-800 mb-2">No matching peaceful moments found</h3>
+        <p class="text-xs text-sage-500 mb-6 leading-relaxed">
+          We couldn't find any titles matching your filter or search. Try clearing your search keyword or switching category tabs.
+        </p>
+        <button onclick="resetAllFilters()" class="px-5 py-2.5 rounded-2xl bg-mint-600 hover:bg-mint-700 text-white font-medium text-xs shadow-card transition">
+          Reset All Filters
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ==================== DETAIL / VIDEO PLAYER MODAL ==================== -->
+  <div id="videoModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-sage-900/40 backdrop-blur-md transition-opacity">
+    <div class="relative w-full max-w-4xl bg-cream-50 rounded-3xl border border-sage-200/80 shadow-2xl overflow-hidden animate-modal flex flex-col max-h-[90vh]">
+      
+      <!-- Modal Close Button -->
+      <button 
+        onclick="closeModal()" 
+        class="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-white/80 hover:bg-white text-sage-700 hover:text-sage-900 border border-sage-200 flex items-center justify-center shadow-soft backdrop-blur-sm transition"
+        title="Close (Esc)"
+      >
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+
+      <!-- Modal Header / Player Section -->
+      <div class="relative bg-sage-900 aspect-video w-full overflow-hidden flex items-center justify-center group/player">
+        <!-- Interactive HTML5 Video Preview / Sample Streaming Mock -->
+        <video 
+          id="modalVideo" 
+          class="w-full h-full object-cover" 
+          poster=""
+          controls 
+          preload="metadata"
+        >
+          <!-- Using high reliability creative commons video trailer streams -->
+          <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+
+        <!-- Aesthetic Top Overlay Badge on Video -->
+        <div class="absolute top-4 left-4 pointer-events-none flex items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-[11px] font-bold bg-mint-900/80 text-mint-100 backdrop-blur-md border border-mint-400/30 flex items-center gap-1.5 shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-mint-400 animate-pulse"></span>
+            HD 1080p Preview
+          </span>
+        </div>
+      </div>
+
+      <!-- Modal Details Body (Scrollable) -->
+      <div class="p-6 sm:p-8 overflow-y-auto flex-1 space-y-6">
+        
+        <!-- Header Info Row -->
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+              <span id="modalGenre" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-mint-100 text-mint-800 border border-mint-200">
+                Romance
+              </span>
+              <span id="modalYear" class="text-xs text-sage-500 font-medium">2021</span>
+              <span class="text-sage-300">•</span>
+              <span id="modalEpisodes" class="text-xs text-sage-500 font-medium">16 Episodes</span>
+              <span class="text-sage-300">•</span>
+              <span class="text-[11px] font-bold px-2 py-0.5 bg-cream-200 text-sage-700 rounded-md">TV-PG</span>
+            </div>
+
+            <h2 id="modalTitle" class="font-serif text-2xl sm:text-3xl font-bold text-sage-900 leading-snug">
+              Drama Title
+            </h2>
+            <p id="modalOriginalTitle" class="font-serif italic text-sage-500 text-sm mt-0.5">
+              Original Native Title
+            </p>
+          </div>
+
+          <!-- Action Buttons Inside Modal -->
+          <div class="flex items-center gap-2.5 shrink-0">
+            <button 
+              id="modalWatchlistBtn"
+              onclick="toggleModalWatchlist()" 
+              class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-white border border-sage-200/90 text-sage-700 hover:bg-mint-50 hover:border-mint-300 transition shadow-sm"
+            >
+              <i data-lucide="bookmark" class="w-3.5 h-3.5 text-sage-500"></i>
+              <span id="modalWatchlistText">Watchlist</span>
+            </button>
+
+            <button 
+              id="modalFavoriteBtn"
+              onclick="toggleModalFavorite()" 
+              class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-white border border-sage-200/90 text-sage-700 hover:bg-blush-50 hover:border-blush-200 transition shadow-sm"
+            >
+              <i data-lucide="heart" class="w-3.5 h-3.5 text-sage-400"></i>
+              <span id="modalFavoriteText">Favorite</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Rating & Details Stats -->
+        <div class="flex items-center gap-6 p-4 rounded-2xl bg-mint-50/70 border border-mint-200/60">
+          <div class="flex items-center gap-2">
+            <i data-lucide="star" class="w-5 h-5 fill-honey text-honey"></i>
+            <div>
+              <div class="flex items-baseline gap-1">
+                <span id="modalRating" class="text-base font-bold text-sage-900">9.4</span>
+                <span class="text-[11px] text-sage-500">/ 10</span>
+              </div>
+              <p class="text-[10px] text-sage-400 font-medium">User Rating</p>
+            </div>
+          </div>
+
+          <div class="h-8 w-px bg-sage-200"></div>
+
+          <div>
+            <span id="modalVibe" class="text-xs font-semibold text-mint-800">Heartwarming & Cozy</span>
+            <p class="text-[10px] text-sage-400 font-medium">Atmosphere</p>
+          </div>
+
+          <div class="h-8 w-px bg-sage-200 hidden sm:block"></div>
+
+          <div class="hidden sm:block">
+            <span id="modalAudio" class="text-xs font-semibold text-sage-800">Original Audio (Subtitled)</span>
+            <p class="text-[10px] text-sage-400 font-medium">Soundtrack</p>
+          </div>
+        </div>
+
+        <!-- Synopsis -->
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-sage-400 mb-2">Story Synopsis</h4>
+          <p id="modalSynopsis" class="text-sm text-sage-700 leading-relaxed font-sans">
+            Full drama synopsis text will be injected here.
+          </p>
+        </div>
+
+        <!-- Cast & Director Pills -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-sage-400 mb-2">Starring Cast</h4>
+            <div id="modalCast" class="flex flex-wrap gap-1.5">
+              <!-- Cast pills injected -->
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-sage-400 mb-2">Themes & Tags</h4>
+            <div id="modalTags" class="flex flex-wrap gap-1.5">
+              <!-- Tag badges injected -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION CONTAINER ==================== -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none">
+    <!-- Dynamic toast elements injected via JavaScript -->
+  </div>
+
+  <!-- ==================== JAVASCRIPT DATA & LOGIC ==================== -->
+  <script>
+    // ==================== CURATED DRAMA / MOVIE DATASET ====================
+    // Soft pastel, romantic, slice of life, cozy aesthetic collection
+    const MOVIES_DATABASE = [
+      {
+        id: 1,
+        title: "Hometown Cha-Cha-Cha",
+        nativeTitle: "갯마을 차차차 (2021)",
+        category: "K-Drama",
+        genre: "Romance & Slice of Life",
+        rating: 9.4,
+        year: 2021,
+        episodes: "16 Episodes",
+        vibe: "Seaside Healing & Gentle Rom-Com",
+        poster: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        synopsis: "A big-city dentist opens a small practice in the scenic seaside village of Gongjin. There, she continuously crosses paths with Chief Hong, an energetic neighborhood handyman with a warm heart who touches everyone's life.",
+        cast: ["Shin Min-a", "Kim Seon-ho", "Lee Sang-yi"],
+        tags: ["Coastal Village", "Enemies to Lovers", "Community Healing", "Heartwarming"]
+      },
+      {
+        id: 2,
+        title: "Hidden Love",
+        nativeTitle: "偷偷藏不住 (2023)",
+        category: "K-Drama", // Asian Romance
+        genre: "Romance & Youth",
+        rating: 9.3,
+        year: 2023,
+        episodes: "25 Episodes",
+        vibe: "Pure Sweet Youth Romance",
+        poster: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80",
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+        synopsis: "Sang Zhi fell in love with Duan Jia Xu, her older brother's university friend. After years of gentle distance, destiny reconnects them in university, blossoming into an exceptionally tender, protective, and sweet romance.",
+        cast: ["Zhao Lusi", "Chen Zheyuan", "Victor Ma"],
+        tags: ["Slow Burn", "Secret Crush", "Tender Romance", "College Life"]
+      },
+      {
+        id: 3,
+        title: "Queen of Tears",
+        nativeTitle: "눈물의 여왕 (2024)",
+        category: "Melodrama",
+        genre: "Romance & Melodrama",
+        rating: 9.2,
+        year: 2024,
+        episodes: "16 Episodes",
+        vibe: "Emotional & High Fashion",
+        poster: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80",
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+        synopsis: "The queen of department stores and the small-town prince of supermarket chains weather a marriage crisis—until love miraculously begins to bloom again against unprecedented family secrets and emotional trials.",
+        cast: ["Kim Soo-hyun", "Kim Ji-won", "Park Sung-hoon"],
+        tags: ["Second Chance Romance", "High Society", "Emotional Tearjerker", "Power Couple"]
+      },
+      {
+        id: 4,
+        title: "Our Beloved Summer",
+        nativeTitle: "그 해 우리는 (2021)",
+        category: "K-Drama",
+        genre: "Romance & Nostalgia",
+        rating: 9.1,
+        year: 2021,
+        episodes: "16 Episodes",
+        vibe: "Nostalgic Acoustic Romance",
+        poster: "https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=800&q=80",
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4",
+        synopsis: "Years after filming a viral high school documentary, two bickering ex-lovers are pulled back in front of the camera and into each other's lives once more, rekindling dormant feelings.",
+        cast: ["Choi Woo-shik", "Kim Da-mi", "Kim Sung-cheol"],
+        tags: ["Exes to Lovers", "Documentary Style", "Aesthetic Cinematography", "Youth"]
+      },
+      {
+        id: 5,
+        title: "Summer Strike",
+        nativeTitle: "아무것도 하고 싶지 않아 (2022)",
+        category: "Slice of Life",
+        genre: "Slice of Life & Cozy",
+        rating: 8.9,
+        year: 2022,
+        episodes: "12 Episodes",
+        vibe: "Quiet Bookstore & Healing Retreat",
+        poster: "https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?auto=format&fit=crop&w=800&q=80",
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+        synopsis: "Burnt out by high-pressure Seoul life, a young woman decides to go on a life strike and relocates to a quiet coastal town with only a single backpack, discovering quiet solace in the local library.",
+        cast: ["Kim Seol-hyun", "Im Si-wan", "Shin Eun-soo"],
+        tags: ["Slow Living", "Cozy Library", "Burnout Recovery", "Quiet Romance"]
+      },
+      {
+        id: 6,
+        title: "Spirited Away",
+        nativeTitle: "千と千尋の神隠し (2001)",
+        category: "Anime",
+        genre: "Anime & Fantasy",
+        rating: 9.6,
+        year: 2001,
+        episodes: "2h 5m Film",
+        vibe: "Magical Ghibli Wonder",
+        poster: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+        synopsis: "During her family's move to the suburbs, a sullen 10-year-old girl wanders into a magical bathhouse world ruled by spirits, witches, and gods, where she must find courage and love to save her parents.",
+        cast: ["Rumi Hiiragi", "Miyu Irino", "Mari Natsuki"],
+        tags: ["Studio Ghibli", "Fantasy Masterpiece", "Nostalgia", "Wholesome"]
+      },
+      {
+        id: 7,
+        title: "Whisper of the Heart",
+        nativeTitle: "耳をすませば (1995)",
+        category: "Anime",
+        genre: "Anime & Romance",
+        rating: 9.2,
+        year: 1995,
+        episodes: "1h 51m Film",
+        vibe: "Lofi Library & Dreamers",
+        poster: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=800&q=80",
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackSeeTheWorld.mp4",
+        synopsis: "A bookish girl discovers that all the books she checks out of the library have previously been checked out by the same young violin craftsman. A sweet tale of young creative dreams and heartfelt inspiration.",
+        cast: ["Yoko Honna", "Issei Takahashi", "Keiju Kobayashi"],
+        tags: ["Cozy Books", "Violin Making", "Creative Spark", "Gentle Love"]
+      },
+      {
+        id: 8,
+        title: "Extraordinary Attorney Woo",
+        nativeTitle: "이상한 변호사 우영우 (2022)",
+        category: "Slice of Life",
+        genre: "Slice of Life & Wholesome",
+        rating: 9.3,
+        year: 2022,
+        episodes: "16 Episodes",
+        vibe: "Uplifting & Whale Magic",
+        poster: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+        synopsis: "Brilliant attorney Woo Young-woo, a young lawyer with autism spectrum disorder, tackles courtroom challenges with unique insight, infectious charm, and heartfelt empathy at a top law firm.",
+        cast: ["Park Eun-bin", "Kang Tae-oh", "Kang Ki-young"],
+        tags: ["Wholesome Love", "Empowering", "Whale Enthusiast", "Feel-Good"]
+      },
+      {
+        id: 9,
+        title: "Crash Landing on You",
+        nativeTitle: "사랑의 불시착 (2019)",
+        category: "K-Drama",
+        genre: "Romance & Adventure",
+        rating: 9.5,
+        year: 2019,
+        episodes: "16 Episodes",
+        vibe: "Epic Fairytale Romance",
+        poster: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
+        synopsis: "A paragliding mishap drops a South Korean heiress into North Korea, and into the life of an army officer who decides he will help her hide and return home, falling hopelessly in love along the way.",
+        cast: ["Hyun Bin", "Son Ye-jin", "Seo Ji-hye"],
+        tags: ["Destined Lovers", "Comfort Comedy", "Heart-fluttering", "Iconic Drama"]
+      },
+      {
+        id: 10,
+        title: "When the Camellia Blooms",
+        nativeTitle: "동백꽃 필 무렵 (2019)",
+        category: "Melodrama",
+        genre: "Romance & Heartfelt",
+        rating: 8.9,
+        year: 2019,
+        episodes: "20 Episodes",
+        vibe: "Warm Village & Cozy Bar",
+        poster: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=800&q=80",
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
+        synopsis: "Dong-baek, a single mother living in the small fictional town of Ongsan, navigates social stigmas, warm neighbors, and a fiercely loyal local police officer who falls head over heels for her.",
+        cast: ["Gong Hyo-jin", "Kang Ha-neul", "Kim Ji-seok"],
+        tags: ["Single Mom", "Purehearted Hero", "Village Life", "Warm Hug"]
+      },
+      {
+        id: 11,
+        title: "Twenty-Five Twenty-One",
+        nativeTitle: "스물다섯 스물하나 (2022)",
+        category: "K-Drama",
+        genre: "Youth & Romance",
+        rating: 9.2,
+        year: 2022,
+        episodes: "16 Episodes",
+        vibe: "Retro 90s Golden Hour",
+        poster: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80",
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        synopsis: "In a time when dreams seem out of reach, a passionate teen fencer pursues big ambitions and meets a hardworking young man who seeks to rebuild his life during the 1998 Asian financial crisis.",
+        cast: ["Kim Tae-ri", "Nam Joo-hyuk", "Bona"],
+        tags: ["Youth Dreams", "Fencing Sports", "Retro Vibes", "Heartfelt"]
+      },
+      {
+        id: 12,
+        title: "My Neighbor Totoro",
+        nativeTitle: "となりのトトロ (1988)",
+        category: "Anime",
+        genre: "Anime & Cozy",
+        rating: 9.4,
+        year: 1988,
+        episodes: "1h 26m Film",
+        vibe: "Forest Spirits & Raindrop Magic",
+        poster: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80",
+        videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        synopsis: "Two young sisters move to the countryside to be near their ailing mother, where they explore their new rural home and discover friendly woodland spirits, including a giant gentle creature named Totoro.",
+        cast: ["Noriko Hidaka", "Chika Sakamoto", "Shigesato Itoi"],
+        tags: ["Gentle Forest", "Rainy Bus Stop", "Childhood Wonder", "Healing"]
+      }
+    ];
+
+    // ==================== STATE MANAGEMENT ====================
+    // Local state persisted in localStorage for delightful user experience
+    let watchlist = JSON.parse(localStorage.getItem('sereneflix_watchlist') || '[]');
+    let favorites = JSON.parse(localStorage.getItem('sereneflix_favorites') || '[]');
+    let currentFilter = 'all';
+    let searchQuery = '';
+    let currentSort = 'featured';
+    let activeModalMovieId = null;
+
+    // Save states to LocalStorage
+    function saveState() {
+      localStorage.setItem('sereneflix_watchlist', JSON.stringify(watchlist));
+      localStorage.setItem('sereneflix_favorites', JSON.stringify(favorites));
+      updateBadges();
+    }
+
+    // ==================== UI BADGE UPDATES ====================
+    function updateBadges() {
+      const watchlistCount = watchlist.length;
+      const favoritesCount = favorites.length;
+
+      document.getElementById('watchlistBadgeCount').textContent = watchlistCount;
+      document.getElementById('favoritesBadgeCount').textContent = favoritesCount;
+      document.getElementById('quickWatchlistBadge').textContent = watchlistCount;
+      document.getElementById('quickFavoritesBadge').textContent = favoritesCount;
+
+      // Update Hero button states
+      const heroId = 1; // Hometown Cha-Cha-Cha
+      const isHeroWatchlist = watchlist.includes(heroId);
+      const isHeroFav = favorites.includes(heroId);
+
+      const heroWatchlistBtn = document.getElementById('heroWatchlistBtn');
+      const heroWatchlistText = document.getElementById('heroWatchlistText');
+      const heroFavBtn = document.getElementById('heroFavoriteBtn');
+
+      if (heroWatchlistBtn && heroWatchlistText) {
+        if (isHeroWatchlist) {
+          heroWatchlistBtn.classList.add('bg-mint-100', 'border-mint-300', 'text-mint-800');
+          heroWatchlistBtn.classList.remove('bg-white/90', 'text-sage-800');
+          heroWatchlistText.textContent = "Saved in Watchlist";
+        } else {
+          heroWatchlistBtn.classList.remove('bg-mint-100', 'border-mint-300', 'text-mint-800');
+          heroWatchlistBtn.classList.add('bg-white/90', 'text-sage-800');
+          heroWatchlistText.textContent = "Add to Watchlist";
+        }
+      }
+
+      if (heroFavBtn) {
+        if (isHeroFav) {
+          heroFavBtn.innerHTML = `<i data-lucide="heart" class="w-5 h-5 fill-blush-400 text-blush-400"></i>`;
+        } else {
+          heroFavBtn.innerHTML = `<i data-lucide="heart" class="w-5 h-5 text-sage-400"></i>`;
+        }
+      }
+
+      lucide.createIcons();
+    }
+
+    // ==================== TOAST NOTIFICATION HELPER ====================
+    function showToast(message, iconName = 'sparkles') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = "animate-toast flex items-center gap-3 px-4 py-3 rounded-2xl bg-cream-50/95 border border-mint-200 text-sage-800 text-xs font-semibold shadow-soft-lg backdrop-blur-md";
+      toast.innerHTML = `
+        <div class="w-7 h-7 rounded-xl bg-mint-100 text-mint-700 flex items-center justify-center shrink-0">
+          <i data-lucide="${iconName}" class="w-4 h-4"></i>
+        </div>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 2600);
+    }
+
+    // ==================== RENDERING CARDS ====================
+    function renderCards() {
+      const grid = document.getElementById('movieGrid');
+      const emptyState = document.getElementById('emptyState');
+      const resultCount = document.getElementById('resultCount');
+      
+      let filtered = [...MOVIES_DATABASE];
+
+      // Filter by Category or Special Lists
+      if (currentFilter === 'watchlist') {
+        filtered = filtered.filter(m => watchlist.includes(m.id));
+      } else if (currentFilter === 'favorites') {
+        filtered = filtered.filter(m => favorites.includes(m.id));
+      } else if (currentFilter !== 'all') {
+        filtered = filtered.filter(m => m.category.toLowerCase() === currentFilter.toLowerCase());
+      }
+
+      // Search Query filter
+      if (searchQuery.trim() !== '') {
+        const query = searchQuery.toLowerCase();
+        filtered = filtered.filter(m => 
+          m.title.toLowerCase().includes(query) || 
+          m.nativeTitle.toLowerCase().includes(query) ||
+          m.genre.toLowerCase().includes(query) ||
+          m.vibe.toLowerCase().includes(query) ||
+          m.tags.some(t => t.toLowerCase().includes(query)) ||
+          m.cast.some(c => c.toLowerCase().includes(query))
+        );
+      }
+
+      // Sorting
+      if (currentSort === 'rating') {
+        filtered.sort((a, b) => b.rating - a.rating);
+      } else if (currentSort === 'year') {
+        filtered.sort((a, b) => b.year - a.year);
+      } else if (currentSort === 'title') {
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+      }
+
+      // Update Section Header Titles based on filter
+      const sectionTitle = document.getElementById('sectionTitle');
+      const sectionSubtitle = document.getElementById('sectionSubtitle');
+      if (currentFilter === 'watchlist') {
+        sectionTitle.innerHTML = `<span>My Watch Later</span> <span class="text-xs font-sans font-semibold text-mint-700 bg-mint-100/90 px-2.5 py-0.5 rounded-full border border-mint-200">Personal Queue</span>`;
+        sectionSubtitle.textContent = "Titles you have saved to enjoy with warm tea and gentle quiet time.";
+      } else if (currentFilter === 'favorites') {
+        sectionTitle.innerHTML = `<span>My Cherished Favorites</span> <span class="text-xs font-sans font-semibold text-blush-400 bg-blush-100 px-2.5 py-0.5 rounded-full border border-blush-200">Heartfelt</span>`;
+        sectionSubtitle.textContent = "Your absolute dearest stories, comfort watches, and favorite moments.";
+      } else {
+        sectionTitle.innerHTML = `<span>Curated Collection</span> <span class="text-xs font-sans font-semibold text-mint-700 bg-mint-100/90 px-2.5 py-0.5 rounded-full border border-mint-200">Fresh & Handpicked</span>`;
+        sectionSubtitle.textContent = "Explore gentle romance, peaceful coastal villages, and cozy animations.";
+      }
+
+      // Empty State handling
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        resultCount.textContent = 'No titles found';
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      resultCount.textContent = `Showing ${filtered.length} lovely title${filtered.length === 1 ? '' : 's'}`;
+
+      // Build HTML for cards
+      grid.innerHTML = filtered.map(movie => {
+        const isWatchlisted = watchlist.includes(movie.id);
+        const isFavorited = favorites.includes(movie.id);
+
+        return `
+          <div class="glass-card rounded-3xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col group border border-sage-200/70">
+            
+            <!-- Poster Media Box -->
+            <div class="relative aspect-[3/4] overflow-hidden bg-sage-100 cursor-pointer" onclick="openModal(${movie.id})">
+              <img 
+                src="${movie.poster}" 
+                alt="${movie.title} poster artwork" 
+                loading="lazy"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+              />
+
+              <!-- Gentle Gradient on Poster -->
+              <div class="absolute inset-0 bg-gradient-to-t from-cream-50/90 via-transparent to-black/20"></div>
+
+              <!-- Top Left Category & Rating Badge -->
+              <div class="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide bg-cream-50/95 text-sage-800 shadow-sm border border-sage-200/60 backdrop-blur-sm">
+                  ${movie.category}
+                </span>
+              </div>
+
+              <!-- Top Right Action Icons: Favorite & Watch Later -->
+              <div class="absolute top-3 right-3 flex items-center gap-1.5 z-10" onclick="event.stopPropagation()">
+                <!-- Favorite Heart Button -->
+                <button 
+                  onclick="toggleFavorite(${movie.id}, event)" 
+                  class="w-8 h-8 rounded-full flex items-center justify-center bg-cream-50/90 hover:bg-white text-sage-600 border border-sage-200/80 shadow-soft transition-all duration-200 active:scale-90"
+                  title="${isFavorited ? 'Remove from Favorites' : 'Add to Favorites'}"
+                >
+                  <i data-lucide="heart" class="w-4 h-4 ${isFavorited ? 'fill-blush-400 text-blush-400' : 'text-sage-400 hover:text-blush-400'}"></i>
+                </button>
+
+                <!-- Watch Later Bookmark Button -->
+                <button 
+                  onclick="toggleWatchlist(${movie.id}, event)" 
+                  class="w-8 h-8 rounded-full flex items-center justify-center bg-cream-50/90 hover:bg-white text-sage-600 border border-sage-200/80 shadow-soft transition-all duration-200 active:scale-90"
+                  title="${isWatchlisted ? 'Remove from Watch Later' : 'Save to Watch Later'}"
+                >
+                  <i data-lucide="bookmark" class="w-4 h-4 ${isWatchlisted ? 'fill-mint-600 text-mint-600' : 'text-sage-400 hover:text-mint-600'}"></i>
+                </button>
+              </div>
+
+              <!-- Play Preview Overlay Center Hover -->
+              <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-sage-900/20 backdrop-blur-[2px]">
+                <span class="w-12 h-12 rounded-full bg-mint-500/90 text-white flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                  <i data-lucide="play" class="w-5 h-5 fill-white ml-0.5"></i>
+                </span>
+              </div>
+
+              <!-- Bottom Overlay Details on Poster -->
+              <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs font-semibold">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/90 text-sage-800 shadow-sm border border-sage-200/50">
+                  <i data-lucide="star" class="w-3 h-3 fill-honey text-honey"></i>
+                  ${movie.rating}
+                </span>
+                <span class="text-[11px] font-medium text-sage-700 bg-white/80 px-2 py-0.5 rounded-md border border-sage-200/50">
+                  ${movie.episodes}
+                </span>
+              </div>
+            </div>
+
+            <!-- Card Bottom Metadata -->
+            <div class="p-4 flex-1 flex flex-col justify-between">
+              <div>
+                <h3 class="font-serif text-base font-bold text-sage-900 line-clamp-1 group-hover:text-mint-700 transition cursor-pointer" onclick="openModal(${movie.id})">
+                  ${movie.title}
+                </h3>
+                <p class="text-[11px] text-sage-500 font-serif italic mt-0.5 line-clamp-1">
+                  ${movie.nativeTitle}
+                </p>
+                <p class="text-xs text-sage-600 mt-2 line-clamp-2 leading-relaxed">
+                  ${movie.synopsis}
+                </p>
+              </div>
+
+              <div class="pt-3.5 mt-3 border-t border-sage-100 flex items-center justify-between">
+                <span class="text-[11px] font-semibold text-mint-700 bg-mint-50 px-2.5 py-0.5 rounded-full border border-mint-200/70">
+                  ${movie.vibe.split('&')[0].trim()}
+                </span>
+                <button 
+                  onclick="openModal(${movie.id})" 
+                  class="text-xs font-semibold text-sage-700 hover:text-mint-700 flex items-center gap-1 transition"
+                >
+                  <span>Preview</span>
+                  <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    // ==================== INTERACTIVE ACTIONS ====================
+    // Toggle Watchlist
+    function toggleWatchlist(id, event) {
+      if (event) event.stopPropagation();
+      const movie = MOVIES_DATABASE.find(m => m.id === id);
+      const index = watchlist.indexOf(id);
+
+      if (index > -1) {
+        watchlist.splice(index, 1);
+        showToast(`Removed "${movie.title}" from Watch Later`, 'bookmark');
+      } else {
+        watchlist.push(id);
+        showToast(`Saved "${movie.title}" to Watch Later 🌿`, 'bookmark');
+      }
+
+      saveState();
+      renderCards();
+
+      // If active modal matches
+      if (activeModalMovieId === id) {
+        updateModalActionButtons(id);
+      }
+    }
+
+    // Toggle Favorites
+    function toggleFavorite(id, event) {
+      if (event) event.stopPropagation();
+      const movie = MOVIES_DATABASE.find(m => m.id === id);
+      const index = favorites.indexOf(id);
+
+      if (index > -1) {
+        favorites.splice(index, 1);
+        showToast(`Removed "${movie.title}" from Favorites`, 'heart');
+      } else {
+        favorites.push(id);
+        showToast(`Added "${movie.title}" to your Favorites 🤍`, 'heart');
+      }
+
+      saveState();
+      renderCards();
+
+      // If active modal matches
+      if (activeModalMovieId === id) {
+        updateModalActionButtons(id);
+      }
+    }
+
+    // Hero quick actions
+    function toggleHeroWatchlist() {
+      toggleWatchlist(1);
+    }
+    function toggleHeroFavorite() {
+      toggleFavorite(1);
+    }
+    function openHeroPreview() {
+      openModal(1);
+    }
+
+    // ==================== FILTERING & SEARCH ====================
+    function setFilter(filterType) {
+      currentFilter = filterType;
+
+      // Update active sidebar nav
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        const target = btn.getAttribute('data-filter');
+        if (target === filterType) {
+          btn.classList.add('bg-mint-100/90', 'text-mint-800', 'shadow-sm', 'border', 'border-mint-200/70');
+          btn.classList.remove('text-sage-700', 'hover:bg-sage-100/70');
+        } else {
+          btn.classList.remove('bg-mint-100/90', 'text-mint-800', 'shadow-sm', 'border', 'border-mint-200/70');
+          btn.classList.add('text-sage-700', 'hover:bg-sage-100/70');
+        }
+      });
+
+      // Update active category pill
+      document.querySelectorAll('.category-pill').forEach(pill => {
+        const target = pill.getAttribute('data-pill');
+        if (target === filterType) {
+          pill.classList.add('bg-mint-200', 'text-mint-900', 'border-mint-300');
+          pill.classList.remove('bg-white', 'text-sage-700', 'border-sage-200');
+        } else {
+          pill.classList.remove('bg-mint-200', 'text-mint-900', 'border-mint-300');
+          pill.classList.add('bg-white', 'text-sage-700', 'border-sage-200');
+        }
+      });
+
+      renderCards();
+    }
+
+    // Search Input Real-time filter
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      if (searchQuery.trim() !== '') {
+        clearSearchBtn.classList.remove('hidden');
+      } else {
+        clearSearchBtn.classList.add('hidden');
+      }
+      renderCards();
+    });
+
+    function clearSearch() {
+      searchInput.value = '';
+      searchQuery = '';
+      clearSearchBtn.classList.add('hidden');
+      renderCards();
+    }
+
+    function sortCards() {
+      currentSort = document.getElementById('sortSelect').value;
+      renderCards();
+    }
+
+    function resetAllFilters() {
+      searchQuery = '';
+      searchInput.value = '';
+      clearSearchBtn.classList.add('hidden');
+      currentFilter = 'all';
+      setFilter('all');
+    }
+
+    // ==================== DETAIL / VIDEO PLAYER MODAL ====================
+    const videoModal = document.getElementById('videoModal');
+    const modalVideo = document.getElementById('modalVideo');
+
+    function openModal(movieId) {
+      const movie = MOVIES_DATABASE.find(m => m.id === movieId);
+      if (!movie) return;
+
+      activeModalMovieId = movieId;
+
+      // Populate text & data
+      document.getElementById('modalTitle').textContent = movie.title;
+      document.getElementById('modalOriginalTitle').textContent = movie.nativeTitle;
+      document.getElementById('modalGenre').textContent = movie.genre;
+      document.getElementById('modalYear').textContent = movie.year;
+      document.getElementById('modalEpisodes').textContent = movie.episodes;
+      document.getElementById('modalRating').textContent = movie.rating;
+      document.getElementById('modalVibe').textContent = movie.vibe;
+      document.getElementById('modalSynopsis').textContent = movie.synopsis;
+
+      // Video Source & Poster
+      modalVideo.poster = movie.poster;
+      modalVideo.src = movie.videoSrc;
+      modalVideo.load();
+
+      // Cast Pills
+      const castContainer = document.getElementById('modalCast');
+      castContainer.innerHTML = movie.cast.map(actor => `
+        <span class="px-2.5 py-1 rounded-xl text-xs font-medium bg-white text-sage-800 border border-sage-200/80 shadow-inner-glow">
+          ${actor}
+        </span>
+      `).join('');
+
+      // Tag Badges
+      const tagsContainer = document.getElementById('modalTags');
+      tagsContainer.innerHTML = movie.tags.map(tag => `
+        <span class="px-2.5 py-1 rounded-xl text-xs font-semibold bg-mint-50 text-mint-800 border border-mint-200">
+          # ${tag}
+        </span>
+      `).join('');
+
+      updateModalActionButtons(movieId);
+
+      // Show Modal
+      videoModal.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      lucide.createIcons();
+
+      // Optional: Auto play video preview with muted audio for smooth experience
+      modalVideo.muted = true;
+      modalVideo.play().catch(() => {/* Browser autoplay policy catch */});
+    }
+
+    function updateModalActionButtons(movieId) {
+      const isWatchlisted = watchlist.includes(movieId);
+      const isFavorited = favorites.includes(movieId);
+
+      const watchlistBtn = document.getElementById('modalWatchlistBtn');
+      const watchlistText = document.getElementById('modalWatchlistText');
+      const favoriteBtn = document.getElementById('modalFavoriteBtn');
+      const favoriteText = document.getElementById('modalFavoriteText');
+
+      if (isWatchlisted) {
+        watchlistBtn.classList.add('bg-mint-100', 'border-mint-300', 'text-mint-800');
+        watchlistBtn.classList.remove('bg-white', 'text-sage-700');
+        watchlistText.textContent = "Saved";
+      } else {
+        watchlistBtn.classList.remove('bg-mint-100', 'border-mint-300', 'text-mint-800');
+        watchlistBtn.classList.add('bg-white', 'text-sage-700');
+        watchlistText.textContent = "Watchlist";
+      }
+
+      if (isFavorited) {
+        favoriteBtn.classList.add('bg-blush-100', 'border-blush-300', 'text-blush-500');
+        favoriteBtn.classList.remove('bg-white', 'text-sage-700');
+        favoriteText.textContent = "Favorited";
+        favoriteBtn.querySelector('i')?.classList.add('fill-blush-400', 'text-blush-400');
+      } else {
+        favoriteBtn.classList.remove('bg-blush-100', 'border-blush-300', 'text-blush-500');
+        favoriteBtn.classList.add('bg-white', 'text-sage-700');
+        favoriteText.textContent = "Favorite";
+        favoriteBtn.querySelector('i')?.classList.remove('fill-blush-400', 'text-blush-400');
+      }
+
+      lucide.createIcons();
+    }
+
+    function toggleModalWatchlist() {
+      if (activeModalMovieId) {
+        toggleWatchlist(activeModalMovieId);
+      }
+    }
+
+    function toggleModalFavorite() {
+      if (activeModalMovieId) {
+        toggleFavorite(activeModalMovieId);
+      }
+    }
+
+    function closeModal() {
+      videoModal.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+      modalVideo.pause();
+      modalVideo.currentTime = 0;
+      activeModalMovieId = null;
+    }
+
+    // Modal background click or Escape key to dismiss
+    videoModal.addEventListener('click', (e) => {
+      if (e.target === videoModal) {
+        closeModal();
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !videoModal.classList.contains('hidden')) {
+        closeModal();
+      }
+    });
+
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navLinks = document.getElementById('navLinks');
+    mobileMenuBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('hidden');
+    });
+
+    // ==================== INITIALIZATION ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCards();
+      updateBadges();
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

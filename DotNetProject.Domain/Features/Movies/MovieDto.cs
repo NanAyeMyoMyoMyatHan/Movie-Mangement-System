@@ -1,64 +1,89 @@
-namespace DotNetProject.Domain.Features.Movies
+﻿namespace DotNetProject.Domain.Features.Movies
 {
+    // -- Existing models (unchanged) --------------------------------------------
     public class MovieModel
     {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public string Genre { get; set; }
-        public int? ReleaseYear { get; set; }
-        public string Description { get; set; }
-        public string PosterUrl { get; set; }
-        public int? TmdbId { get; set; }
-        public bool IsManual { get; set; }
-        public DateTime CreateAt { get; set; } = DateTime.UtcNow;
-        public bool IsDeleted { get; set; } = false;
-        public DateTime? DeletedAt { get; set; }
+        public long ContentId { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public string? PosterUrl { get; set; }
+        public string? BannerUrl { get; set; }
+        public DateOnly? ReleaseDate { get; set; }
+        public string? Country { get; set; }
+        public string? Language { get; set; }
+        public int ContentTypeId { get; set; } 
+        public string Status { get; set; } = string.Empty;
     }
 
-    public class MovieCreateRequestModel
+    // -- New: Result-pattern request / response records -------------------------
+
+    public sealed record GetMoviePagedListRequest
     {
-        public string Title { get; set; }
-        public string Genre { get; set; }
-        public int? ReleaseYear { get; set; }
-        public string Description { get; set; }
-        public string PosterUrl { get; set; }
-        public int? TmdbId { get; set; }
-        public bool IsManual { get; set; }
-        public DateTime CreateAt { get; set; } = DateTime.UtcNow;
+        public int PageNo { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
+        public string? SearchTerm { get; set; }
     }
 
-    public class MovieCreateResponseModel
-    {
-        public string IsSuccess { get; set; }
-        public string Message { get; set; }
-    }
-
-    public class MovieDeleteRequestModel
+    public sealed record GetMovieDetailRequest
     {
         public int Id { get; set; }
     }
 
-    public class MovieDeleteResponseModel
+    public sealed record CreateMovieRequest
     {
-        public string IsSuccess { get; set; }
-        public string Message { get; set; }
-    }
-
-    public class MovieUpdateRequestModel
-    {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public string Genre { get; set; }
+        public string? Title { get; set; }
+        public string? Genre { get; set; }
         public int? ReleaseYear { get; set; }
-        public string Description { get; set; }
-        public string PosterUrl { get; set; }
+        public string? Description { get; set; }
+        public string? PosterUrl { get; set; }
         public int? TmdbId { get; set; }
         public bool IsManual { get; set; }
     }
 
-    public class MovieUpdateResponseModel
+    public sealed record UpdateMovieRequest
     {
-        public string IsSuccess { get; set; }
-        public string Message { get; set; }
+        public int Id { get; set; }
+        public string? Title { get; set; }
+        public string? Genre { get; set; }
+        public int? ReleaseYear { get; set; }
+        public string? Description { get; set; }
+        public string? PosterUrl { get; set; }
+        public int? TmdbId { get; set; }
+        public bool IsManual { get; set; }
     }
+
+    public sealed record DeleteMovieRequest
+    {
+        public int Id { get; set; }
+    }
+
+    // -- Response records -------------------------------------------------------
+
+    public sealed record MovieListItemResponse(
+        long Id,
+        string Title,
+        int? ReleaseYear,
+        string? PosterUrl);
+
+    public sealed record MovieDetailResponse(
+        int Id,
+        string Title,
+        string? Genre,
+        int? ReleaseYear,
+        string? Description,
+        string? PosterUrl,
+        int? TmdbId,
+        bool IsManual,
+        DateTimeOffset CreatedAt);
+
+    public sealed record GetMoviePagedListResponse(
+        IReadOnlyList<MovieListItemResponse> Items,
+        int TotalCount,
+        int PageNo,
+        int PageSize);
+
+    public sealed record GetMovieDetailResponse(MovieDetailResponse Movie);
+    public sealed record CreateMovieResponse(MovieDetailResponse Movie);
+    public sealed record UpdateMovieResponse(MovieDetailResponse Movie);
+    public sealed record DeleteMovieResponse(int Id, bool IsDeleted);
 }

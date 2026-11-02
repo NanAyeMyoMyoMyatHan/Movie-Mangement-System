@@ -13,14 +13,13 @@ namespace DotNetProject.WebApi.Features.Users
         private readonly AppDbContext _db;
         private readonly IWebHostEnvironment _env;
 
-        public UserServices(IWebHostEnvironment env, AppDbContext db = null)
+        public UserServices(IWebHostEnvironment env, AppDbContext db)
         {
             _env = env;
             _db = db;
         }
         public async Task<UserModel> GetUserByIdAsync(int id)
         {
-            if (_db == null) throw new InvalidOperationException("AppDbContext is not provided.");
             var user = await _db.Users.FindAsync(id);
             if (user == null || user.IsDeleted)
             {
@@ -40,7 +39,6 @@ namespace DotNetProject.WebApi.Features.Users
         }
         public async Task<List<UserModel>> GetAllUsersAsync()
         {
-            if (_db == null) throw new InvalidOperationException("AppDbContext is not provided.");
             var users = await _db.Users.Where(u => !u.IsDeleted).ToListAsync();
             return users.Select(user => new UserModel
             {
@@ -56,7 +54,6 @@ namespace DotNetProject.WebApi.Features.Users
         }
         public async Task<UserCreateResponseModel> CreateUserAsync(UserCreateRequestModel model)
         {
-            if (_db == null) throw new InvalidOperationException("AppDbContext is not provided.");
             var user = new User
             {
                 UserName = model.UserName,
@@ -76,7 +73,6 @@ namespace DotNetProject.WebApi.Features.Users
         }
         public async Task<UserUpdateResponseModel> UpdateUserAsync(UserUpdateRequestModel model)
         {
-            if (_db == null) throw new InvalidOperationException("AppDbContext is not provided.");
             var user = await _db.Users.FindAsync(model.Id);
             if (user == null || user.IsDeleted)
             {
@@ -99,7 +95,6 @@ namespace DotNetProject.WebApi.Features.Users
         }
         public async Task<UserLoginResponseModel> LoginAsync(UserLoginRequestModel model)
         {
-            if (_db == null) throw new InvalidOperationException("AppDbContext is not provided.");
             var user = await _db.Users.FirstOrDefaultAsync(u =>
                 !u.IsDeleted &&
                 (u.Email == model.Email || u.UserName == model.Email) &&

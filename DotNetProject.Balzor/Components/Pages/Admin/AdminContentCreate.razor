@@ -1,0 +1,71 @@
+@page "/admin/contents/create"
+@layout AdminLayout
+@using DotNetProject.Balzor.Components.Shared
+@using DotNetProject.Balzor.Components.Layout
+@rendermode InteractiveServer
+
+<PageTitle>Add Drama — SereneFlix Admin</PageTitle>
+
+<div class="admin-page-header">
+    <div>
+        <h1>Add Drama / Series</h1>
+        <p><a href="/admin/contents" style="color:#7B977D;text-decoration:none;">← Back to Dramas</a></p>
+    </div>
+</div>
+
+<div class="admin-content-area">
+    @if (_error != null) { <div class="admin-alert admin-alert-error">@_error</div> }
+    @if (_success != null) { <div class="admin-alert admin-alert-success">@_success</div> }
+
+    <div class="admin-form-card">
+        <div class="admin-form-group">
+            <label class="admin-label">Title <span class="required">*</span></label>
+            <input class="admin-input" @bind="_form.Title" placeholder="Drama title" />
+        </div>
+
+        <div class="admin-form-group">
+            <label class="admin-label">Description</label>
+            <textarea class="admin-input admin-textarea" @bind="_form.Description" rows="4" placeholder="Short synopsis…"></textarea>
+        </div>
+
+        <div class="admin-form-row">
+            <div class="admin-form-group">
+                <label class="admin-label">Country</label>
+                <input class="admin-input" @bind="_form.Country" placeholder="e.g. South Korea" />
+            </div>
+            <div class="admin-form-group">
+                <label class="admin-label">Language</label>
+                <input class="admin-input" @bind="_form.Language" placeholder="e.g. Korean" />
+            </div>
+        </div>
+
+        <div class="admin-form-row">
+            <div class="admin-form-group">
+                <label class="admin-label">Poster URL</label>
+                <input class="admin-input" @bind="_form.PosterUrl" placeholder="https://…" />
+            </div>
+            <div class="admin-form-group">
+                <label class="admin-label">Banner URL</label>
+                <input class="admin-input" @bind="_form.BannerUrl" placeholder="https://…" />
+            </div>
+        </div>
+
+        <div class="admin-form-row">
+            <div class="admin-form-group">
+                <label class="admin-label">Release Date</label>
+                <input class="admin-input" type="text" @bind="_releaseDateStr" placeholder="yyyy-MM-dd" />
+            </div>
+            <div class="admin-form-group">
+                <label class="admin-label">Status</label>
+                <input class="admin-input" @bind="_form.Status" placeholder="e.g. Ongoing, Completed" />
+            </div>
+        </div>
+
+        <div class="admin-form-actions">
+            <button class="btn-admin btn-admin-primary" @onclick="SubmitAsync" disabled="@_submitting">
+                @(_submitting ? "Saving…" : "Save Drama")
+            </button>
+            <a href="/admin/contents" class="btn-admin btn-admin-edit">Cancel</a>
+        </div>
+    </div>
+</div>
