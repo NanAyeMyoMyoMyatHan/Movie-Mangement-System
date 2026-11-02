@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace DotNetProject.Balzor.Components.Pages
 {
-    public partial class Index
+    public partial class Index : ComponentBase, IDisposable
     {
         [Inject]
         private HttpClientService HttpClientService { get; set; } = default!;
@@ -17,9 +17,13 @@ namespace DotNetProject.Balzor.Components.Pages
         [Inject]
         private FavoriteService FavoriteService { get; set; } = default!;
 
+        [Inject]
+        private WatchHistoryService WatchHistoryService { get; set; } = default!;
+
         protected List<ContentListItemResponse> Dramas { get; set; } = new();
         protected List<MovieListItemResponse> Movies { get; set; } = new();
         protected List<ThaiListItemResponse> Thais { get; set; } = new();
+        protected List<WatchHistoryItem> ContinueWatchingItems { get; set; } = new();
 
         protected HashSet<long> FavoriteDramaIds { get; set; } = new();
         protected HashSet<long> FavoriteThaiIds { get; set; } = new();
@@ -92,7 +96,22 @@ namespace DotNetProject.Balzor.Components.Pages
             FavoriteThaiIds = favs.Where(f => f.IsContent && f.Category != null && f.Category.Contains("Thai", StringComparison.OrdinalIgnoreCase)).Select(f => f.Id).ToHashSet();
             FavoriteMovieIds = favs.Where(f => !f.IsContent || (f.Category != null && f.Category.Contains("Movie", StringComparison.OrdinalIgnoreCase))).Select(f => f.Id).ToHashSet();
 
+            // Load Continue Watching history & subscribe to reactive changes
+            WatchHistoryService.OnChange += HandleHistoryChange;
+            await LoadContinueWatchingAsync();
+
             IsLoading = false;
+        }
+
+        private async Task LoadContinueWatchingAsync()
+        {
+            ContinueWatchingItems = await WatchHistoryService.GetHistoryAsync(5);
+        }
+
+        private async void HandleHistoryChange()
+        {
+            await LoadContinueWatchingAsync();
+            await InvokeAsync(StateHasChanged);
         }
 
         public async Task ToggleFavoriteDrama(ContentListItemResponse drama)
@@ -171,24 +190,43 @@ namespace DotNetProject.Balzor.Components.Pages
             NavigateToDrama(7); // KinnPorsche
         }
 
+        public void ResumePlayback(WatchHistoryItem item)
+        {
+            if (item.IsContent)
+            {
+                Nav.NavigateTo($"/drama/{item.ContentId}?ep={item.EpisodeNumber}&autoplay=true");
+            }
+            else
+            {
+                Nav.NavigateTo($"/movie/{item.ContentId}");
+            }
+        }
+
         public void PlayContent(string title, string? desc, string? posterUrl, int ep = 1, string? videoUrl = null)
         {
-            if (title.Contains("Fool In Love", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(20002);
-            else if (title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(20003);
-            else if (title.Contains("Daung", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(20004);
-            else if (title.Contains("Khem", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(20005);
-            else if (title.Contains("Bad Buddy", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(6);
-            else if (title.Contains("2gether", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(5);
-            else if (title.Contains("KinnPorsche", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(7);
-            else if (title.Contains("TharnType", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(8);
-            else if (title.Contains("SOTUS", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(9);
-            else if (title.Contains("Thousand Stars", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(10);
-            else if (title.Contains("Crash Landing", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(15);
-            else if (title.Contains("Vincenzo", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(21);
-            else if (title.Contains("The Glory", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(22);
-            else if (title.Contains("Lovely Runner", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(24);
-            else if (title.Contains("Alchemy", StringComparison.OrdinalIgnoreCase)) NavigateToDrama(23);
-            else NavigateToDrama(23);
+            long id = 23;
+            if (title.Contains("Fool In Love", StringComparison.OrdinalIgnoreCase)) id = 20002;
+            else if (title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase)) id = 20003;
+            else if (title.Contains("Daung", StringComparison.OrdinalIgnoreCase)) id = 20004;
+            else if (title.Contains("Khem", StringComparison.OrdinalIgnoreCase)) id = 20005;
+            else if (title.Contains("Bad Buddy", StringComparison.OrdinalIgnoreCase)) id = 6;
+            else if (title.Contains("2gether", StringComparison.OrdinalIgnoreCase)) id = 5;
+            else if (title.Contains("KinnPorsche", StringComparison.OrdinalIgnoreCase)) id = 7;
+            else if (title.Contains("TharnType", StringComparison.OrdinalIgnoreCase)) id = 8;
+            else if (title.Contains("SOTUS", StringComparison.OrdinalIgnoreCase)) id = 9;
+            else if (title.Contains("Thousand Stars", StringComparison.OrdinalIgnoreCase)) id = 10;
+            else if (title.Contains("Crash Landing", StringComparison.OrdinalIgnoreCase)) id = 15;
+            else if (title.Contains("Vincenzo", StringComparison.OrdinalIgnoreCase)) id = 21;
+            else if (title.Contains("The Glory", StringComparison.OrdinalIgnoreCase)) id = 22;
+            else if (title.Contains("Lovely Runner", StringComparison.OrdinalIgnoreCase)) id = 24;
+            else if (title.Contains("Alchemy", StringComparison.OrdinalIgnoreCase)) id = 23;
+
+            Nav.NavigateTo($"/drama/{id}?ep={ep}&autoplay=true");
+        }
+
+        public void Dispose()
+        {
+            WatchHistoryService.OnChange -= HandleHistoryChange;
         }
     }
 }

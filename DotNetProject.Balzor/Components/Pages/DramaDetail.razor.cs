@@ -22,8 +22,17 @@ namespace DotNetProject.Balzor.Components.Pages
         [Inject]
         private FavoriteService FavoriteService { get; set; } = default!;
 
+        [Inject]
+        private WatchHistoryService WatchHistoryService { get; set; } = default!;
+
         [Parameter]
         public long Id { get; set; }
+
+        [SupplyParameterFromQuery(Name = "ep")]
+        public int? QueryEpisode { get; set; }
+
+        [SupplyParameterFromQuery(Name = "autoplay")]
+        public bool? Autoplay { get; set; }
 
         protected ContentDetailDto? Drama { get; set; }
         protected List<EpisodeDto> Episodes { get; set; } = new();
@@ -76,14 +85,25 @@ namespace DotNetProject.Balzor.Components.Pages
                     DramaTotalEpisodesText = $"{Episodes.Count} Episodes";
                     ConfigureDramaCredits(Drama.Title);
 
-                    var firstEp = Episodes.FirstOrDefault();
-                    if (firstEp != null)
+                    EpisodeDto? selectedEp = null;
+                    if (QueryEpisode.HasValue)
                     {
-                        ActiveEpisodeNumber = firstEp.EpisodeNumber;
-                        ActiveVideoTitle = !string.IsNullOrWhiteSpace(firstEp.Title) ? firstEp.Title : $"{Drama.Title} - Episode {firstEp.EpisodeNumber}";
-                        ActiveVideoDescription = !string.IsNullOrWhiteSpace(firstEp.Description) ? firstEp.Description : Drama.Description ?? "";
-                        ActiveVideoUrl = !string.IsNullOrWhiteSpace(firstEp.VideoUrl) ? firstEp.VideoUrl : "/videos/video_2026-08-04_13-49-33.mp4";
-                        ActiveVideoPoster = !string.IsNullOrWhiteSpace(firstEp.ThumbnailUrl) ? firstEp.ThumbnailUrl : Drama.PosterUrl;
+                        selectedEp = Episodes.FirstOrDefault(e => e.EpisodeNumber == QueryEpisode.Value);
+                    }
+                    selectedEp ??= Episodes.FirstOrDefault();
+
+                    if (selectedEp != null)
+                    {
+                        ActiveEpisodeNumber = selectedEp.EpisodeNumber;
+                        ActiveVideoTitle = !string.IsNullOrWhiteSpace(selectedEp.Title) ? selectedEp.Title : $"{Drama.Title} - Episode {selectedEp.EpisodeNumber}";
+                        ActiveVideoDescription = !string.IsNullOrWhiteSpace(selectedEp.Description) ? selectedEp.Description : Drama.Description ?? "";
+                        ActiveVideoUrl = !string.IsNullOrWhiteSpace(selectedEp.VideoUrl) ? selectedEp.VideoUrl : "/videos/video_2026-08-04_13-49-33.mp4";
+                        ActiveVideoPoster = !string.IsNullOrWhiteSpace(selectedEp.ThumbnailUrl) ? selectedEp.ThumbnailUrl : Drama.PosterUrl;
+
+                        if (Autoplay == true)
+                        {
+                            await PlayEpisode(selectedEp);
+                        }
                     }
                 }
                 else
@@ -110,6 +130,37 @@ namespace DotNetProject.Balzor.Components.Pages
             ActiveVideoPoster = !string.IsNullOrWhiteSpace(ep.ThumbnailUrl) ? ep.ThumbnailUrl : Drama?.PosterUrl;
             IsPlayingVideo = true;
             StateHasChanged();
+
+            // Record into Continue Watching history
+            if (Drama != null)
+            {
+                await WatchHistoryService.RecordWatchAsync(
+                    Drama.ContentId,
+                    Drama.Title,
+                    Drama.Description,
+                    !string.IsNullOrWhiteSpace(ep.ThumbnailUrl) ? ep.ThumbnailUrl : Drama.PosterUrl,
+                    ep.EpisodeNumber,
+                    Episodes.Count > 0 ? Episodes.Count : 16,
+                    ep.VideoUrl,
+                    isContent: true,
+                    progressPercentage: 45
+                );
+
+                var wlItem = new WatchLaterItem
+                {
+                    Id = Drama.ContentId,
+                    IsContent = true,
+                    Title = Drama.Title,
+                    PosterUrl = Drama.PosterUrl,
+                    Category = DramaLanguage.Contains("Thai", StringComparison.OrdinalIgnoreCase) ? "Thai BL" : "Korean Drama",
+                    Description = Drama.Description,
+                    TotalEpisodes = Episodes.Count > 0 ? Episodes.Count : 16,
+                    CurrentEpisode = ep.EpisodeNumber,
+                    Status = "Watching",
+                    AddedAt = DateTime.UtcNow
+                };
+                await WatchLaterService.AddItemAsync(wlItem);
+            }
 
             // Smoothly auto-scroll up to the video player so user immediately sees it playing
             await Task.Delay(50);

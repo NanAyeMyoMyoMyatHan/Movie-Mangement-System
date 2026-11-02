@@ -310,7 +310,7 @@
 }
 
     .myflix-see-all::after {
-        content: "â†’";
+        content: " \2192";
         transition: transform 0.15s ease;
     }
 
@@ -368,6 +368,22 @@
     justify-content: center;
     background: rgba(15, 36, 32, 0.25);
     transition: background 0.2s ease;
+}
+
+.myflix-continue-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3.5px;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 3;
+}
+
+.myflix-continue-progress-fill {
+    height: 100%;
+    background: #DE7149;
+    border-radius: 0 2px 2px 0;
 }
 
 .myflix-continue-card:hover .myflix-thumb-overlay {

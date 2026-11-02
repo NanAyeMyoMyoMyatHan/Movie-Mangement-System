@@ -16,6 +16,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<HttpClientService>();
 builder.Services.AddSingleton<WatchLaterService>();
 builder.Services.AddSingleton<FavoriteService>();
+builder.Services.AddSingleton<WatchHistoryService>();
 
 var app = builder.Build();
 

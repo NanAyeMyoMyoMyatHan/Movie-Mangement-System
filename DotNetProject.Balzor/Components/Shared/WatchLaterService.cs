@@ -251,6 +251,15 @@ namespace DotNetProject.Balzor.Components.Shared
                 _items.Insert(0, item);
                 NotifyStateChanged();
             }
+            else
+            {
+                existing.CurrentEpisode = item.CurrentEpisode;
+                if (!string.IsNullOrWhiteSpace(item.Status)) existing.Status = item.Status;
+                existing.AddedAt = DateTime.UtcNow;
+                _items.Remove(existing);
+                _items.Insert(0, existing);
+                NotifyStateChanged();
+            }
             return Task.CompletedTask;
         }
 

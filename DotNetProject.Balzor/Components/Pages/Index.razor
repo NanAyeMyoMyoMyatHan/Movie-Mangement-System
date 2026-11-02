@@ -90,105 +90,41 @@
     </div>
 </section>
 
-<!-- Continue Watching Section -->
-<section class="myflix-section-block">
-    <div class="myflix-section-header">
-        <h2>Continue Watching</h2>
-        <a href="continue-watching" class="myflix-see-all">See All</a>
-    </div>
+<!-- Continue Watching Section (Dynamic Last Watched) -->
+@if (ContinueWatchingItems != null && ContinueWatchingItems.Any())
+{
+    <section class="myflix-section-block">
+        <div class="myflix-section-header">
+            <h2>Continue Watching</h2>
+            <a href="watch-later" class="myflix-see-all">See All</a>
+        </div>
 
-    <div class="myflix-continue-grid">
-        <!-- Item 1: Bad Buddy -->
-        <article class="myflix-continue-card" @onclick='() => PlayContent("Bad Buddy", "Two rival families live next door to each other, but their sons secretly develop feelings.", "https://upload.wikimedia.org/wikipedia/en/b/b7/Bad_Buddy_Series_2021_poster.jpg", 6)'>
-            <div class="myflix-continue-thumb">
-                <img src="https://upload.wikimedia.org/wikipedia/en/b/b7/Bad_Buddy_Series_2021_poster.jpg" alt="Bad Buddy" />
-                <div class="myflix-thumb-overlay">
-                    <button class="myflix-play-icon-btn" aria-label="Play Bad Buddy">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                            <polygon points="6 4 19 12 6 20 6 4"></polygon>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="myflix-continue-info">
-                <h3>Bad Buddy</h3>
-                <p>Episode 6</p>
-            </div>
-        </article>
-
-        <!-- Item 2: Crash Landing on You -->
-        <article class="myflix-continue-card" @onclick='() => PlayContent("Crash Landing on You", "A paragliding mishap drops a South Korean heiress in North Korea - and into the life of an army officer.", "https://upload.wikimedia.org/wikipedia/en/5/5e/Crash_Landing_on_You_poster.png", 12)'>
-            <div class="myflix-continue-thumb">
-                <img src="https://upload.wikimedia.org/wikipedia/en/5/5e/Crash_Landing_on_You_poster.png" alt="Crash Landing on You" />
-                <div class="myflix-thumb-overlay">
-                    <button class="myflix-play-icon-btn" aria-label="Play Crash Landing on You">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                            <polygon points="6 4 19 12 6 20 6 4"></polygon>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="myflix-continue-info">
-                <h3>Crash Landing on You</h3>
-                <p>Episode 12</p>
-            </div>
-        </article>
-
-        <!-- Item 3: Lovely Runner -->
-        <article class="myflix-continue-card" @onclick='() => PlayContent("Lovely Runner", "A passionate fan travels back in time to save her favorite idol from a tragic fate.", "https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png", 8)'>
-            <div class="myflix-continue-thumb">
-                <img src="https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png" alt="Lovely Runner" />
-                <div class="myflix-thumb-overlay">
-                    <button class="myflix-play-icon-btn" aria-label="Play Lovely Runner">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                            <polygon points="6 4 19 12 6 20 6 4"></polygon>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="myflix-continue-info">
-                <h3>Lovely Runner</h3>
-                <p>Episode 8</p>
-            </div>
-        </article>
-
-        <!-- Item 4: Vincenzo -->
-        <article class="myflix-continue-card" @onclick='() => PlayContent("Vincenzo", "During a visit to his motherland, a Korean-Italian mafia lawyer gives a conglomerate a taste of its own medicine.", "https://upload.wikimedia.org/wikipedia/en/5/5b/Vincenzo_TV_series.jpg", 4)'>
-            <div class="myflix-continue-thumb">
-                <img src="https://upload.wikimedia.org/wikipedia/en/5/5b/Vincenzo_TV_series.jpg" alt="Vincenzo" />
-                <div class="myflix-thumb-overlay">
-                    <button class="myflix-play-icon-btn" aria-label="Play Vincenzo">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                            <polygon points="6 4 19 12 6 20 6 4"></polygon>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="myflix-continue-info">
-                <h3>Vincenzo</h3>
-                <p>Episode 4</p>
-            </div>
-        </article>
-
-        <!-- Item 5: The Glory -->
-        <article class="myflix-continue-card" @onclick='() => PlayContent("The Glory", "Years after surviving horrific high school bullying, a woman puts an elaborate revenge scheme into motion.", "https://upload.wikimedia.org/wikipedia/en/7/79/The_Glory_TV_series.jpg", 10)'>
-            <div class="myflix-continue-thumb">
-                <img src="https://upload.wikimedia.org/wikipedia/en/7/79/The_Glory_TV_series.jpg" alt="The Glory" />
-                <div class="myflix-thumb-overlay">
-                    <button class="myflix-play-icon-btn" aria-label="Play The Glory">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                            <polygon points="6 4 19 12 6 20 6 4"></polygon>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="myflix-continue-info">
-                <h3>The Glory</h3>
-                <p>Episode 10</p>
-            </div>
-        </article>
-    </div>
-</section>
+        <div class="myflix-continue-grid">
+            @foreach (var item in ContinueWatchingItems)
+            {
+                <article class="myflix-continue-card" @onclick="() => ResumePlayback(item)" title="Resume @item.Title (Episode @item.EpisodeNumber)">
+                    <div class="myflix-continue-thumb">
+                        <img src="@item.PosterUrl" alt="@item.Title" loading="lazy" />
+                        <div class="myflix-thumb-overlay">
+                            <button type="button" class="myflix-play-icon-btn" aria-label="Play @item.Title">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="6 4 19 12 6 20 6 4"></polygon>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="myflix-continue-progress">
+                            <div class="myflix-continue-progress-fill" style="width: @(item.ProgressPercentage)%"></div>
+                        </div>
+                    </div>
+                    <div class="myflix-continue-info">
+                        <h3>@item.Title</h3>
+                        <p>@(item.IsContent ? $"Episode {item.EpisodeNumber}" : "Movie")</p>
+                    </div>
+                </article>
+            }
+        </div>
+    </section>
+}
 
 <!-- Thai BL Series Section -->
 <section class="myflix-section-block">
