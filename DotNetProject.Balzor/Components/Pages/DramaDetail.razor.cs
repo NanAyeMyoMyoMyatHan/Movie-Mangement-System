@@ -1,6 +1,7 @@
 using DotNetProject.Balzor.Components.Shared;
 using DotNetProject.Domain.Features.Contents;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace DotNetProject.Balzor.Components.Pages
 {
@@ -11,6 +12,9 @@ namespace DotNetProject.Balzor.Components.Pages
 
         [Inject]
         private NavigationManager Nav { get; set; } = default!;
+
+        [Inject]
+        private IJSRuntime JS { get; set; } = default!;
 
         [Parameter]
         public long Id { get; set; }
@@ -40,7 +44,7 @@ namespace DotNetProject.Balzor.Components.Pages
         protected override async Task OnParametersSetAsync()
         {
             IsLoading = true;
-            IsPlayingVideo = false; // Video player is closed initially until user clicks an episode!
+            IsPlayingVideo = false;
             ErrorMessage = null;
 
             try
@@ -88,28 +92,67 @@ namespace DotNetProject.Balzor.Components.Pages
             }
         }
 
-        protected void PlayEpisode(EpisodeDto ep)
+        protected async Task PlayEpisode(EpisodeDto ep)
         {
             ActiveEpisodeNumber = ep.EpisodeNumber;
             ActiveVideoTitle = !string.IsNullOrWhiteSpace(ep.Title) ? ep.Title : $"{Drama?.Title} - Episode {ep.EpisodeNumber}";
             ActiveVideoDescription = !string.IsNullOrWhiteSpace(ep.Description) ? ep.Description : Drama?.Description ?? "";
             ActiveVideoUrl = !string.IsNullOrWhiteSpace(ep.VideoUrl) ? ep.VideoUrl : "/videos/video_2026-08-04_13-49-33.mp4";
             ActiveVideoPoster = !string.IsNullOrWhiteSpace(ep.ThumbnailUrl) ? ep.ThumbnailUrl : Drama?.PosterUrl;
-            IsPlayingVideo = true; // Opens Video Player as specified in flowchart!
+            IsPlayingVideo = true;
             StateHasChanged();
+
+            // Smoothly auto-scroll up to the video player so user immediately sees it playing
+            await Task.Delay(50);
+            try
+            {
+                await JS.InvokeVoidAsync("eval", @"
+                    const el = document.getElementById('videoPlayerBox');
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                ");
+            }
+            catch { }
         }
 
-        protected void StartPlayingFirstEpisode()
+        protected async Task StartPlayingFirstEpisode()
         {
             var ep = Episodes.FirstOrDefault(e => e.EpisodeNumber == ActiveEpisodeNumber) ?? Episodes.FirstOrDefault();
             if (ep != null)
             {
-                PlayEpisode(ep);
+                await PlayEpisode(ep);
             }
             else
             {
                 IsPlayingVideo = true;
+                StateHasChanged();
+                await Task.Delay(50);
+                try
+                {
+                    await JS.InvokeVoidAsync("eval", @"
+                        const el = document.getElementById('videoPlayerBox');
+                        if (el) {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    ");
+                }
+                catch { }
             }
+        }
+
+        protected async Task ScrollToPlayer()
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("eval", @"
+                    const el = document.getElementById('videoPlayerBox');
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                ");
+            }
+            catch { }
         }
 
         protected void StopPlaying()

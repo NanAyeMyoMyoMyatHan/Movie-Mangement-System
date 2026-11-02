@@ -478,6 +478,77 @@
         color: #F4EFEA !important;
     }
 
+    .drama-now-playing-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        background: rgba(222, 113, 73, 0.15);
+        border: 1px solid rgba(222, 113, 73, 0.4);
+        border-radius: 12px;
+        margin-bottom: 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .drama-now-playing-banner:hover {
+        background: rgba(222, 113, 73, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .now-playing-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .now-playing-pulse {
+        width: 10px;
+        height: 10px;
+        background: #DE7149;
+        border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(222, 113, 73, 0.7);
+        animation: pulseOrange 1.5s infinite;
+    }
+
+    @@keyframes pulseOrange {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(222, 113, 73, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(222, 113, 73, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(222, 113, 73, 0); }
+    }
+
+    .now-playing-text {
+        font-size: 13.5px;
+        color: #F4EFEA;
+    }
+
+    .now-playing-scroll-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #DE7149;
+        color: #FFFFFF;
+        border: 0;
+        border-radius: 9999px;
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .ep-playing-pill {
+        background: #DE7149;
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 9999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        box-shadow: 0 2px 8px rgba(222, 113, 73, 0.4);
+    }
+
     .drama-loading-box {
         padding: 60px 20px;
         text-align: center;
@@ -570,13 +641,13 @@
             <!-- Video Player (Appears when episode or play is clicked!) -->
             @if (IsPlayingVideo)
             {
-                <div class="drama-theater-player">
+                <div id="videoPlayerBox" class="drama-theater-player">
                     <div class="drama-player-bar">
                         <div class="drama-player-title">
                             <span>@ActiveVideoTitle</span>
                             <span class="drama-ep-badge">EP @ActiveEpisodeNumber</span>
                         </div>
-                        <button class="drama-player-close" @onclick="StopPlaying" title="Close Video Player">
+                        <button type="button" class="drama-player-close" @onclick="StopPlaying" title="Close Video Player">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -666,6 +737,23 @@
                 <span class="drama-ep-count-span">@DramaTotalEpisodesText</span>
             </div>
 
+            <!-- Now Playing Interactive Banner -->
+            @if (IsPlayingVideo)
+            {
+                <div class="drama-now-playing-banner" @onclick="ScrollToPlayer" title="Click to view Video Player at top">
+                    <div class="now-playing-left">
+                        <span class="now-playing-pulse"></span>
+                        <span class="now-playing-text">Now Playing: <strong>EP @ActiveEpisodeNumber - @ActiveVideoTitle</strong></span>
+                    </div>
+                    <button type="button" class="now-playing-scroll-btn">
+                        <span>Watch Player</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="18 15 12 9 6 15"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            }
+
             <!-- Episodes List (Horizontal Rows like Image 2) -->
             <div class="drama-episodes-container">
                 @if (Episodes != null && Episodes.Any())
@@ -690,13 +778,17 @@
                                 <p class="drama-ep-desc-p">@(string.IsNullOrWhiteSpace(currentEp.Description) ? Drama.Description : currentEp.Description)</p>
                             </div>
                             <div class="drama-ep-actions-right">
+                                @if (isCurrentPlaying)
+                                {
+                                    <span class="ep-playing-pill">▶ Playing</span>
+                                }
                                 <span class="drama-ep-time">@(currentEp.Duration.HasValue && currentEp.Duration.Value > 0 ? $"{currentEp.Duration.Value} min" : "70 min")</span>
-                                <button class="drama-ep-circle-btn" title="Play Episode @currentEp.EpisodeNumber">
+                                <button type="button" class="drama-ep-circle-btn" @onclick="() => PlayEpisode(currentEp)" title="Play Episode @currentEp.EpisodeNumber">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                         <polygon points="6 4 19 12 6 20 6 4"></polygon>
                                     </svg>
                                 </button>
-                                <button class="drama-ep-options-btn" title="More options" @onclick:stopPropagation="true">
+                                <button type="button" class="drama-ep-options-btn" title="More options" @onclick:stopPropagation="true">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <circle cx="12" cy="12" r="1"></circle>
                                         <circle cx="12" cy="5" r="1"></circle>
