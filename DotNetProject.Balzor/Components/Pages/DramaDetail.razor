@@ -4,92 +4,106 @@
 <PageTitle>@(Drama?.Title ?? "Drama Details") - NangWorld</PageTitle>
 
 <style>
-    /* Fullscreen dark overlay container - completely overrides any parent layout backgrounds */
-    .sd-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 99999;
-        background: #080C0B !important;
-        color: #FFFFFF !important;
-        overflow-y: auto;
-        font-family: 'Plus Jakarta Sans', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        box-sizing: border-box;
-    }
-
-    .sd-wrapper {
-        max-width: 1050px;
-        margin: 0 auto;
-        padding: 24px 32px 80px;
-        box-sizing: border-box;
-    }
-
-    /* Top Navigation */
-    .sd-nav {
+    /* Top bar above the theater card */
+    .drama-top-bar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
     }
 
-    .sd-icon-btn {
+    .drama-back-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 18px;
+        border-radius: 9999px;
+        background: #FFFFFF;
+        border: 1px solid rgba(24, 59, 54, 0.12);
+        color: #183B36;
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        transition: all 0.2s ease;
+    }
+
+    .drama-back-pill:hover {
+        background: #DE7149;
+        color: #FFFFFF;
+        border-color: #DE7149;
+        transform: translateX(-3px);
+    }
+
+    .drama-top-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .drama-top-icon-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         width: 38px;
         height: 38px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.08) !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
-        color: #FFFFFF !important;
+        background: #FFFFFF;
+        border: 1px solid rgba(24, 59, 54, 0.12);
+        color: #183B36;
         cursor: pointer;
         transition: all 0.2s ease;
-        padding: 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     }
 
-    .sd-icon-btn:hover {
-        background: rgba(255, 255, 255, 0.22) !important;
+    .drama-top-icon-btn:hover {
+        background: #DE7149;
+        color: #FFFFFF;
+        border-color: #DE7149;
         transform: scale(1.08);
     }
 
-    .sd-nav-right {
-        display: flex;
-        align-items: center;
-        gap: 12px;
+    /* Main Theater Card (Dashboard Forest Jade Theme) */
+    .drama-theater-card {
+        background: #0F2420;
+        border-radius: 24px;
+        padding: 36px 40px 48px;
+        color: #F4EFEA;
+        box-shadow: 0 16px 40px rgba(15, 36, 32, 0.16);
+        border: 1px solid rgba(244, 239, 234, 0.08);
+        box-sizing: border-box;
     }
 
-    /* Video Player Area */
-    .sd-player-wrap {
+    /* Video Player inside Theater Card */
+    .drama-theater-player {
         margin-bottom: 32px;
         background: #000000;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 16px 45px rgba(0, 0, 0, 0.9);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(244, 239, 234, 0.12);
     }
 
-    .sd-player-header {
+    .drama-player-bar {
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 12px 20px;
-        background: #0F1D19;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: #142E28;
+        border-bottom: 1px solid rgba(244, 239, 234, 0.08);
     }
 
-    .sd-player-info {
-        font-size: 14px;
+    .drama-player-title {
+        font-size: 14.5px;
         font-weight: 700;
-        color: #FFFFFF;
+        color: #F4EFEA;
         display: flex;
         align-items: center;
         gap: 10px;
     }
 
-    .sd-badge-now-playing {
-        background: #3B82F6;
+    .drama-ep-badge {
+        background: #DE7149;
         color: #FFFFFF;
         font-size: 11px;
         padding: 2px 10px;
@@ -97,7 +111,27 @@
         font-weight: 700;
     }
 
-    .sd-video-element {
+    .drama-player-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(244, 239, 234, 0.1);
+        border: 1px solid rgba(244, 239, 234, 0.15);
+        color: #F4EFEA;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .drama-player-close:hover {
+        background: #DE7149;
+        border-color: #DE7149;
+        color: #FFFFFF;
+    }
+
+    .drama-video {
         width: 100%;
         aspect-ratio: 16 / 9;
         max-height: 540px;
@@ -106,7 +140,7 @@
     }
 
     /* Hero Section - 2 Columns (Image 2 Design) */
-    .sd-hero {
+    .drama-hero {
         display: flex;
         flex-direction: row;
         align-items: flex-start;
@@ -114,26 +148,26 @@
         margin-bottom: 40px;
     }
 
-    .sd-poster-box {
+    .drama-poster-wrap {
         width: 240px;
         min-width: 240px;
         aspect-ratio: 3 / 4;
-        border-radius: 14px;
+        border-radius: 16px;
         overflow: hidden;
-        background: #142421;
-        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #16362F;
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(244, 239, 234, 0.12);
         flex-shrink: 0;
     }
 
-    .sd-poster-img {
+    .drama-poster {
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
     }
 
-    .sd-info-col {
+    .drama-info {
         flex: 1;
         min-width: 0;
         display: flex;
@@ -141,29 +175,25 @@
         gap: 12px;
     }
 
-    .sd-title {
+    .drama-heading {
         font-family: 'Playfair Display', Georgia, serif;
         font-size: 34px;
         font-weight: 800;
-        color: #FFFFFF;
+        color: #F4EFEA;
         margin: 0;
         line-height: 1.18;
     }
 
-    .sd-meta-row {
+    .drama-meta {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
         gap: 10px;
         font-size: 13.5px;
-        color: #A3B3AE;
+        color: #9DB4AE;
     }
 
-    .sd-dot {
-        opacity: 0.5;
-    }
-
-    .sd-badge-hd {
+    .badge-gold-hd {
         background: #F59E0B;
         color: #000000;
         font-size: 11px;
@@ -173,9 +203,9 @@
         line-height: 1.2;
     }
 
-    .sd-badge-pill {
-        background: rgba(255, 255, 255, 0.12);
-        color: #E2E8F0;
+    .badge-dark-pill {
+        background: rgba(244, 239, 234, 0.12);
+        color: #F4EFEA;
         font-size: 11.5px;
         font-weight: 600;
         padding: 2px 8px;
@@ -183,67 +213,66 @@
         line-height: 1.2;
     }
 
-    .sd-synopsis {
+    .drama-desc {
         font-size: 14px;
-        line-height: 1.6;
-        color: #9AA7A2;
-        margin: 4px 0 6px;
+        line-height: 1.65;
+        color: #B5C4BF;
+        margin: 4px 0 8px;
         max-width: 740px;
     }
 
-    /* Action Buttons Row */
-    .sd-actions {
+    .drama-btns {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
         gap: 12px;
-        margin: 6px 0 12px;
+        margin: 6px 0 14px;
     }
 
-    .sd-btn-play {
+    .drama-btn-play {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: #4F46E5 !important;
+        background: #DE7149 !important;
         color: #FFFFFF !important;
         border: 0 !important;
-        border-radius: 10px;
-        padding: 10px 26px;
-        font-size: 14.5px;
+        border-radius: 9999px;
+        padding: 11px 28px;
+        font-size: 14px;
         font-weight: 700;
         cursor: pointer;
-        box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4);
+        box-shadow: 0 4px 14px rgba(222, 113, 73, 0.35);
         transition: all 0.2s ease;
     }
 
-    .sd-btn-play:hover {
-        background: #4338CA !important;
-        transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.55);
+    .drama-btn-play:hover {
+        background: #C85C34 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(222, 113, 73, 0.45);
     }
 
-    .sd-btn-secondary {
+    .drama-btn-watchlist {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: rgba(255, 255, 255, 0.08) !important;
-        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        background: rgba(244, 239, 234, 0.08) !important;
+        border: 1.5px solid rgba(244, 239, 234, 0.25) !important;
         color: #F4EFEA !important;
-        border-radius: 10px;
-        padding: 10px 20px;
+        border-radius: 9999px;
+        padding: 10px 22px;
         font-size: 13.5px;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
     }
 
-    .sd-btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.16) !important;
-        border-color: rgba(255, 255, 255, 0.3) !important;
+    .drama-btn-watchlist:hover {
+        background: rgba(244, 239, 234, 0.16) !important;
+        border-color: rgba(244, 239, 234, 0.4) !important;
+        transform: translateY(-1px);
     }
 
-    /* Credits */
-    .sd-credits {
+    .drama-credits-list {
         display: flex;
         flex-direction: column;
         gap: 6px;
@@ -251,121 +280,126 @@
         margin-top: 4px;
     }
 
-    .sd-credits-row {
+    .drama-credit-item {
         display: flex;
         gap: 16px;
     }
 
-    .sd-credits-label {
-        width: 65px;
-        color: #6E7D76;
+    .drama-credit-lbl {
+        width: 70px;
+        color: #6E8882;
         font-weight: 500;
         flex-shrink: 0;
     }
 
-    .sd-credits-value {
-        color: #B5BFBA;
+    .drama-credit-val {
+        color: #C5D2CE;
     }
 
     /* Episodes Section Header */
-    .sd-episodes-head {
+    .drama-ep-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding-bottom: 14px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(244, 239, 234, 0.1);
+        margin-bottom: 14px;
     }
 
-    .sd-episodes-title {
+    .drama-ep-title-h2 {
         font-size: 21px;
-        font-weight: 700;
-        color: #FFFFFF;
+        font-weight: 800;
+        color: #F4EFEA;
         margin: 0;
     }
 
-    .sd-episodes-count {
-        font-size: 13px;
-        color: #8C9993;
-        font-weight: 500;
+    .drama-ep-count-span {
+        font-size: 13.5px;
+        color: #8FA9AA;
+        font-weight: 600;
     }
 
-    /* Episode Rows List (Horizontal rows like Photo 2) */
-    .sd-ep-list {
+    /* Episodes List Rows (Horizontal rows like Photo 2) */
+    .drama-episodes-container {
         display: flex;
         flex-direction: column;
+        gap: 10px;
     }
 
-    .sd-ep-row {
+    .drama-episode-item {
         display: flex;
         align-items: center;
         gap: 20px;
-        padding: 15px 12px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 10px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
         cursor: pointer;
-        transition: background 0.18s ease;
+        transition: all 0.2s ease;
     }
 
-    .sd-ep-row:hover {
-        background: rgba(255, 255, 255, 0.05);
+    .drama-episode-item:hover {
+        background: rgba(222, 113, 73, 0.08);
+        border-color: rgba(222, 113, 73, 0.35);
+        transform: translateX(4px);
     }
 
-    .sd-ep-row.active {
-        background: rgba(79, 70, 229, 0.18);
-        border-left: 3px solid #4F46E5;
+    .drama-episode-item.active {
+        background: rgba(222, 113, 73, 0.16);
+        border-left: 4px solid #DE7149;
     }
 
-    .sd-ep-thumb {
+    .drama-ep-thumb-wrapper {
         position: relative;
         width: 145px;
         height: 82px;
         flex-shrink: 0;
-        border-radius: 8px;
+        border-radius: 10px;
         overflow: hidden;
-        background: #182824;
+        background: #142C27;
     }
 
-    .sd-ep-thumb-img {
+    .drama-ep-thumb-image {
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
     }
 
-    .sd-ep-overlay {
+    .drama-ep-disc-overlay {
         position: absolute;
         inset: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(0, 0, 0, 0.38);
+        background: rgba(0, 0, 0, 0.35);
         transition: background 0.15s ease;
     }
 
-    .sd-ep-row:hover .sd-ep-overlay {
-        background: rgba(0, 0, 0, 0.15);
+    .drama-episode-item:hover .drama-ep-disc-overlay {
+        background: rgba(0, 0, 0, 0.1);
     }
 
-    .sd-ep-disc {
+    .drama-ep-disc-circle {
         width: 32px;
         height: 32px;
         border-radius: 50%;
-        background: rgba(0, 0, 0, 0.7);
+        background: rgba(15, 36, 32, 0.85);
         backdrop-filter: blur(4px);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #FFFFFF;
+        color: #F4EFEA;
         transition: transform 0.15s ease, background 0.15s ease;
     }
 
-    .sd-ep-row:hover .sd-ep-disc {
-        transform: scale(1.12);
-        background: #4F46E5;
+    .drama-episode-item:hover .drama-ep-disc-circle {
+        transform: scale(1.15);
+        background: #DE7149;
+        color: #FFFFFF;
     }
 
-    .sd-ep-info {
+    .drama-ep-info-col {
         flex: 1;
         min-width: 0;
         display: flex;
@@ -373,19 +407,19 @@
         gap: 4px;
     }
 
-    .sd-ep-name {
+    .drama-ep-name-h4 {
         font-size: 15px;
         font-weight: 700;
-        color: #FFFFFF;
+        color: #F4EFEA;
         margin: 0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
-    .sd-ep-desc {
+    .drama-ep-desc-p {
         font-size: 12.5px;
-        color: #8C9993;
+        color: #8FA9AA;
         line-height: 1.45;
         margin: 0;
         display: -webkit-box;
@@ -394,26 +428,26 @@
         overflow: hidden;
     }
 
-    .sd-ep-right {
+    .drama-ep-actions-right {
         display: flex;
         align-items: center;
         gap: 16px;
         flex-shrink: 0;
     }
 
-    .sd-ep-duration {
+    .drama-ep-time {
         font-size: 13px;
-        color: #8C9993;
+        color: #8FA9AA;
         font-weight: 500;
     }
 
-    .sd-ep-circle-play {
+    .drama-ep-circle-btn {
         width: 34px;
         height: 34px;
         border-radius: 50%;
-        border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+        border: 1.5px solid rgba(244, 239, 234, 0.35) !important;
         background: transparent !important;
-        color: #FFFFFF !important;
+        color: #F4EFEA !important;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -422,14 +456,15 @@
         padding: 0;
     }
 
-    .sd-ep-row:hover .sd-ep-circle-play {
-        border-color: #FFFFFF !important;
-        background: rgba(255, 255, 255, 0.18) !important;
-        transform: scale(1.08);
+    .drama-episode-item:hover .drama-ep-circle-btn {
+        border-color: #DE7149 !important;
+        background: #DE7149 !important;
+        color: #FFFFFF !important;
+        transform: scale(1.1);
     }
 
-    .sd-ep-dots {
-        color: #6E7D76 !important;
+    .drama-ep-options-btn {
+        color: #6E8882 !important;
         background: transparent !important;
         border: 0 !important;
         cursor: pointer;
@@ -439,150 +474,152 @@
         justify-content: center;
     }
 
-    .sd-ep-dots:hover {
-        color: #FFFFFF !important;
+    .drama-ep-options-btn:hover {
+        color: #F4EFEA !important;
     }
 
-    /* Loading state */
-    .sd-loading {
-        padding: 80px 20px;
+    .drama-loading-box {
+        padding: 60px 20px;
         text-align: center;
-        color: #8C9993;
+        color: #183B36;
     }
 
-    .sd-spinner {
+    .drama-spinner-circle {
         width: 44px;
         height: 44px;
-        border: 3.5px solid rgba(255, 255, 255, 0.12);
-        border-top-color: #4F46E5;
+        border: 3.5px solid rgba(24, 59, 54, 0.15);
+        border-top-color: #DE7149;
         border-radius: 50%;
-        animation: sdSpin 0.8s linear infinite;
+        animation: dramaSpin 0.8s linear infinite;
         margin: 0 auto 16px;
     }
 
-    @@keyframes sdSpin {
+    @@keyframes dramaSpin {
         to { transform: rotate(360deg); }
     }
 
-    @@media (max-width: 768px) {
-        .sd-wrapper {
-            padding: 16px 14px 60px;
+    @@media (max-width: 992px) {
+        .drama-theater-card {
+            padding: 24px 20px;
         }
-        .sd-hero {
+        .drama-hero {
             flex-direction: column;
             align-items: center;
             text-align: center;
         }
-        .sd-poster-box {
-            width: 180px;
-            min-width: 180px;
+        .drama-poster-wrap {
+            width: 190px;
+            min-width: 190px;
         }
-        .sd-meta-row, .sd-actions, .sd-credits-row {
+        .drama-meta, .drama-btns, .drama-credit-item {
             justify-content: center;
         }
-        .sd-ep-desc {
+        .drama-ep-desc-p {
             display: none;
         }
     }
 </style>
 
-<div class="sd-container">
-    <div class="sd-wrapper">
-        <!-- Top Navigation Bar -->
-        <div class="sd-nav">
-            <button class="sd-icon-btn" @onclick="GoBack" title="Back to Catalog">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="15 18 9 12 15 6"></polyline>
+<div class="drama-page-flow">
+    <!-- Top Action Bar (Back to Browse + Cast) -->
+    <div class="drama-top-bar">
+        <button class="drama-back-pill" @onclick="GoBack" title="Back to Catalog">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            <span>Back to Browse</span>
+        </button>
+
+        <div class="drama-top-actions">
+            <button class="drama-top-icon-btn" title="Cast to TV">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="2" y1="20" x2="2.01" y2="20"></line>
+                    <path d="M5 20a5 5 0 0 0-5-5"></path>
+                    <path d="M9 20a9 9 0 0 0-9-9"></path>
+                    <path d="M2 12V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"></path>
                 </svg>
             </button>
-            <div class="sd-nav-right">
-                <button class="sd-icon-btn" title="Cast to TV">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="2" y1="20" x2="2.01" y2="20"></line>
-                        <path d="M5 20a5 5 0 0 0-5-5"></path>
-                        <path d="M9 20a9 9 0 0 0-9-9"></path>
-                        <path d="M2 12V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"></path>
-                    </svg>
-                </button>
-                <button class="sd-icon-btn" @onclick="GoBack" title="Close">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
+            <button class="drama-top-icon-btn" @onclick="GoBack" title="Close">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
         </div>
+    </div>
 
-        @if (IsLoading)
-        {
-            <div class="sd-loading">
-                <div class="sd-spinner"></div>
-                <p>Loading drama details and episodes...</p>
-            </div>
-        }
-        else if (!string.IsNullOrEmpty(ErrorMessage))
-        {
-            <div class="sd-loading">
-                <h3 style="color:#FFF;">Unable to load drama</h3>
-                <p>@ErrorMessage</p>
-                <button class="sd-btn-play" style="margin-top:16px;" @onclick="GoBack">Back to Home</button>
-            </div>
-        }
-        else if (Drama != null)
-        {
+    @if (IsLoading)
+    {
+        <div class="drama-loading-box">
+            <div class="drama-spinner-circle"></div>
+            <p>Loading drama details and episodes...</p>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="drama-loading-box">
+            <h3 style="color:#183B36;">Unable to load drama</h3>
+            <p style="color:#5C6B64;">@ErrorMessage</p>
+            <button class="drama-btn-play" style="margin-top:16px;" @onclick="GoBack">Back to Home</button>
+        </div>
+    }
+    else if (Drama != null)
+    {
+        <!-- Deep Forest Theater Card (Matching Dashboard Theme) -->
+        <div class="drama-theater-card">
             <!-- Video Player (Appears when episode or play is clicked!) -->
             @if (IsPlayingVideo)
             {
-                <div class="sd-player-wrap">
-                    <div class="sd-player-header">
-                        <div class="sd-player-info">
+                <div class="drama-theater-player">
+                    <div class="drama-player-bar">
+                        <div class="drama-player-title">
                             <span>@ActiveVideoTitle</span>
-                            <span class="sd-badge-now-playing">EP @ActiveEpisodeNumber</span>
+                            <span class="drama-ep-badge">EP @ActiveEpisodeNumber</span>
                         </div>
-                        <button class="sd-icon-btn" @onclick="StopPlaying" title="Close Video Player">
+                        <button class="drama-player-close" @onclick="StopPlaying" title="Close Video Player">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                             </svg>
                         </button>
                     </div>
-                    <video class="sd-video-element" src="@ActiveVideoUrl" controls autoplay poster="@ActiveVideoPoster" preload="auto">
+                    <video class="drama-video" src="@ActiveVideoUrl" controls autoplay poster="@ActiveVideoPoster" preload="auto">
                         Your browser does not support the video tag.
                     </video>
                 </div>
             }
 
             <!-- Hero Section: Cover on Left, Details on Right (Photo 2 Layout) -->
-            <div class="sd-hero">
-                <div class="sd-poster-box">
-                    <img src="@Drama.PosterUrl" alt="@Drama.Title" class="sd-poster-img" />
+            <div class="drama-hero">
+                <div class="drama-poster-wrap">
+                    <img src="@Drama.PosterUrl" alt="@Drama.Title" class="drama-poster" />
                 </div>
 
-                <div class="sd-info-col">
-                    <h1 class="sd-title">@Drama.Title</h1>
+                <div class="drama-info">
+                    <h1 class="drama-heading">@Drama.Title</h1>
 
-                    <div class="sd-meta-row">
+                    <div class="drama-meta">
                         <span>@DramaYear</span>
-                        <span class="sd-dot">•</span>
+                        <span>•</span>
                         <span>@DramaTotalEpisodesText</span>
-                        <span class="sd-dot">•</span>
+                        <span>•</span>
                         <span>@DramaGenres</span>
-                        <span class="sd-badge-hd">HD</span>
-                        <span class="sd-badge-pill">@DramaAgeRating</span>
-                        <span class="sd-badge-pill">@DramaLanguage</span>
+                        <span class="badge-gold-hd">HD</span>
+                        <span class="badge-dark-pill">@DramaAgeRating</span>
+                        <span class="badge-dark-pill">@DramaLanguage</span>
                     </div>
 
-                    <p class="sd-synopsis">@Drama.Description</p>
+                    <p class="drama-desc">@Drama.Description</p>
 
-                    <div class="sd-actions">
-                        <button class="sd-btn-play" @onclick="StartPlayingFirstEpisode">
+                    <div class="drama-btns">
+                        <button class="drama-btn-play" @onclick="StartPlayingFirstEpisode">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
                             </svg>
                             <span>Play</span>
                         </button>
 
-                        <button class="sd-btn-secondary" @onclick="ToggleWatchlist">
+                        <button class="drama-btn-watchlist" @onclick="ToggleWatchlist">
                             @if (IsWatchlisted)
                             {
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -600,7 +637,7 @@
                             }
                         </button>
 
-                        <button class="sd-btn-secondary">
+                        <button class="drama-btn-watchlist">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
                                 <polyline points="16 6 12 2 8 6"></polyline>
@@ -610,56 +647,56 @@
                         </button>
                     </div>
 
-                    <div class="sd-credits">
-                        <div class="sd-credits-row">
-                            <span class="sd-credits-label">Starring</span>
-                            <span class="sd-credits-value">@DramaStarring</span>
+                    <div class="drama-credits-list">
+                        <div class="drama-credit-item">
+                            <span class="drama-credit-lbl">Starring</span>
+                            <span class="drama-credit-val">@DramaStarring</span>
                         </div>
-                        <div class="sd-credits-row">
-                            <span class="sd-credits-label">Creators</span>
-                            <span class="sd-credits-value">@DramaCreators</span>
+                        <div class="drama-credit-item">
+                            <span class="drama-credit-lbl">Creators</span>
+                            <span class="drama-credit-val">@DramaCreators</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Episodes Section Header -->
-            <div class="sd-episodes-head">
-                <h2 class="sd-episodes-title">Episodes</h2>
-                <span class="sd-episodes-count">@DramaTotalEpisodesText</span>
+            <div class="drama-ep-header">
+                <h2 class="drama-ep-title-h2">Episodes</h2>
+                <span class="drama-ep-count-span">@DramaTotalEpisodesText</span>
             </div>
 
             <!-- Episodes List (Horizontal Rows like Image 2) -->
-            <div class="sd-ep-list">
+            <div class="drama-episodes-container">
                 @if (Episodes != null && Episodes.Any())
                 {
                     @foreach (var ep in Episodes)
                     {
                         var currentEp = ep;
                         bool isCurrentPlaying = (currentEp.EpisodeNumber == ActiveEpisodeNumber && IsPlayingVideo);
-                        <div class="sd-ep-row @(isCurrentPlaying ? "active" : "")" @onclick="() => PlayEpisode(currentEp)">
-                            <div class="sd-ep-thumb">
-                                <img src="@GetEpisodeThumbnail(currentEp)" alt="Episode @currentEp.EpisodeNumber" class="sd-ep-thumb-img" />
-                                <div class="sd-ep-overlay">
-                                    <div class="sd-ep-disc">
+                        <div class="drama-episode-item @(isCurrentPlaying ? "active" : "")" @onclick="() => PlayEpisode(currentEp)">
+                            <div class="drama-ep-thumb-wrapper">
+                                <img src="@GetEpisodeThumbnail(currentEp)" alt="Episode @currentEp.EpisodeNumber" class="drama-ep-thumb-image" />
+                                <div class="drama-ep-disc-overlay">
+                                    <div class="drama-ep-disc-circle">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                             <polygon points="6 4 19 12 6 20 6 4"></polygon>
                                         </svg>
                                     </div>
                                 </div>
                             </div>
-                            <div class="sd-ep-info">
-                                <h4 class="sd-ep-name">@currentEp.EpisodeNumber. @(string.IsNullOrWhiteSpace(currentEp.Title) ? $"Episode {currentEp.EpisodeNumber}" : currentEp.Title)</h4>
-                                <p class="sd-ep-desc">@(string.IsNullOrWhiteSpace(currentEp.Description) ? Drama.Description : currentEp.Description)</p>
+                            <div class="drama-ep-info-col">
+                                <h4 class="drama-ep-name-h4">@currentEp.EpisodeNumber. @(string.IsNullOrWhiteSpace(currentEp.Title) ? $"Episode {currentEp.EpisodeNumber}" : currentEp.Title)</h4>
+                                <p class="drama-ep-desc-p">@(string.IsNullOrWhiteSpace(currentEp.Description) ? Drama.Description : currentEp.Description)</p>
                             </div>
-                            <div class="sd-ep-right">
-                                <span class="sd-ep-duration">@(currentEp.Duration.HasValue && currentEp.Duration.Value > 0 ? $"{currentEp.Duration.Value} min" : "70 min")</span>
-                                <button class="sd-ep-circle-play" title="Play Episode @currentEp.EpisodeNumber">
+                            <div class="drama-ep-actions-right">
+                                <span class="drama-ep-time">@(currentEp.Duration.HasValue && currentEp.Duration.Value > 0 ? $"{currentEp.Duration.Value} min" : "70 min")</span>
+                                <button class="drama-ep-circle-btn" title="Play Episode @currentEp.EpisodeNumber">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                         <polygon points="6 4 19 12 6 20 6 4"></polygon>
                                     </svg>
                                 </button>
-                                <button class="sd-ep-dots" title="More options" @onclick:stopPropagation="true">
+                                <button class="drama-ep-options-btn" title="More options" @onclick:stopPropagation="true">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <circle cx="12" cy="12" r="1"></circle>
                                         <circle cx="12" cy="5" r="1"></circle>
@@ -672,11 +709,11 @@
                 }
                 else
                 {
-                    <div style="padding: 30px; text-align: center; color: #8C9993;">
+                    <div style="padding: 30px; text-align: center; color: #8FA9AA;">
                         <p>No episodes found for this series.</p>
                     </div>
                 }
             </div>
-        }
-    </div>
+        </div>
+    }
 </div>
