@@ -1,11 +1,18 @@
 using DotNetProject.Balzor.Components;
 using DotNetProject.Balzor.Components.Shared;
+using DotNetProject.Database.AppDbModels;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Database context for direct database user authentication and data access
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? "Server=localhost;Database=MyFlixDb;User Id=sa;Password=sasa@123;TrustServerCertificate=True;"));
 
 builder.Services.AddHttpClient("Api", client =>
 {
@@ -61,7 +68,6 @@ if (videoProviders.Count > 0)
     });
 }
 
-// Dedicated routes for each drama to prevent file name collisions (e.g. EP1 1080P.mp4)
 var dramaRouteMap = new Dictionary<string, string>
 {
     { "/videos/fool-in-love", @"D:\Fool In Love" },

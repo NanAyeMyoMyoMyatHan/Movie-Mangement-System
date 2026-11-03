@@ -1,4 +1,7 @@
+using DotNetProject.Database.AppDbModels;
 using DotNetProject.Domain.Features.Users;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,6 +38,7 @@ namespace DotNetProject.Balzor.Components.Shared
     public class AuthService
     {
         private readonly HttpClientService _api;
+        private readonly IServiceProvider _serviceProvider;
         private CurrentUserDto _currentUser = new();
         private bool _isInitialized = false;
 
@@ -43,9 +47,10 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public event Action? OnAuthStateChanged;
 
-        public AuthService(HttpClientService api)
+        public AuthService(HttpClientService api, IServiceProvider serviceProvider)
         {
             _api = api;
+            _serviceProvider = serviceProvider;
             EnsureInitialized();
         }
 
@@ -117,7 +122,7 @@ namespace DotNetProject.Balzor.Components.Shared
         {
             if (_isInitialized) return;
 
-            LoadAccounts();
+            LoadLocalAccounts();
 
             try
             {
@@ -140,7 +145,7 @@ namespace DotNetProject.Balzor.Components.Shared
             _isInitialized = true;
         }
 
-        private static void LoadAccounts()
+        private static void LoadLocalAccounts()
         {
             lock (_accountsLock)
             {
@@ -159,87 +164,6 @@ namespace DotNetProject.Balzor.Components.Shared
                         }
                     }
                     catch { }
-                }
-
-                bool needsSave = false;
-
-                // Ensure Admin exists
-                if (!_accounts.Any(a => a.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase)))
-                {
-                    _accounts.Add(new StoredUserAccount
-                    {
-                        Id = 1005,
-                        UserName = "admin",
-                        DisplayName = "System Admin",
-                        Email = "admin@nangworld.com",
-                        Password = "admin123",
-                        Role = "Admin"
-                    });
-                    needsSave = true;
-                }
-
-                // Ensure Nang Aye Han exists with the user's password
-                if (!_accounts.Any(a => a.DisplayName.Equals("Nang Aye Han", StringComparison.OrdinalIgnoreCase) ||
-                                        a.UserName.Equals("Nang Aye Han", StringComparison.OrdinalIgnoreCase) ||
-                                        a.UserName.Equals("nangayehan", StringComparison.OrdinalIgnoreCase)))
-                {
-                    _accounts.Add(new StoredUserAccount
-                    {
-                        Id = 1001,
-                        UserName = "Nang Aye Han",
-                        DisplayName = "Nang Aye Han",
-                        Email = "nanayemyomyomyathan@gmail.com",
-                        Password = "Ayehan@182003",
-                        Role = "User"
-                    });
-                    needsSave = true;
-                }
-                else
-                {
-                    // Ensure password matches the user's provided password
-                    var userAcc = _accounts.FirstOrDefault(a => a.DisplayName.Equals("Nang Aye Han", StringComparison.OrdinalIgnoreCase) ||
-                                                               a.UserName.Equals("Nang Aye Han", StringComparison.OrdinalIgnoreCase) ||
-                                                               a.UserName.Equals("nangayehan", StringComparison.OrdinalIgnoreCase));
-                    if (userAcc != null && userAcc.Password != "Ayehan@182003")
-                    {
-                        userAcc.Password = "Ayehan@182003";
-                        needsSave = true;
-                    }
-                }
-
-                // Ensure demo Nang exists
-                if (!_accounts.Any(a => a.UserName.Equals("nang", StringComparison.OrdinalIgnoreCase)))
-                {
-                    _accounts.Add(new StoredUserAccount
-                    {
-                        Id = 1003,
-                        UserName = "nang",
-                        DisplayName = "Nang",
-                        Email = "nang@gmail.com",
-                        Password = "1234",
-                        Role = "User"
-                    });
-                    needsSave = true;
-                }
-
-                // Ensure demo Su Su exists
-                if (!_accounts.Any(a => a.UserName.Equals("susu", StringComparison.OrdinalIgnoreCase)))
-                {
-                    _accounts.Add(new StoredUserAccount
-                    {
-                        Id = 1002,
-                        UserName = "susu",
-                        DisplayName = "Su Su",
-                        Email = "su@gmail.com",
-                        Password = "susu",
-                        Role = "User"
-                    });
-                    needsSave = true;
-                }
-
-                if (needsSave)
-                {
-                    SaveAccountsToFile();
                 }
             }
         }
@@ -286,14 +210,75 @@ namespace DotNetProject.Balzor.Components.Shared
                 return new UserLoginResponseModel
                 {
                     IsSuccess = false,
-                    Message = "Username and password are required."
+                    Message = "Username or Email and password are required."
                 };
             }
 
             var cleanInput = usernameOrEmail.Trim();
+            var inputNoSpace = cleanInput.Replace(" ", "").ToLowerInvariant();
             var cleanPwd = password.Trim();
 
-            // 1. Try Authenticating via WebApi
+            // 1. Authenticate against SQL Server Users table via AppDbContext
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetService<AppDbContext>();
+                if (db != null)
+                {
+                    var user = await db.Users.FirstOrDefaultAsync(u =>
+                        !u.IsDeleted &&
+                        (u.Email == cleanInput ||
+                         u.UserName == cleanInput ||
+                         (u.DisplayName != null && u.DisplayName == cleanInput) ||
+                         u.UserName == inputNoSpace ||
+                         (u.DisplayName != null && u.DisplayName == inputNoSpace)) &&
+                        u.Password == cleanPwd);
+
+                    if (user == null)
+                    {
+                        var candidates = await db.Users.Where(u => !u.IsDeleted && u.Password == cleanPwd).ToListAsync();
+                        user = candidates.FirstOrDefault(u =>
+                            u.Email.Equals(cleanInput, StringComparison.OrdinalIgnoreCase) ||
+                            u.UserName.Equals(cleanInput, StringComparison.OrdinalIgnoreCase) ||
+                            (u.DisplayName != null && u.DisplayName.Equals(cleanInput, StringComparison.OrdinalIgnoreCase)) ||
+                            u.UserName.Replace(" ", "").Equals(inputNoSpace, StringComparison.OrdinalIgnoreCase) ||
+                            (u.DisplayName != null && u.DisplayName.Replace(" ", "").Equals(inputNoSpace, StringComparison.OrdinalIgnoreCase)));
+                    }
+
+                    if (user != null)
+                    {
+                        bool isAdmin = user.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase) ||
+                                       user.Email.Equals("admin@nangworld.com", StringComparison.OrdinalIgnoreCase);
+
+                        _currentUser = new CurrentUserDto
+                        {
+                            Id = user.Id,
+                            UserName = user.UserName,
+                            DisplayName = !string.IsNullOrWhiteSpace(user.DisplayName) ? user.DisplayName : user.UserName,
+                            Email = user.Email,
+                            Role = isAdmin ? "Admin" : "User",
+                            LoggedInAt = DateTime.UtcNow
+                        };
+
+                        SaveSession();
+                        OnAuthStateChanged?.Invoke();
+
+                        return new UserLoginResponseModel
+                        {
+                            IsSuccess = true,
+                            Message = $"{_currentUser.Role} login successful.",
+                            Id = user.Id,
+                            UserName = user.UserName,
+                            DisplayName = _currentUser.DisplayName,
+                            Email = user.Email,
+                            Role = _currentUser.Role
+                        };
+                    }
+                }
+            }
+            catch { }
+
+            // 2. Try WebApi Authentication
             try
             {
                 var req = new UserLoginRequestModel
@@ -326,20 +311,18 @@ namespace DotNetProject.Balzor.Components.Shared
             }
             catch { }
 
-            // 2. Local File-Persisted Storage Authentication
+            // 3. Fallback to Local Persistent File (users.json)
             lock (_accountsLock)
             {
-                var inputNoSpaces = cleanInput.Replace(" ", "").ToLowerInvariant();
-
                 var matchedUser = _accounts.FirstOrDefault(u =>
                     string.Equals(u.Password.Trim(), cleanPwd, StringComparison.Ordinal) &&
                     (
                         u.UserName.Equals(cleanInput, StringComparison.OrdinalIgnoreCase) ||
                         u.DisplayName.Equals(cleanInput, StringComparison.OrdinalIgnoreCase) ||
                         u.Email.Equals(cleanInput, StringComparison.OrdinalIgnoreCase) ||
-                        u.UserName.Replace(" ", "").Equals(inputNoSpaces, StringComparison.OrdinalIgnoreCase) ||
-                        u.DisplayName.Replace(" ", "").Equals(inputNoSpaces, StringComparison.OrdinalIgnoreCase) ||
-                        u.Email.Replace(" ", "").Equals(inputNoSpaces, StringComparison.OrdinalIgnoreCase)
+                        u.UserName.Replace(" ", "").Equals(inputNoSpace, StringComparison.OrdinalIgnoreCase) ||
+                        u.DisplayName.Replace(" ", "").Equals(inputNoSpace, StringComparison.OrdinalIgnoreCase) ||
+                        u.Email.Replace(" ", "").Equals(inputNoSpace, StringComparison.OrdinalIgnoreCase)
                     ));
 
                 if (matchedUser != null)
@@ -387,39 +370,65 @@ namespace DotNetProject.Balzor.Components.Shared
             var cleanMail = email.Trim();
             var cleanPass = password.Trim();
 
-            int nextId;
-            lock (_accountsLock)
+            // 1. Insert into SQL Server Users table directly
+            try
             {
-                nextId = _accounts.Any() ? _accounts.Max(a => a.Id) + 1 : 2000;
-                var existing = _accounts.FirstOrDefault(a =>
-                    a.UserName.Equals(cleanUName, StringComparison.OrdinalIgnoreCase) ||
-                    a.Email.Equals(cleanMail, StringComparison.OrdinalIgnoreCase) ||
-                    a.DisplayName.Equals(cleanDName, StringComparison.OrdinalIgnoreCase));
+                using var scope = _serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetService<AppDbContext>();
+                if (db != null)
+                {
+                    var existing = await db.Users.FirstOrDefaultAsync(u =>
+                        !u.IsDeleted &&
+                        (u.UserName == cleanUName || u.Email == cleanMail));
 
-                if (existing != null)
-                {
-                    existing.Password = cleanPass;
-                    existing.DisplayName = cleanDName;
-                    existing.Email = cleanMail;
-                }
-                else
-                {
-                    _accounts.Add(new StoredUserAccount
+                    if (existing != null)
                     {
-                        Id = nextId,
+                        return new UserCreateResponseModel
+                        {
+                            IsSuccess = false,
+                            Message = "Username or email is already registered in database."
+                        };
+                    }
+
+                    var dbUser = new DotNetProject.Database.AppDbModels.User
+                    {
                         UserName = cleanUName,
                         DisplayName = cleanDName,
                         Email = cleanMail,
                         Password = cleanPass,
-                        Role = cleanUName.Equals("admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : "User",
-                        CreatedAt = DateTime.UtcNow
-                    });
+                        CreatedAt = DateTime.UtcNow,
+                        IsDeleted = false
+                    };
+
+                    db.Users.Add(dbUser);
+                    await db.SaveChangesAsync();
+
+                    // Also mirror into local persistent file
+                    lock (_accountsLock)
+                    {
+                        _accounts.Add(new StoredUserAccount
+                        {
+                            Id = dbUser.Id,
+                            UserName = cleanUName,
+                            DisplayName = cleanDName,
+                            Email = cleanMail,
+                            Password = cleanPass,
+                            Role = cleanUName.Equals("admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : "User",
+                            CreatedAt = DateTime.UtcNow
+                        });
+                        SaveAccountsToFile();
+                    }
+
+                    return new UserCreateResponseModel
+                    {
+                        IsSuccess = true,
+                        Message = "Account registered successfully in database."
+                    };
                 }
-
-                SaveAccountsToFile();
             }
+            catch { }
 
-            // Also forward to WebApi in background if available
+            // 2. Fallback to WebApi registration if direct DB scope was unavailable
             try
             {
                 var req = new UserCreateRequestModel
@@ -429,9 +438,43 @@ namespace DotNetProject.Balzor.Components.Shared
                     Email = cleanMail,
                     Password = cleanPass
                 };
-                await _api.RegisterUserAsync(req);
+                var apiRes = await _api.RegisterUserAsync(req);
+                if (apiRes != null && apiRes.IsSuccess)
+                {
+                    return apiRes;
+                }
             }
             catch { }
+
+            // 3. Fallback to local storage registration
+            lock (_accountsLock)
+            {
+                int nextId = _accounts.Any() ? _accounts.Max(a => a.Id) + 1 : 2000;
+                var existing = _accounts.FirstOrDefault(a =>
+                    a.UserName.Equals(cleanUName, StringComparison.OrdinalIgnoreCase) ||
+                    a.Email.Equals(cleanMail, StringComparison.OrdinalIgnoreCase));
+
+                if (existing != null)
+                {
+                    return new UserCreateResponseModel
+                    {
+                        IsSuccess = false,
+                        Message = "Username or email is already registered."
+                    };
+                }
+
+                _accounts.Add(new StoredUserAccount
+                {
+                    Id = nextId,
+                    UserName = cleanUName,
+                    DisplayName = cleanDName,
+                    Email = cleanMail,
+                    Password = cleanPass,
+                    Role = cleanUName.Equals("admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : "User",
+                    CreatedAt = DateTime.UtcNow
+                });
+                SaveAccountsToFile();
+            }
 
             return new UserCreateResponseModel
             {
