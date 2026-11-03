@@ -13,3 +13,7 @@ obj/
 Thumbs.db
 ehthumbs.db
 *.zip
+
+## Storage runtime data
+DotNetProject.Balzor/Storage/*.json
+

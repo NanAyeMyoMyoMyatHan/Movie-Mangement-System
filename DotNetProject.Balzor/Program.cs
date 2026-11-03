@@ -15,9 +15,9 @@ builder.Services.AddHttpClient("Api", client =>
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<HttpClientService>();
 builder.Services.AddScoped<AuthService>();
-builder.Services.AddSingleton<WatchLaterService>();
-builder.Services.AddSingleton<FavoriteService>();
-builder.Services.AddSingleton<WatchHistoryService>();
+builder.Services.AddScoped<WatchLaterService>();
+builder.Services.AddScoped<FavoriteService>();
+builder.Services.AddScoped<WatchHistoryService>();
 
 var app = builder.Build();
 

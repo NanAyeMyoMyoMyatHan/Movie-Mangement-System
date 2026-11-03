@@ -21,19 +21,34 @@ namespace DotNetProject.Balzor.Components.Shared
         public DateTime LastWatchedAt { get; set; } = DateTime.UtcNow;
     }
 
-    public class WatchHistoryService
+    public class WatchHistoryService : IDisposable
     {
+        private readonly AuthService _authService;
         private readonly List<WatchHistoryItem> _history = new();
-        private bool _isInitialized = false;
+        private string _activeUserKey = "guest";
 
         public event Action? OnChange;
 
-        public WatchHistoryService()
+        public WatchHistoryService(AuthService authService)
         {
-            EnsureInitialized();
+            _authService = authService;
+            _activeUserKey = _authService.GetCurrentUserKey();
+            _authService.OnAuthStateChanged += HandleAuthStateChanged;
+            LoadHistoryForActiveUser();
         }
 
-        private static string GetStoragePath()
+        private void HandleAuthStateChanged()
+        {
+            var newKey = _authService.GetCurrentUserKey();
+            if (_activeUserKey != newKey)
+            {
+                _activeUserKey = newKey;
+                LoadHistoryForActiveUser();
+                OnChange?.Invoke();
+            }
+        }
+
+        private static string GetBaseStorageDir()
         {
             string currentDir = Directory.GetCurrentDirectory();
             string targetDir;
@@ -59,25 +74,31 @@ namespace DotNetProject.Balzor.Components.Shared
             {
                 Directory.CreateDirectory(targetDir);
             }
-            return Path.Combine(targetDir, "watchhistory.json");
+            return targetDir;
+        }
+
+        private string GetStoragePath(string userKey)
+        {
+            var targetDir = GetBaseStorageDir();
+            return Path.Combine(targetDir, $"watchhistory_{userKey}.json");
         }
 
         private void SaveToFile()
         {
             try
             {
-                var filePath = GetStoragePath();
+                var filePath = GetStoragePath(_activeUserKey);
                 var json = JsonSerializer.Serialize(_history, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(filePath, json);
             }
             catch { }
         }
 
-        private void EnsureInitialized()
+        private void LoadHistoryForActiveUser()
         {
-            if (_isInitialized) return;
+            _history.Clear();
+            var filePath = GetStoragePath(_activeUserKey);
 
-            var filePath = GetStoragePath();
             if (File.Exists(filePath))
             {
                 try
@@ -86,105 +107,15 @@ namespace DotNetProject.Balzor.Components.Shared
                     var loaded = JsonSerializer.Deserialize<List<WatchHistoryItem>>(json);
                     if (loaded != null)
                     {
-                        _history.Clear();
                         _history.AddRange(loaded);
-                        _isInitialized = true;
                         return;
                     }
                 }
                 catch { }
             }
 
-            // Seed with initial realistic viewing history
-            _history.Clear();
-            _history.AddRange(GetDefaultSeeds());
-            SaveToFile();
-            _isInitialized = true;
-        }
-
-        private static List<WatchHistoryItem> GetDefaultSeeds()
-        {
-            return new List<WatchHistoryItem>
-            {
-                new WatchHistoryItem
-                {
-                    ContentId = 23,
-                    IsContent = true,
-                    Title = "Alchemy of Souls",
-                    Description = "A powerful sorceress whose soul is trapped in another body becomes involved with a young nobleman.",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg",
-                    EpisodeNumber = 1,
-                    TotalEpisodes = 30,
-                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
-                    ProgressPercentage = 60,
-                    LastWatchedAt = DateTime.UtcNow.AddMinutes(-15)
-                },
-                new WatchHistoryItem
-                {
-                    ContentId = 6,
-                    IsContent = true,
-                    Title = "Bad Buddy",
-                    Description = "Two rival families live next door, but their sons secretly develop deep feelings.",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/b/b7/Bad_Buddy_Series_2021_poster.jpg",
-                    EpisodeNumber = 6,
-                    TotalEpisodes = 12,
-                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
-                    ProgressPercentage = 45,
-                    LastWatchedAt = DateTime.UtcNow.AddHours(-2)
-                },
-                new WatchHistoryItem
-                {
-                    ContentId = 15,
-                    IsContent = true,
-                    Title = "Crash Landing on You",
-                    Description = "A paragliding mishap drops a South Korean heiress in North Korea into the life of an army officer.",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/5/5e/Crash_Landing_on_You_poster.png",
-                    EpisodeNumber = 12,
-                    TotalEpisodes = 16,
-                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
-                    ProgressPercentage = 80,
-                    LastWatchedAt = DateTime.UtcNow.AddHours(-5)
-                },
-                new WatchHistoryItem
-                {
-                    ContentId = 24,
-                    IsContent = true,
-                    Title = "Lovely Runner",
-                    Description = "A passionate fan travels back in time to save her favorite idol from a tragic fate.",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png",
-                    EpisodeNumber = 8,
-                    TotalEpisodes = 16,
-                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
-                    ProgressPercentage = 50,
-                    LastWatchedAt = DateTime.UtcNow.AddDays(-1)
-                },
-                new WatchHistoryItem
-                {
-                    ContentId = 21,
-                    IsContent = true,
-                    Title = "Vincenzo",
-                    Description = "A Korean-Italian mafia lawyer gives a conglomerate a taste of its own medicine.",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/5/5b/Vincenzo_TV_series.jpg",
-                    EpisodeNumber = 4,
-                    TotalEpisodes = 20,
-                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
-                    ProgressPercentage = 30,
-                    LastWatchedAt = DateTime.UtcNow.AddDays(-2)
-                },
-                new WatchHistoryItem
-                {
-                    ContentId = 22,
-                    IsContent = true,
-                    Title = "The Glory",
-                    Description = "Years after surviving horrific high school bullying, a woman puts an elaborate revenge scheme into motion.",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/7/79/The_Glory_TV_series.jpg",
-                    EpisodeNumber = 10,
-                    TotalEpisodes = 16,
-                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
-                    ProgressPercentage = 70,
-                    LastWatchedAt = DateTime.UtcNow.AddDays(-3)
-                }
-            };
+            // Notice: For a new user account, Continue Watching starts empty.
+            // Items are only added when this specific user actually plays or resumes a video!
         }
 
         public Task<List<WatchHistoryItem>> GetHistoryAsync(int limit = 10)
@@ -258,5 +189,10 @@ namespace DotNetProject.Balzor.Components.Shared
         }
 
         private void NotifyStateChanged() => OnChange?.Invoke();
+
+        public void Dispose()
+        {
+            _authService.OnAuthStateChanged -= HandleAuthStateChanged;
+        }
     }
 }

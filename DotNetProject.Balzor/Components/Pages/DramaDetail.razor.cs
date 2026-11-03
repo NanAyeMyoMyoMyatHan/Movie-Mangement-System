@@ -176,21 +176,6 @@ namespace DotNetProject.Balzor.Components.Pages
                     isContent: true,
                     progressPercentage: 45
                 );
-
-                var wlItem = new WatchLaterItem
-                {
-                    Id = Drama.ContentId,
-                    IsContent = true,
-                    Title = Drama.Title,
-                    PosterUrl = Drama.PosterUrl,
-                    Category = DramaLanguage.Contains("Thai", StringComparison.OrdinalIgnoreCase) ? "Thai BL" : "Korean Drama",
-                    Description = Drama.Description,
-                    TotalEpisodes = Episodes.Count > 0 ? Episodes.Count : 16,
-                    CurrentEpisode = ep.EpisodeNumber,
-                    Status = "Watching",
-                    AddedAt = DateTime.UtcNow
-                };
-                await WatchLaterService.AddItemAsync(wlItem);
             }
 
             // Smoothly auto-scroll up to the video player so user immediately sees it playing
