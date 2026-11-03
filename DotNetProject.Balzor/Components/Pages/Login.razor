@@ -1,0 +1,632 @@
+@page "/login"
+@page "/signin"
+@using DotNetProject.Balzor.Components.Shared
+@inject AuthService AuthService
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+<PageTitle>Sign In — NangWorld</PageTitle>
+
+<div class="login-wrapper">
+    <!-- Ambient Background Glows -->
+    <div class="login-ambient-1"></div>
+    <div class="login-ambient-2"></div>
+
+    <div class="login-card">
+        <!-- Logo & Brand -->
+        <div class="login-brand">
+            <a href="/" class="login-logo-link">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="#DE7149">
+                    <path d="M6 3.5c0-.9 1-.1.4.1l13.5 7.5c.8.5.8 1.6 0 2.1L7.4 20.6c-.6.4-1.4 0-1.4-.8V3.5z" />
+                </svg>
+                <span class="login-logo-text">
+                    <span class="logo-white">Nang</span><span class="logo-accent">World</span>
+                </span>
+            </a>
+            <p class="login-tagline">Stream the finest Asian dramas, movies, and series.</p>
+        </div>
+
+        <!-- Mode Tabs: Sign In / Create Account -->
+        <div class="login-mode-tabs">
+            <button type="button" class="login-tab-btn @(IsRegisterMode ? "" : "active")" @onclick="() => SetMode(false)">
+                Sign In
+            </button>
+            <button type="button" class="login-tab-btn @(IsRegisterMode ? "active" : "")" @onclick="() => SetMode(true)">
+                Create Account
+            </button>
+        </div>
+
+        <!-- Quick Demo Fill Pills -->
+        @if (!IsRegisterMode)
+        {
+            <div class="login-demo-box">
+                <span class="login-demo-label">Quick Fill:</span>
+                <button type="button" class="login-demo-pill admin-pill" @onclick="FillAdminDemo" title="Fill admin credentials">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>Admin</span>
+                </button>
+                <button type="button" class="login-demo-pill user-pill" @onclick="FillUserDemo" title="Fill user credentials">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span>User</span>
+                </button>
+            </div>
+        }
+
+        <!-- Error Notification -->
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="login-alert error">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>@ErrorMessage</span>
+            </div>
+        }
+
+        <!-- Success Notification -->
+        @if (!string.IsNullOrEmpty(SuccessMessage))
+        {
+            <div class="login-alert success">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>@SuccessMessage</span>
+            </div>
+        }
+
+        @if (!IsRegisterMode)
+        {
+            <!-- Sign In Form -->
+            <form @onsubmit="HandleLogin" class="login-form">
+                <div class="form-group">
+                    <label for="usernameInput" class="form-label">Username or Email</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <input id="usernameInput" type="text" class="form-input" placeholder="e.g. admin or nang" @bind="LoginUsername" required autofocus />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="passwordInput" class="form-label">Password</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <input id="passwordInput" type="@(ShowPassword ? "text" : "password")" class="form-input" placeholder="Enter password" @bind="LoginPassword" required />
+                        <button type="button" class="btn-toggle-eye" @onclick="() => ShowPassword = !ShowPassword" title="Toggle password visibility">
+                            @if (ShowPassword)
+                            {
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            }
+                            else
+                            {
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            }
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-actions-row">
+                    <label class="remember-label">
+                        <input type="checkbox" @bind="RememberMe" />
+                        <span>Remember me</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-login-submit" disabled="@IsSubmitting">
+                    @if (IsSubmitting)
+                    {
+                        <span class="login-spinner"></span>
+                        <span>Signing In...</span>
+                    }
+                    else
+                    {
+                        <span>Sign In</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    }
+                </button>
+            </form>
+        }
+        else
+        {
+            <!-- Create Account Form -->
+            <form @onsubmit="HandleRegister" class="login-form">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <input type="text" class="form-input" placeholder="Choose a username" @bind="RegUsername" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Full / Display Name</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <input type="text" class="form-input" placeholder="Your display name" @bind="RegDisplayName" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <input type="email" class="form-input" placeholder="you@example.com" @bind="RegEmail" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <input type="password" class="form-input" placeholder="Create password" @bind="RegPassword" required />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login-submit" disabled="@IsSubmitting">
+                    @if (IsSubmitting)
+                    {
+                        <span class="login-spinner"></span>
+                        <span>Creating Account...</span>
+                    }
+                    else
+                    {
+                        <span>Create Account</span>
+                    }
+                </button>
+            </form>
+        }
+
+        <!-- Guest link / Back to catalog -->
+        <div class="login-footer">
+            <a href="/" class="login-guest-link">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                <span>Continue as Guest to NangWorld</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .login-wrapper {
+        min-height: 100vh;
+        background: #0B1613;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        position: relative;
+        overflow: hidden;
+        font-family: inherit;
+    }
+
+    .login-ambient-1 {
+        position: absolute;
+        top: -100px;
+        left: -100px;
+        width: 480px;
+        height: 480px;
+        background: radial-gradient(circle, rgba(222, 113, 73, 0.22) 0%, rgba(11, 22, 19, 0) 70%);
+        pointer-events: none;
+    }
+
+    .login-ambient-2 {
+        position: absolute;
+        bottom: -120px;
+        right: -100px;
+        width: 520px;
+        height: 520px;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, rgba(11, 22, 19, 0) 70%);
+        pointer-events: none;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 450px;
+        background: #0F2420;
+        border: 1px solid rgba(244, 239, 234, 0.12);
+        border-radius: 24px;
+        padding: 40px 36px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+        position: relative;
+        z-index: 2;
+        color: #F4EFEA;
+    }
+
+    .login-brand {
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    .login-logo-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        margin-bottom: 8px;
+    }
+
+    .login-logo-text {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .logo-white { color: #F4EFEA; }
+    .logo-accent { color: #DE7149; }
+
+    .login-tagline {
+        font-size: 13.5px;
+        color: #8FA9AA;
+        margin: 0;
+    }
+
+    /* Mode Tabs */
+    .login-mode-tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 5px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .login-tab-btn {
+        background: transparent;
+        border: none;
+        color: #8FA9AA;
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .login-tab-btn.active {
+        background: #DE7149;
+        color: #FFFFFF;
+        box-shadow: 0 3px 10px rgba(222, 113, 73, 0.35);
+    }
+
+    /* Demo Quick Fill Box */
+    .login-demo-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px dashed rgba(244, 239, 234, 0.15);
+        padding: 8px 12px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-size: 12px;
+    }
+
+    .login-demo-label {
+        color: #8FA9AA;
+        font-weight: 600;
+    }
+
+    .login-demo-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 11.5px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+    }
+
+    .login-demo-pill:hover {
+        transform: translateY(-1px);
+    }
+
+    .admin-pill {
+        background: rgba(222, 113, 73, 0.2);
+        color: #DE7149;
+        border: 1px solid rgba(222, 113, 73, 0.4);
+    }
+
+    .user-pill {
+        background: rgba(16, 185, 129, 0.18);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    /* Alerts */
+    .login-alert {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 14px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 18px;
+    }
+
+    .login-alert.error {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.35);
+        color: #fca5a5;
+    }
+
+    .login-alert.success {
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        color: #6ee7b7;
+    }
+
+    /* Form Styles */
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #C5D2CE;
+    }
+
+    .input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 14px;
+        color: #6E8882;
+        pointer-events: none;
+    }
+
+    .form-input {
+        width: 100%;
+        background: #142E28;
+        border: 1px solid rgba(244, 239, 234, 0.15);
+        color: #F4EFEA;
+        border-radius: 12px;
+        padding: 12px 42px 12px 42px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    .form-input:focus {
+        border-color: #DE7149;
+        box-shadow: 0 0 0 3px rgba(222, 113, 73, 0.2);
+    }
+
+    .btn-toggle-eye {
+        position: absolute;
+        right: 12px;
+        background: transparent;
+        border: none;
+        color: #8FA9AA;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-toggle-eye:hover {
+        color: #F4EFEA;
+    }
+
+    .form-actions-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 12.5px;
+        color: #8FA9AA;
+    }
+
+    .remember-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+    }
+
+    .btn-login-submit {
+        background: #DE7149;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 12px;
+        padding: 13px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 6px 18px rgba(222, 113, 73, 0.35);
+        transition: all 0.2s ease;
+        margin-top: 6px;
+    }
+
+    .btn-login-submit:hover:not(:disabled) {
+        background: #C85F38;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px rgba(222, 113, 73, 0.45);
+    }
+
+    .btn-login-submit:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+
+    .login-spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #FFFFFF;
+        border-radius: 50%;
+        animation: lSpin 0.7s linear infinite;
+    }
+
+    @@keyframes lSpin {
+        to { transform: rotate(360deg); }
+    }
+
+    .login-footer {
+        margin-top: 26px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(244, 239, 234, 0.08);
+        text-align: center;
+    }
+
+    .login-guest-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #8FA9AA;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: color 0.15s ease;
+    }
+
+    .login-guest-link:hover {
+        color: #DE7149;
+    }
+</style>
+
+@code {
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnUrl { get; set; }
+
+    private bool IsRegisterMode = false;
+    private bool ShowPassword = false;
+    private bool RememberMe = true;
+    private bool IsSubmitting = false;
+
+    private string LoginUsername = "";
+    private string LoginPassword = "";
+
+    private string RegUsername = "";
+    private string RegDisplayName = "";
+    private string RegEmail = "";
+    private string RegPassword = "";
+
+    private string? ErrorMessage;
+    private string? SuccessMessage;
+
+    protected override void OnInitialized()
+    {
+        // If already admin and returnUrl is admin, go to admin
+        if (AuthService.IsAdmin())
+        {
+            Nav.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? "/admin" : ReturnUrl);
+        }
+    }
+
+    private void SetMode(bool isRegister)
+    {
+        IsRegisterMode = isRegister;
+        ErrorMessage = null;
+        SuccessMessage = null;
+    }
+
+    private void FillAdminDemo()
+    {
+        LoginUsername = "admin";
+        LoginPassword = "admin123";
+        ErrorMessage = null;
+    }
+
+    private void FillUserDemo()
+    {
+        LoginUsername = "nang";
+        LoginPassword = "1234";
+        ErrorMessage = null;
+    }
+
+    private async Task HandleLogin()
+    {
+        ErrorMessage = null;
+        SuccessMessage = null;
+        IsSubmitting = true;
+
+        try
+        {
+            var res = await AuthService.LoginAsync(LoginUsername, LoginPassword);
+            if (res != null && res.IsSuccess)
+            {
+                if (AuthService.IsAdmin())
+                {
+                    SuccessMessage = "Admin authentication successful! Redirecting to Admin Dashboard...";
+                    StateHasChanged();
+                    await Task.Delay(700);
+                    Nav.NavigateTo("/admin");
+                }
+                else
+                {
+                    SuccessMessage = $"Welcome back, {AuthService.CurrentUser.DisplayName}! Redirecting...";
+                    StateHasChanged();
+                    await Task.Delay(700);
+                    var target = (!string.IsNullOrWhiteSpace(ReturnUrl) && !ReturnUrl.Contains("admin", StringComparison.OrdinalIgnoreCase))
+                        ? ReturnUrl
+                        : "/";
+                    Nav.NavigateTo(target);
+                }
+            }
+            else
+            {
+                ErrorMessage = res?.Message ?? "Invalid username or password.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Login failed: " + ex.Message;
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
+    }
+
+    private async Task HandleRegister()
+    {
+        ErrorMessage = null;
+        SuccessMessage = null;
+        IsSubmitting = true;
+
+        try
+        {
+            var res = await AuthService.RegisterAsync(RegUsername, RegDisplayName, RegEmail, RegPassword);
+            if (res != null && res.IsSuccess)
+            {
+                SuccessMessage = "Account created successfully! Signing in...";
+                StateHasChanged();
+                await Task.Delay(1000);
+                LoginUsername = RegUsername;
+                LoginPassword = RegPassword;
+                IsRegisterMode = false;
+                await HandleLogin();
+            }
+            else
+            {
+                ErrorMessage = res?.Message ?? "Registration failed.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Registration error: " + ex.Message;
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
+    }
+}

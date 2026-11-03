@@ -15,6 +15,9 @@ namespace DotNetProject.Balzor.Components.Pages
         [Inject]
         private NavigationManager Nav { get; set; } = default!;
 
+        [Inject]
+        public AuthService AuthService { get; set; } = default!;
+
         protected List<WatchLaterItem> Items { get; set; } = new();
         protected List<WatchLaterItem> FilteredItems { get; set; } = new();
 
@@ -33,6 +36,7 @@ namespace DotNetProject.Balzor.Components.Pages
         protected override async Task OnInitializedAsync()
         {
             WatchLaterService.OnChange += HandleServiceChange;
+            AuthService.OnAuthStateChanged += HandleAuthChange;
             await LoadItemsAsync();
         }
 
@@ -150,9 +154,15 @@ namespace DotNetProject.Balzor.Components.Pages
             });
         }
 
+        private void HandleAuthChange()
+        {
+            InvokeAsync(StateHasChanged);
+        }
+
         public void Dispose()
         {
             WatchLaterService.OnChange -= HandleServiceChange;
+            AuthService.OnAuthStateChanged -= HandleAuthChange;
         }
     }
 }

@@ -357,6 +357,54 @@ a.myflix-category-link.active svg,
     border: 2px solid #DE7149;
 }
 
+.myflix-avatar-text {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #183B36;
+    color: #F4EFEA;
+    font-size: 14px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #DE7149;
+    flex-shrink: 0;
+}
+
+.header-admin-badge {
+    background: #DE7149;
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    margin-left: 4px;
+}
+
+.myflix-signin-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    background: #DE7149;
+    color: #FFFFFF !important;
+    font-size: 13.5px;
+    font-weight: 700;
+    border-radius: 999px;
+    text-decoration: none !important;
+    transition: all 0.18s ease;
+    box-shadow: 0 4px 12px rgba(222, 113, 73, 0.28);
+}
+
+.myflix-signin-pill:hover {
+    background: #C85E38;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(222, 113, 73, 0.36);
+}
+
 /* ========================================================
    HERO BANNER
    ======================================================== */

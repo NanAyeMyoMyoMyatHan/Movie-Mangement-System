@@ -184,7 +184,113 @@ a.myflix-category-link.active svg,
     border-top: 1px solid rgba(44, 62, 53, 0.08);
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
+}
+
+/* Admin Highlight Pill */
+.admin-highlight {
+    background: rgba(222, 113, 73, 0.08) !important;
+    color: #DE7149 !important;
+    font-weight: 700 !important;
+    position: relative;
+}
+
+.admin-highlight svg {
+    stroke: #DE7149 !important;
+}
+
+.admin-highlight.active {
+    background: #DE7149 !important;
+    color: #FFFFFF !important;
+}
+
+.admin-highlight.active svg {
+    stroke: #FFFFFF !important;
+}
+
+.nav-admin-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10B981;
+    margin-left: auto;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+}
+
+/* User Box in Sidebar */
+.nav-user-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    margin-top: 6px;
+    background: rgba(24, 59, 54, 0.04);
+    border: 1px solid rgba(24, 59, 54, 0.08);
+    border-radius: 12px;
+}
+
+.nav-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #183B36;
+    color: #F4EFEA;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.nav-user-details {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.nav-user-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #183B36;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nav-user-role {
+    font-size: 11px;
+    font-weight: 600;
+    color: #DE7149;
+}
+
+.logout-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    color: #8A5A4A !important;
+}
+
+.logout-btn:hover {
+    background: rgba(222, 113, 73, 0.12) !important;
+    color: #DE7149 !important;
+}
+
+.login-nav-link {
+    background: rgba(222, 113, 73, 0.1) !important;
+    color: #DE7149 !important;
+    font-weight: 700 !important;
+}
+
+.login-nav-link:hover {
+    background: #DE7149 !important;
+    color: #FFFFFF !important;
+}
+
+.login-nav-link:hover svg {
+    stroke: #FFFFFF !important;
 }
 
 /* Responsive */

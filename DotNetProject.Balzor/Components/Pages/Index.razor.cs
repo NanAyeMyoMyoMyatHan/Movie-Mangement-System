@@ -20,6 +20,9 @@ namespace DotNetProject.Balzor.Components.Pages
         [Inject]
         private WatchHistoryService WatchHistoryService { get; set; } = default!;
 
+        [Inject]
+        public AuthService AuthService { get; set; } = default!;
+
         protected List<ContentListItemResponse> Dramas { get; set; } = new();
         protected List<MovieListItemResponse> Movies { get; set; } = new();
         protected List<ThaiListItemResponse> Thais { get; set; } = new();
@@ -142,6 +145,7 @@ namespace DotNetProject.Balzor.Components.Pages
 
             // Load Continue Watching history & subscribe to reactive changes
             WatchHistoryService.OnChange += HandleHistoryChange;
+            AuthService.OnAuthStateChanged += HandleAuthChange;
             await LoadContinueWatchingAsync();
 
             IsLoading = false;
@@ -304,9 +308,15 @@ namespace DotNetProject.Balzor.Components.Pages
             Nav.NavigateTo($"/drama/{id}?ep={ep}&autoplay=true");
         }
 
+        private void HandleAuthChange()
+        {
+            InvokeAsync(StateHasChanged);
+        }
+
         public void Dispose()
         {
             WatchHistoryService.OnChange -= HandleHistoryChange;
+            AuthService.OnAuthStateChanged -= HandleAuthChange;
         }
     }
 }

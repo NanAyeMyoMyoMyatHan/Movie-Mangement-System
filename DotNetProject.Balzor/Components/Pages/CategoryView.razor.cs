@@ -35,6 +35,9 @@ namespace DotNetProject.Balzor.Components.Pages
         [Inject]
         private FavoriteService FavoriteService { get; set; } = default!;
 
+        [Inject]
+        public AuthService AuthService { get; set; } = default!;
+
         [Parameter]
         public string? CategorySlug { get; set; }
 
@@ -56,17 +59,19 @@ namespace DotNetProject.Balzor.Components.Pages
         {
             Nav.LocationChanged += HandleLocationChanged;
             FavoriteService.OnChange += HandleFavoritesChanged;
+            AuthService.OnAuthStateChanged += HandleAuthChanged;
             await RefreshFavoriteCacheAsync();
         }
 
         protected override async Task OnParametersSetAsync()
         {
-            var detectedSlug = NormalizeSlug(CategorySlug);
+            var detectedSlug = ExtractSlug(Nav.Uri, CategorySlug);
             if (detectedSlug != CurrentSlug || !AllItems.Any())
             {
                 CurrentSlug = detectedSlug;
                 ConfigureCategoryMeta();
                 await LoadCategoryDataAsync();
+                StateHasChanged();
             }
         }
 
@@ -74,7 +79,7 @@ namespace DotNetProject.Balzor.Components.Pages
         {
             await InvokeAsync(async () =>
             {
-                var detectedSlug = NormalizeSlug(CategorySlug);
+                var detectedSlug = ExtractSlug(e.Location);
                 if (detectedSlug != CurrentSlug)
                 {
                     CurrentSlug = detectedSlug;
@@ -85,12 +90,17 @@ namespace DotNetProject.Balzor.Components.Pages
             });
         }
 
-        private string NormalizeSlug(string? slug)
+        private void HandleAuthChanged()
         {
-            // 1. First inspect the route parameter
-            if (!string.IsNullOrWhiteSpace(slug))
+            InvokeAsync(StateHasChanged);
+        }
+
+        private string ExtractSlug(string? uri, string? paramSlug = null)
+        {
+            // 1. Check explicit route parameter if provided
+            if (!string.IsNullOrWhiteSpace(paramSlug))
             {
-                var s = slug.Trim().ToLower();
+                var s = paramSlug.Trim().ToLowerInvariant();
                 if (s.Contains("korean") || s.Contains("drama") || s.Contains("k-drama"))
                     return "korean-drama";
                 if (s.Contains("bl") || s.Contains("thai"))
@@ -101,16 +111,19 @@ namespace DotNetProject.Balzor.Components.Pages
                     return "new-releases";
             }
 
-            // 2. Next inspect the active browser URI
-            var uri = Nav.Uri.ToLower();
-            if (uri.Contains("korean-drama") || uri.Contains("k-drama"))
-                return "korean-drama";
-            if (uri.Contains("bl-series") || uri.Contains("thai-bl"))
-                return "bl-series";
-            if (uri.Contains("movies") || uri.Contains("movie"))
-                return "movies";
-            if (uri.Contains("new-releases"))
-                return "new-releases";
+            // 2. Check full URI
+            if (!string.IsNullOrWhiteSpace(uri))
+            {
+                var u = uri.ToLowerInvariant();
+                if (u.Contains("/category/korean-drama") || u.EndsWith("korean-drama"))
+                    return "korean-drama";
+                if (u.Contains("/category/bl-series") || u.EndsWith("bl-series") || u.Contains("/category/thai-bl") || u.EndsWith("thai-bl"))
+                    return "bl-series";
+                if (u.Contains("/category/movies") || u.EndsWith("movies") || u.Contains("/category/movie") || u.EndsWith("movie"))
+                    return "movies";
+                if (u.Contains("/category/new-releases") || u.EndsWith("new-releases"))
+                    return "new-releases";
+            }
 
             return "new-releases";
         }
@@ -162,7 +175,7 @@ namespace DotNetProject.Balzor.Components.Pages
             if (CurrentSlug == slug && AllItems.Any()) return;
             CurrentSlug = slug;
             ConfigureCategoryMeta();
-            Nav.NavigateTo($"category/{slug}");
+            Nav.NavigateTo($"/category/{slug}");
             await LoadCategoryDataAsync();
             StateHasChanged();
         }
@@ -474,6 +487,7 @@ namespace DotNetProject.Balzor.Components.Pages
         {
             Nav.LocationChanged -= HandleLocationChanged;
             FavoriteService.OnChange -= HandleFavoritesChanged;
+            AuthService.OnAuthStateChanged -= HandleAuthChanged;
         }
     }
 }

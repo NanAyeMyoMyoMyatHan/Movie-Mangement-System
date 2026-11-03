@@ -2,6 +2,7 @@ using Common;
 using DotNetProject.Domain.Features.Contents;
 using DotNetProject.Domain.Features.Movies;
 using DotNetProject.Domain.Features.Thai;
+using DotNetProject.Domain.Features.Users;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -74,6 +75,14 @@ namespace DotNetProject.Balzor.Components.Shared
             return JsonConvert.DeserializeObject<T>(result);
         }
 
+        // --- User Authentication API client methods ---
+
+        public Task<UserLoginResponseModel?> LoginUserAsync(UserLoginRequestModel request) =>
+            PostAsync<UserLoginResponseModel>("api/User/login", request);
+
+        public Task<UserCreateResponseModel?> RegisterUserAsync(UserCreateRequestModel request) =>
+            PostAsync<UserCreateResponseModel>("api/User", request);
+
         // --- Movie API client methods 
 
         public Task<Result<GetMoviePagedListResponse>?> GetMoviesPagedAsync(GetMoviePagedListRequest request) =>
@@ -101,8 +110,6 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public Task<Result<GetContentDetailResponse>?> GetContentDetailAsync(long id) =>
             PostAsync<Result<GetContentDetailResponse>>("api/contents/detail", new GetContentDetailRequest { ContentId = id });
-
-
 
         public Task<Result<CreateContentResponse>?> CreateContentAsync(CreateContentRequest request) =>
             PostAsync<Result<CreateContentResponse>>("api/contents/create", request);

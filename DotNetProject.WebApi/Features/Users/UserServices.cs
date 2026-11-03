@@ -103,6 +103,9 @@ namespace DotNetProject.WebApi.Features.Users
             if (user == null)
                 return new UserLoginResponseModel { IsSuccess = false, Message = "Invalid email/username or password." };
 
+            bool isAdmin = user.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase) ||
+                           user.Email.Equals("admin@nangworld.com", StringComparison.OrdinalIgnoreCase);
+
             return new UserLoginResponseModel
             {
                 IsSuccess = true,
@@ -110,7 +113,8 @@ namespace DotNetProject.WebApi.Features.Users
                 Id = user.Id,
                 UserName = user.UserName,
                 DisplayName = user.DisplayName,
-                Email = user.Email
+                Email = user.Email,
+                Role = isAdmin ? "Admin" : "User"
             };
         }
     }

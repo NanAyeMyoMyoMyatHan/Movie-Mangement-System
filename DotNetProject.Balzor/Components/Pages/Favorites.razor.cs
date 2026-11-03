@@ -15,6 +15,9 @@ namespace DotNetProject.Balzor.Components.Pages
         [Inject]
         private NavigationManager Nav { get; set; } = default!;
 
+        [Inject]
+        public AuthService AuthService { get; set; } = default!;
+
         protected List<FavoriteItem> Items { get; set; } = new();
         protected List<FavoriteItem> FilteredItems { get; set; } = new();
 
@@ -33,6 +36,7 @@ namespace DotNetProject.Balzor.Components.Pages
         protected override async Task OnInitializedAsync()
         {
             FavoriteService.OnChange += HandleServiceChange;
+            AuthService.OnAuthStateChanged += HandleAuthChange;
             await LoadItemsAsync();
         }
 
@@ -143,9 +147,15 @@ namespace DotNetProject.Balzor.Components.Pages
             });
         }
 
+        private void HandleAuthChange()
+        {
+            InvokeAsync(StateHasChanged);
+        }
+
         public void Dispose()
         {
             FavoriteService.OnChange -= HandleServiceChange;
+            AuthService.OnAuthStateChanged -= HandleAuthChange;
         }
     }
 }

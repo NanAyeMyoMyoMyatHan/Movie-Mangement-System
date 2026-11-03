@@ -14,6 +14,7 @@ builder.Services.AddHttpClient("Api", client =>
 });
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<HttpClientService>();
+builder.Services.AddScoped<AuthService>();
 builder.Services.AddSingleton<WatchLaterService>();
 builder.Services.AddSingleton<FavoriteService>();
 builder.Services.AddSingleton<WatchHistoryService>();
