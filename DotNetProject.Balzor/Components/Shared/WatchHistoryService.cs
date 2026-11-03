@@ -105,7 +105,7 @@ namespace DotNetProject.Balzor.Components.Shared
                 {
                     var json = File.ReadAllText(filePath);
                     var loaded = JsonSerializer.Deserialize<List<WatchHistoryItem>>(json);
-                    if (loaded != null)
+                    if (loaded != null && loaded.Any())
                     {
                         _history.AddRange(loaded);
                         return;
@@ -114,8 +114,110 @@ namespace DotNetProject.Balzor.Components.Shared
                 catch { }
             }
 
-            // Notice: For a new user account, Continue Watching starts empty.
-            // Items are only added when this specific user actually plays or resumes a video!
+            // Provide default continue watching for admin and default accounts
+            if (_activeUserKey == "u_1005_admin" || _activeUserKey == "guest" || _activeUserKey.Contains("admin"))
+            {
+                _history.AddRange(GetDefaultSeeds());
+                SaveToFile();
+            }
+        }
+
+        private static List<WatchHistoryItem> GetDefaultSeeds()
+        {
+            return new List<WatchHistoryItem>
+            {
+                new WatchHistoryItem
+                {
+                    ContentId = 20004,
+                    IsContent = true,
+                    Title = "Daung With You",
+                    Description = "A bright, cheerful Decorative Arts student falls in love at first sight with a reserved Jazz music student.",
+                    PosterUrl = "/images/daung_with_you.jpg",
+                    EpisodeNumber = 9,
+                    TotalEpisodes = 12,
+                    VideoUrl = "/videos/daung-with-you/EP9 1080P.mp4",
+                    ProgressPercentage = 45,
+                    LastWatchedAt = DateTime.UtcNow.AddMinutes(-30)
+                },
+                new WatchHistoryItem
+                {
+                    ContentId = 23,
+                    IsContent = true,
+                    Title = "Alchemy of Souls",
+                    Description = "A powerful sorceress whose soul is trapped in another body becomes involved with a young nobleman.",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg",
+                    EpisodeNumber = 1,
+                    TotalEpisodes = 30,
+                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
+                    ProgressPercentage = 60,
+                    LastWatchedAt = DateTime.UtcNow.AddHours(-3)
+                },
+                new WatchHistoryItem
+                {
+                    ContentId = 6,
+                    IsContent = true,
+                    Title = "Bad Buddy",
+                    Description = "Two rival families live next door, but their sons secretly develop deep feelings.",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/b/b7/Bad_Buddy_Series_2021_poster.jpg",
+                    EpisodeNumber = 6,
+                    TotalEpisodes = 12,
+                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
+                    ProgressPercentage = 45,
+                    LastWatchedAt = DateTime.UtcNow.AddHours(-12)
+                },
+                new WatchHistoryItem
+                {
+                    ContentId = 15,
+                    IsContent = true,
+                    Title = "Crash Landing on You",
+                    Description = "A paragliding mishap drops a South Korean heiress in North Korea into the life of an army officer.",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/5/5e/Crash_Landing_on_You_poster.png",
+                    EpisodeNumber = 12,
+                    TotalEpisodes = 16,
+                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
+                    ProgressPercentage = 80,
+                    LastWatchedAt = DateTime.UtcNow.AddDays(-1)
+                },
+                new WatchHistoryItem
+                {
+                    ContentId = 24,
+                    IsContent = true,
+                    Title = "Lovely Runner",
+                    Description = "A passionate fan travels back in time to save her favorite idol from a tragic fate.",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png",
+                    EpisodeNumber = 8,
+                    TotalEpisodes = 16,
+                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
+                    ProgressPercentage = 50,
+                    LastWatchedAt = DateTime.UtcNow.AddDays(-2)
+                },
+                new WatchHistoryItem
+                {
+                    ContentId = 21,
+                    IsContent = true,
+                    Title = "Vincenzo",
+                    Description = "A Korean-Italian mafia lawyer gives a conglomerate a taste of its own medicine.",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/5/5b/Vincenzo_TV_series.jpg",
+                    EpisodeNumber = 4,
+                    TotalEpisodes = 20,
+                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
+                    ProgressPercentage = 30,
+                    LastWatchedAt = DateTime.UtcNow.AddDays(-3)
+                },
+                new WatchHistoryItem
+                {
+                    ContentId = 22,
+                    IsContent = true,
+                    Title = "The Glory",
+                    Description = "Years after surviving horrific high school bullying, a woman puts an elaborate revenge scheme into motion.",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/7/79/The_Glory_TV_series.jpg",
+                    EpisodeNumber = 10,
+                    TotalEpisodes = 16,
+                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
+                    ProgressPercentage = 70,
+                    LastWatchedAt = DateTime.UtcNow.AddDays(-4)
+                }
+            };
         }
 
         public Task<List<WatchHistoryItem>> GetHistoryAsync(int limit = 10)

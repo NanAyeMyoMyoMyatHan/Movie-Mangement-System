@@ -105,7 +105,7 @@ namespace DotNetProject.Balzor.Components.Shared
                 {
                     var json = File.ReadAllText(filePath);
                     var loaded = JsonSerializer.Deserialize<List<FavoriteItem>>(json);
-                    if (loaded != null)
+                    if (loaded != null && loaded.Any())
                     {
                         _favorites.AddRange(loaded);
                         return;
@@ -114,8 +114,123 @@ namespace DotNetProject.Balzor.Components.Shared
                 catch { }
             }
 
-            // Notice: For a new user account, Favorites starts clean and empty.
-            // Items are ONLY added when this specific user clicks "Add to Favorites"!
+            // Provide default curated favorites for admin and default accounts
+            if (_activeUserKey == "u_1005_admin" || _activeUserKey == "guest" || _activeUserKey.Contains("admin"))
+            {
+                _favorites.AddRange(GetDefaultSeeds());
+                SaveToFile();
+            }
+        }
+
+        private static List<FavoriteItem> GetDefaultSeeds()
+        {
+            return new List<FavoriteItem>
+            {
+                new FavoriteItem
+                {
+                    Id = 23,
+                    IsContent = true,
+                    Title = "Alchemy of Souls",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg",
+                    Category = "Korean Drama",
+                    Description = "A powerful sorceress whose soul is trapped in another body becomes involved with a young nobleman.",
+                    Year = "2022",
+                    Rating = 9.4,
+                    TotalEpisodes = 30,
+                    AddedAt = DateTime.UtcNow.AddDays(-10)
+                },
+                new FavoriteItem
+                {
+                    Id = 20003,
+                    IsContent = true,
+                    Title = "Kingdom",
+                    PosterUrl = "/images/kingdom.jpg",
+                    Category = "Korean Drama",
+                    Description = "While strange rumors grip the kingdom, the crown prince becomes their only hope against a deadly plague.",
+                    Year = "2019",
+                    Rating = 9.1,
+                    TotalEpisodes = 12,
+                    AddedAt = DateTime.UtcNow.AddDays(-8)
+                },
+                new FavoriteItem
+                {
+                    Id = 20002,
+                    IsContent = true,
+                    Title = "Fool In Love",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/3/3c/Fool_in_love_the_series.jpg",
+                    Category = "Thai BL",
+                    Description = "The confident heir to the Araya Group crosses paths with an intelligent young successor with a boxer past.",
+                    Year = "2026",
+                    Rating = 9.3,
+                    TotalEpisodes = 6,
+                    AddedAt = DateTime.UtcNow.AddDays(-6)
+                },
+                new FavoriteItem
+                {
+                    Id = 7,
+                    IsContent = true,
+                    Title = "KinnPorsche",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/9/9e/KinnPorsche_series_poster.jpg",
+                    Category = "Thai BL",
+                    Description = "The second son of a major mafia family is assigned a bodyguard with hidden martial arts skills.",
+                    Year = "2022",
+                    Rating = 9.5,
+                    TotalEpisodes = 14,
+                    AddedAt = DateTime.UtcNow.AddDays(-14)
+                },
+                new FavoriteItem
+                {
+                    Id = 15,
+                    IsContent = true,
+                    Title = "Crash Landing on You",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/5/5e/Crash_Landing_on_You_poster.png",
+                    Category = "Korean Drama",
+                    Description = "A paragliding mishap drops a South Korean heiress into North Korea into the life of an army officer.",
+                    Year = "2019",
+                    Rating = 9.6,
+                    TotalEpisodes = 16,
+                    AddedAt = DateTime.UtcNow.AddDays(-12)
+                },
+                new FavoriteItem
+                {
+                    Id = 24,
+                    IsContent = true,
+                    Title = "Lovely Runner",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png",
+                    Category = "Korean Drama",
+                    Description = "A passionate fan travels back in time to save her favorite idol from a tragic fate.",
+                    Year = "2024",
+                    Rating = 9.4,
+                    TotalEpisodes = 16,
+                    AddedAt = DateTime.UtcNow.AddDays(-4)
+                },
+                new FavoriteItem
+                {
+                    Id = 20005,
+                    IsContent = true,
+                    Title = "KhemJira",
+                    PosterUrl = "/images/khemjira.jpg",
+                    Category = "Thai BL",
+                    Description = "Born with a curse, Khemjira journeys to Isan to seek help from a formidable local shaman.",
+                    Year = "2025",
+                    Rating = 9.2,
+                    TotalEpisodes = 12,
+                    AddedAt = DateTime.UtcNow.AddDays(-3)
+                },
+                new FavoriteItem
+                {
+                    Id = 20004,
+                    IsContent = true,
+                    Title = "Daung With You",
+                    PosterUrl = "/images/daung_with_you.jpg",
+                    Category = "Thai BL",
+                    Description = "A cheerful Decorative Arts student sparks a sweet campus romance with a jazz music major.",
+                    Year = "2026",
+                    Rating = 9.0,
+                    TotalEpisodes = 12,
+                    AddedAt = DateTime.UtcNow.AddDays(-2)
+                }
+            };
         }
 
         public Task<List<FavoriteItem>> GetFavoritesAsync(string? categoryFilter = null, string? sortBy = null)

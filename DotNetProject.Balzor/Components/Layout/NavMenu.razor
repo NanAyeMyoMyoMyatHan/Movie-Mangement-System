@@ -88,18 +88,6 @@
 
     <!-- Bottom Actions & User Profile -->
     <div class="myflix-bottom-nav">
-        <!-- Admin Panel link is STRICTLY hidden from regular users / guests. Only shows for Admin! -->
-        @if (AuthService.IsAdmin())
-        {
-            <NavLink href="/admin" class="myflix-category-link admin-highlight">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-                <span>Admin Panel</span>
-                <span class="nav-admin-dot" title="Admin Active"></span>
-            </NavLink>
-        }
-
         <NavLink href="/settings" class="myflix-category-link">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"></circle>

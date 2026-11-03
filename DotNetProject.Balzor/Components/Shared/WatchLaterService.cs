@@ -105,7 +105,7 @@ namespace DotNetProject.Balzor.Components.Shared
                 {
                     var json = File.ReadAllText(filePath);
                     var loaded = JsonSerializer.Deserialize<List<WatchLaterItem>>(json);
-                    if (loaded != null)
+                    if (loaded != null && loaded.Any())
                     {
                         _items.AddRange(loaded);
                         return;
@@ -114,8 +114,123 @@ namespace DotNetProject.Balzor.Components.Shared
                 catch { }
             }
 
-            // Notice: For a new user account, Watch Later starts clean and empty.
-            // Items are ONLY added when this specific user explicitly adds them to Watch Later!
+            // Provide default curated watch later items for admin and default accounts
+            if (_activeUserKey == "u_1005_admin" || _activeUserKey == "guest" || _activeUserKey.Contains("admin"))
+            {
+                _items.AddRange(GetDefaultSeeds());
+                SaveToFile();
+            }
+        }
+
+        private static List<WatchLaterItem> GetDefaultSeeds()
+        {
+            return new List<WatchLaterItem>
+            {
+                new WatchLaterItem
+                {
+                    Id = 20004,
+                    IsContent = true,
+                    Title = "Daung With You",
+                    PosterUrl = "/images/daung_with_you.jpg",
+                    Category = "Thai BL",
+                    Description = "A cheerful Decorative Arts student sparks a sweet campus romance with a jazz music major.",
+                    TotalEpisodes = 12,
+                    CurrentEpisode = 9,
+                    Status = "Watching",
+                    AddedAt = DateTime.UtcNow.AddDays(-1)
+                },
+                new WatchLaterItem
+                {
+                    Id = 21,
+                    IsContent = true,
+                    Title = "Vincenzo",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/5/5b/Vincenzo_TV_series.jpg",
+                    Category = "Korean Drama",
+                    Description = "A Korean-Italian mafia lawyer gives a conglomerate a taste of its own medicine.",
+                    TotalEpisodes = 20,
+                    CurrentEpisode = 4,
+                    Status = "Watching",
+                    AddedAt = DateTime.UtcNow.AddDays(-3)
+                },
+                new WatchLaterItem
+                {
+                    Id = 22,
+                    IsContent = true,
+                    Title = "The Glory",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/7/79/The_Glory_TV_series.jpg",
+                    Category = "Korean Drama",
+                    Description = "Years after surviving brutal bullying, a woman puts an elaborate revenge scheme into motion.",
+                    TotalEpisodes = 16,
+                    CurrentEpisode = 10,
+                    Status = "Watching",
+                    AddedAt = DateTime.UtcNow.AddDays(-4)
+                },
+                new WatchLaterItem
+                {
+                    Id = 20003,
+                    IsContent = true,
+                    Title = "Kingdom",
+                    PosterUrl = "/images/kingdom.jpg",
+                    Category = "Korean Drama",
+                    Description = "While strange rumors grip the kingdom, the crown prince investigates a deadly plague.",
+                    TotalEpisodes = 12,
+                    CurrentEpisode = 1,
+                    Status = "Want to Watch",
+                    AddedAt = DateTime.UtcNow.AddDays(-5)
+                },
+                new WatchLaterItem
+                {
+                    Id = 24,
+                    IsContent = true,
+                    Title = "Lovely Runner",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png",
+                    Category = "Korean Drama",
+                    Description = "A passionate fan travels back in time to save her favorite idol from a tragic fate.",
+                    TotalEpisodes = 16,
+                    CurrentEpisode = 8,
+                    Status = "Want to Watch",
+                    AddedAt = DateTime.UtcNow.AddDays(-7)
+                },
+                new WatchLaterItem
+                {
+                    Id = 6,
+                    IsContent = true,
+                    Title = "Bad Buddy",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/b/b7/Bad_Buddy_Series_2021_poster.jpg",
+                    Category = "Thai BL",
+                    Description = "Two rival families live next door, but their sons secretly develop deep feelings.",
+                    TotalEpisodes = 12,
+                    CurrentEpisode = 6,
+                    Status = "Want to Watch",
+                    AddedAt = DateTime.UtcNow.AddDays(-8)
+                },
+                new WatchLaterItem
+                {
+                    Id = 20005,
+                    IsContent = true,
+                    Title = "KhemJira",
+                    PosterUrl = "/images/khemjira.jpg",
+                    Category = "Thai BL",
+                    Description = "Born with a curse, Khemjira journeys to Isan to seek help from a formidable local shaman.",
+                    TotalEpisodes = 12,
+                    CurrentEpisode = 1,
+                    Status = "Want to Watch",
+                    AddedAt = DateTime.UtcNow.AddDays(-9)
+                },
+                new WatchLaterItem
+                {
+                    Id = 20002,
+                    IsContent = true,
+                    Title = "Fool In Love",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/3/3c/Fool_in_love_the_series.jpg",
+                    Category = "Thai BL",
+                    Description = "The heir of Araya Group meets an intelligent young successor, sparking unexpected love.",
+                    TotalEpisodes = 6,
+                    CurrentEpisode = 1,
+                    Status = "Want to Watch",
+                    AddedAt = DateTime.UtcNow.AddDays(-10)
+                }
+            };
         }
 
         public Task<List<WatchLaterItem>> GetItemsAsync(string? categoryFilter = null, string? sortBy = null)

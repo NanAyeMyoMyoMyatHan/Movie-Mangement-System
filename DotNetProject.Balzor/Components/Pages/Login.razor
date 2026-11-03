@@ -567,18 +567,18 @@
                 {
                     SuccessMessage = "Admin authentication successful! Redirecting to Admin Dashboard...";
                     StateHasChanged();
-                    await Task.Delay(700);
-                    Nav.NavigateTo("/admin");
+                    await Task.Delay(400);
+                    Nav.NavigateTo("/admin", forceLoad: true);
                 }
                 else
                 {
                     SuccessMessage = $"Welcome back, {AuthService.CurrentUser.DisplayName}! Redirecting...";
                     StateHasChanged();
-                    await Task.Delay(700);
+                    await Task.Delay(400);
                     var target = (!string.IsNullOrWhiteSpace(ReturnUrl) && !ReturnUrl.Contains("admin", StringComparison.OrdinalIgnoreCase))
                         ? ReturnUrl
                         : "/";
-                    Nav.NavigateTo(target);
+                    Nav.NavigateTo(target, forceLoad: true);
                 }
             }
             else
