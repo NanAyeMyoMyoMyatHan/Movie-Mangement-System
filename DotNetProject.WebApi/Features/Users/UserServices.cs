@@ -97,7 +97,7 @@ namespace DotNetProject.WebApi.Features.Users
         {
             var user = await _db.Users.FirstOrDefaultAsync(u =>
                 !u.IsDeleted &&
-                (u.Email == model.Email || u.UserName == model.Email) &&
+                (u.Email == model.Email || u.UserName == model.Email || u.DisplayName == model.Email) &&
                 u.Password == model.Password);
 
             if (user == null)
