@@ -105,7 +105,7 @@ namespace DotNetProject.Balzor.Components.Shared
                 {
                     var json = File.ReadAllText(filePath);
                     var loaded = JsonSerializer.Deserialize<List<WatchHistoryItem>>(json);
-                    if (loaded != null && loaded.Any())
+                    if (loaded != null)
                     {
                         _history.AddRange(loaded);
                         return;
@@ -114,7 +114,7 @@ namespace DotNetProject.Balzor.Components.Shared
                 catch { }
             }
 
-            // Provide default continue watching for admin and default accounts
+            // Provide default continue watching only if file does not exist yet for admin and default accounts
             if (_activeUserKey == "u_1005_admin" || _activeUserKey == "guest" || _activeUserKey.Contains("admin"))
             {
                 _history.AddRange(GetDefaultSeeds());

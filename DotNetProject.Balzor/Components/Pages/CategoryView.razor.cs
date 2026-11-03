@@ -101,7 +101,7 @@ namespace DotNetProject.Balzor.Components.Pages
             if (!string.IsNullOrWhiteSpace(paramSlug))
             {
                 var s = paramSlug.Trim().ToLowerInvariant();
-                if (s.Contains("korean") || s.Contains("drama") || s.Contains("k-drama"))
+                if (s.Contains("korean") || s.Contains("k-drama"))
                     return "korean-drama";
                 if (s.Contains("bl") || s.Contains("thai"))
                     return "bl-series";
@@ -115,13 +115,13 @@ namespace DotNetProject.Balzor.Components.Pages
             if (!string.IsNullOrWhiteSpace(uri))
             {
                 var u = uri.ToLowerInvariant();
-                if (u.Contains("/category/korean-drama") || u.EndsWith("korean-drama"))
+                if (u.Contains("korean") || u.Contains("k-drama"))
                     return "korean-drama";
-                if (u.Contains("/category/bl-series") || u.EndsWith("bl-series") || u.Contains("/category/thai-bl") || u.EndsWith("thai-bl"))
+                if (u.Contains("bl-series") || u.Contains("thai-bl") || u.Contains("/category/bl"))
                     return "bl-series";
-                if (u.Contains("/category/movies") || u.EndsWith("movies") || u.Contains("/category/movie") || u.EndsWith("movie"))
+                if (u.Contains("/category/movies") || u.Contains("/category/movie") || u.EndsWith("movies") || u.EndsWith("movie"))
                     return "movies";
-                if (u.Contains("/category/new-releases") || u.EndsWith("new-releases"))
+                if (u.Contains("new-releases") || u.EndsWith("new-releases"))
                     return "new-releases";
             }
 
