@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DotNetProject.Balzor.Components.Shared
@@ -31,12 +33,78 @@ namespace DotNetProject.Balzor.Components.Shared
             EnsureInitialized();
         }
 
+        private static string GetStoragePath()
+        {
+            string currentDir = Directory.GetCurrentDirectory();
+            string targetDir;
+            if (File.Exists(Path.Combine(currentDir, "Program.cs")))
+            {
+                targetDir = Path.Combine(currentDir, "Storage");
+            }
+            else
+            {
+                string baseDir = AppContext.BaseDirectory;
+                string probe = Path.GetFullPath(Path.Combine(baseDir, "..", "..", ".."));
+                if (File.Exists(Path.Combine(probe, "Program.cs")))
+                {
+                    targetDir = Path.Combine(probe, "Storage");
+                }
+                else
+                {
+                    targetDir = Path.Combine(baseDir, "Storage");
+                }
+            }
+
+            if (!Directory.Exists(targetDir))
+            {
+                Directory.CreateDirectory(targetDir);
+            }
+            return Path.Combine(targetDir, "favorites.json");
+        }
+
+        private void SaveToFile()
+        {
+            try
+            {
+                var filePath = GetStoragePath();
+                var json = JsonSerializer.Serialize(_favorites, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(filePath, json);
+            }
+            catch { }
+        }
+
         private void EnsureInitialized()
         {
             if (_isInitialized) return;
 
-            // Seed with favorite titles
-            _favorites.AddRange(new[]
+            var filePath = GetStoragePath();
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    var json = File.ReadAllText(filePath);
+                    var loaded = JsonSerializer.Deserialize<List<FavoriteItem>>(json);
+                    if (loaded != null)
+                    {
+                        _favorites.Clear();
+                        _favorites.AddRange(loaded);
+                        _isInitialized = true;
+                        return;
+                    }
+                }
+                catch { }
+            }
+
+            // Seed with favorite titles on first setup
+            _favorites.Clear();
+            _favorites.AddRange(GetDefaultSeeds());
+            SaveToFile();
+            _isInitialized = true;
+        }
+
+        private static List<FavoriteItem> GetDefaultSeeds()
+        {
+            return new List<FavoriteItem>
             {
                 new FavoriteItem
                 {
@@ -168,9 +236,7 @@ namespace DotNetProject.Balzor.Components.Shared
                     TotalEpisodes = 20,
                     AddedAt = DateTime.UtcNow.AddDays(-18)
                 }
-            });
-
-            _isInitialized = true;
+            };
         }
 
         public Task<List<FavoriteItem>> GetFavoritesAsync(string? categoryFilter = null, string? sortBy = null)
@@ -226,6 +292,7 @@ namespace DotNetProject.Balzor.Components.Shared
             if (existing != null)
             {
                 _favorites.Remove(existing);
+                SaveToFile();
                 NotifyStateChanged();
                 return Task.FromResult(false); // Removed from favorites
             }
@@ -233,6 +300,7 @@ namespace DotNetProject.Balzor.Components.Shared
             {
                 item.AddedAt = DateTime.UtcNow;
                 _favorites.Insert(0, item);
+                SaveToFile();
                 NotifyStateChanged();
                 return Task.FromResult(true); // Added to favorites
             }
@@ -244,6 +312,7 @@ namespace DotNetProject.Balzor.Components.Shared
             if (existing != null)
             {
                 _favorites.Remove(existing);
+                SaveToFile();
                 NotifyStateChanged();
             }
             return Task.CompletedTask;

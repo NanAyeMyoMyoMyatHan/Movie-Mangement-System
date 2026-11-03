@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DotNetProject.Balzor.Components.Shared
@@ -31,12 +33,78 @@ namespace DotNetProject.Balzor.Components.Shared
             EnsureInitialized();
         }
 
+        private static string GetStoragePath()
+        {
+            string currentDir = Directory.GetCurrentDirectory();
+            string targetDir;
+            if (File.Exists(Path.Combine(currentDir, "Program.cs")))
+            {
+                targetDir = Path.Combine(currentDir, "Storage");
+            }
+            else
+            {
+                string baseDir = AppContext.BaseDirectory;
+                string probe = Path.GetFullPath(Path.Combine(baseDir, "..", "..", ".."));
+                if (File.Exists(Path.Combine(probe, "Program.cs")))
+                {
+                    targetDir = Path.Combine(probe, "Storage");
+                }
+                else
+                {
+                    targetDir = Path.Combine(baseDir, "Storage");
+                }
+            }
+
+            if (!Directory.Exists(targetDir))
+            {
+                Directory.CreateDirectory(targetDir);
+            }
+            return Path.Combine(targetDir, "watchhistory.json");
+        }
+
+        private void SaveToFile()
+        {
+            try
+            {
+                var filePath = GetStoragePath();
+                var json = JsonSerializer.Serialize(_history, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(filePath, json);
+            }
+            catch { }
+        }
+
         private void EnsureInitialized()
         {
             if (_isInitialized) return;
 
+            var filePath = GetStoragePath();
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    var json = File.ReadAllText(filePath);
+                    var loaded = JsonSerializer.Deserialize<List<WatchHistoryItem>>(json);
+                    if (loaded != null)
+                    {
+                        _history.Clear();
+                        _history.AddRange(loaded);
+                        _isInitialized = true;
+                        return;
+                    }
+                }
+                catch { }
+            }
+
             // Seed with initial realistic viewing history
-            _history.AddRange(new[]
+            _history.Clear();
+            _history.AddRange(GetDefaultSeeds());
+            SaveToFile();
+            _isInitialized = true;
+        }
+
+        private static List<WatchHistoryItem> GetDefaultSeeds()
+        {
+            return new List<WatchHistoryItem>
             {
                 new WatchHistoryItem
                 {
@@ -116,9 +184,7 @@ namespace DotNetProject.Balzor.Components.Shared
                     ProgressPercentage = 70,
                     LastWatchedAt = DateTime.UtcNow.AddDays(-3)
                 }
-            });
-
-            _isInitialized = true;
+            };
         }
 
         public Task<List<WatchHistoryItem>> GetHistoryAsync(int limit = 10)
@@ -174,6 +240,7 @@ namespace DotNetProject.Balzor.Components.Shared
                 _history.Insert(0, newItem);
             }
 
+            SaveToFile();
             NotifyStateChanged();
             return Task.CompletedTask;
         }
@@ -184,6 +251,7 @@ namespace DotNetProject.Balzor.Components.Shared
             if (existing != null)
             {
                 _history.Remove(existing);
+                SaveToFile();
                 NotifyStateChanged();
             }
             return Task.CompletedTask;

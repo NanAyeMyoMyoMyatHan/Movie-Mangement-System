@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DotNetProject.Balzor.Components.Shared
@@ -31,12 +33,78 @@ namespace DotNetProject.Balzor.Components.Shared
             EnsureInitialized();
         }
 
+        private static string GetStoragePath()
+        {
+            string currentDir = Directory.GetCurrentDirectory();
+            string targetDir;
+            if (File.Exists(Path.Combine(currentDir, "Program.cs")))
+            {
+                targetDir = Path.Combine(currentDir, "Storage");
+            }
+            else
+            {
+                string baseDir = AppContext.BaseDirectory;
+                string probe = Path.GetFullPath(Path.Combine(baseDir, "..", "..", ".."));
+                if (File.Exists(Path.Combine(probe, "Program.cs")))
+                {
+                    targetDir = Path.Combine(probe, "Storage");
+                }
+                else
+                {
+                    targetDir = Path.Combine(baseDir, "Storage");
+                }
+            }
+
+            if (!Directory.Exists(targetDir))
+            {
+                Directory.CreateDirectory(targetDir);
+            }
+            return Path.Combine(targetDir, "watchlater.json");
+        }
+
+        private void SaveToFile()
+        {
+            try
+            {
+                var filePath = GetStoragePath();
+                var json = JsonSerializer.Serialize(_items, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(filePath, json);
+            }
+            catch { }
+        }
+
         private void EnsureInitialized()
         {
             if (_isInitialized) return;
 
-            // Seed initial items matching the user's catalog & favorites
-            _items.AddRange(new[]
+            var filePath = GetStoragePath();
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    var json = File.ReadAllText(filePath);
+                    var loaded = JsonSerializer.Deserialize<List<WatchLaterItem>>(json);
+                    if (loaded != null)
+                    {
+                        _items.Clear();
+                        _items.AddRange(loaded);
+                        _isInitialized = true;
+                        return;
+                    }
+                }
+                catch { }
+            }
+
+            // Seed initial items on first setup
+            _items.Clear();
+            _items.AddRange(GetDefaultSeeds());
+            SaveToFile();
+            _isInitialized = true;
+        }
+
+        private static List<WatchLaterItem> GetDefaultSeeds()
+        {
+            return new List<WatchLaterItem>
             {
                 new WatchLaterItem
                 {
@@ -168,9 +236,7 @@ namespace DotNetProject.Balzor.Components.Shared
                     Status = "Want to Watch",
                     AddedAt = DateTime.UtcNow
                 }
-            });
-
-            _isInitialized = true;
+            };
         }
 
         public Task<List<WatchLaterItem>> GetItemsAsync(string? categoryFilter = null, string? sortBy = null)
@@ -230,6 +296,7 @@ namespace DotNetProject.Balzor.Components.Shared
             if (existing != null)
             {
                 _items.Remove(existing);
+                SaveToFile();
                 NotifyStateChanged();
                 return Task.FromResult(false); // Removed
             }
@@ -237,6 +304,7 @@ namespace DotNetProject.Balzor.Components.Shared
             {
                 item.AddedAt = DateTime.UtcNow;
                 _items.Insert(0, item);
+                SaveToFile();
                 NotifyStateChanged();
                 return Task.FromResult(true); // Added
             }
@@ -249,7 +317,6 @@ namespace DotNetProject.Balzor.Components.Shared
             {
                 item.AddedAt = DateTime.UtcNow;
                 _items.Insert(0, item);
-                NotifyStateChanged();
             }
             else
             {
@@ -258,8 +325,9 @@ namespace DotNetProject.Balzor.Components.Shared
                 existing.AddedAt = DateTime.UtcNow;
                 _items.Remove(existing);
                 _items.Insert(0, existing);
-                NotifyStateChanged();
             }
+            SaveToFile();
+            NotifyStateChanged();
             return Task.CompletedTask;
         }
 
@@ -269,6 +337,7 @@ namespace DotNetProject.Balzor.Components.Shared
             if (existing != null)
             {
                 _items.Remove(existing);
+                SaveToFile();
                 NotifyStateChanged();
             }
             return Task.CompletedTask;

@@ -1,4 +1,4 @@
-﻿using DotNetProject.Domain.Features.Thai;
+using DotNetProject.Domain.Features.Thai;
 using Common;
 using DotNetProject.Database.AppDbModels;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ namespace DotNetProject.WebApi.Features.Thai
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _environment;
 
-        public ThaiServices(IWebHostEnvironment environment, AppDbContext context = null)
+        public ThaiServices(AppDbContext context, IWebHostEnvironment? environment = null)
         {
             _environment = environment;
             _context = context;
@@ -121,3 +121,4 @@ namespace DotNetProject.WebApi.Features.Thai
         }
     }
 }
+

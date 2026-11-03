@@ -121,6 +121,37 @@ namespace DotNetProject.Balzor.Components.Pages
             }
         }
 
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                try
+                {
+                    await JS.InvokeVoidAsync("eval", "window.scrollTo(0, 0);");
+                }
+                catch { }
+            }
+        }
+
+        protected static string? CleanPoster(string? url, string? title)
+        {
+            if (title != null && title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase))
+                return "/images/kingdom.jpg";
+            if (title != null && title.Contains("Daung", StringComparison.OrdinalIgnoreCase))
+                return "/images/daung_with_you.jpg";
+            if (title != null && title.Contains("Khem", StringComparison.OrdinalIgnoreCase))
+                return "/images/khemjira.jpg";
+
+            if (string.IsNullOrWhiteSpace(url)) return null;
+            if (url.Contains("static.tvmaze.com") && url.Contains("1245252"))
+                return "/images/kingdom.jpg";
+            if (url.Contains("static.tvmaze.com") && url.Contains("1528703"))
+                return "/images/daung_with_you.jpg";
+            if (url.Contains("static.tvmaze.com") && url.Contains("1454779"))
+                return "/images/khemjira.jpg";
+            return url;
+        }
+
         protected async Task PlayEpisode(EpisodeDto ep)
         {
             ActiveEpisodeNumber = ep.EpisodeNumber;

@@ -542,16 +542,13 @@ a.myflix-category-link.active svg,
     gap: 4px;
 }
 
-.myflix-see-all::after {
-    content: " \2192";
-    transition: transform 0.15s ease;
-}
+.myflix-see-all svg { transition: transform 0.15s ease; }
 
 .myflix-see-all:hover {
     color: #DE7149 !important;
 }
 
-.myflix-see-all:hover::after {
+.myflix-see-all:hover svg {
     transform: translateX(3px);
 }
 
@@ -919,4 +916,5 @@ a.myflix-category-link.active svg,
     from { opacity: 0; transform: scale(0.97); }
     to { opacity: 1; transform: scale(1); }
 }
+
 

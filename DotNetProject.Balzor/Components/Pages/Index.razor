@@ -96,7 +96,13 @@
     <section class="myflix-section-block">
         <div class="myflix-section-header">
             <h2>Continue Watching</h2>
-            <a href="watch-later" class="myflix-see-all">See All</a>
+            <a href="watch-later" class="myflix-see-all">
+                <span>See All</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </a>
         </div>
 
         <div class="myflix-continue-grid">
@@ -130,7 +136,13 @@
 <section class="myflix-section-block">
     <div class="myflix-section-header">
         <h2>Thai BL Series</h2>
-        <a href="category/thai-bl" class="myflix-see-all">See All</a>
+        <a href="category/bl-series" class="myflix-see-all">
+            <span>See All</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+        </a>
     </div>
 
     @if (IsLoading)
@@ -168,14 +180,20 @@
         </div>
     }
 </section>
+
 <!-- Korean Dramas Section -->
 <section class="myflix-section-block">
     <div class="myflix-section-header">
         <h2>Korean Dramas</h2>
-        <a href="category/korean-drama" class="myflix-see-all">See All</a>
+        <a href="category/korean-drama" class="myflix-see-all">
+            <span>See All</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+        </a>
     </div>
 
-    <!--Using Db Section-->
     @if (IsLoading)
     {
         <div class="myflix-loading">
@@ -210,14 +228,19 @@
             <p>No Korean dramas available at the moment.</p>
         </div>
     }
-
 </section>
 
-<!--Movie Section -->
+<!-- Movie Section -->
 <section class="myflix-section-block">
     <div class="myflix-section-header">
         <h2>Movies</h2>
-        <a href="category/movies" class="myflix-see-all">See All</a>
+        <a href="category/movies" class="myflix-see-all">
+            <span>See All</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+        </a>
     </div>
 
     <div class="myflix-poster-grid">
@@ -253,6 +276,5 @@
                 <p>No movies available at the moment.</p>
             </div>
         }
-
     </div>
 </section>

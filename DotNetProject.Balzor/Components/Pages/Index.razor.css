@@ -309,16 +309,13 @@
     gap: 4px;
 }
 
-    .myflix-see-all::after {
-        content: " \2192";
-        transition: transform 0.15s ease;
-    }
+    .myflix-see-all svg { transition: transform 0.15s ease; }
 
     .myflix-see-all:hover {
         color: #DE7149;
     }
 
-        .myflix-see-all:hover::after {
+        .myflix-see-all:hover svg {
             transform: translateX(3px);
         }
 
@@ -1056,3 +1053,4 @@
         display: none;
     }
 }
+
