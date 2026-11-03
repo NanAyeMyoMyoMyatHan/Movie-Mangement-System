@@ -1,0 +1,98 @@
+[
+  {
+    "Id": 23,
+    "IsContent": true,
+    "Title": "Alchemy of Souls",
+    "PosterUrl": "https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg",
+    "Category": "Korean Drama",
+    "Description": "A powerful sorceress whose soul is trapped in another body becomes involved with a young nobleman.",
+    "Year": "2022",
+    "Rating": 9.4,
+    "TotalEpisodes": 30,
+    "AddedAt": "2026-10-24T04:00:33.7537884Z"
+  },
+  {
+    "Id": 20003,
+    "IsContent": true,
+    "Title": "Kingdom",
+    "PosterUrl": "https://static.tvmaze.com/uploads/images/original_untouched/498/1245252.jpg",
+    "Category": "Korean Drama",
+    "Description": "While strange rumors grip the kingdom, the crown prince becomes their only hope against a deadly plague.",
+    "Year": "2019",
+    "Rating": 9.1,
+    "TotalEpisodes": 12,
+    "AddedAt": "2026-10-26T04:00:33.7539683Z"
+  },
+  {
+    "Id": 20002,
+    "IsContent": true,
+    "Title": "Fool In Love",
+    "PosterUrl": "https://upload.wikimedia.org/wikipedia/en/3/3c/Fool_in_love_the_series.jpg",
+    "Category": "Thai BL",
+    "Description": "The confident heir to the Araya Group crosses paths with an intelligent young successor with a boxer past.",
+    "Year": "2026",
+    "Rating": 9.3,
+    "TotalEpisodes": 6,
+    "AddedAt": "2026-10-28T04:00:33.7539696Z"
+  },
+  {
+    "Id": 7,
+    "IsContent": true,
+    "Title": "KinnPorsche",
+    "PosterUrl": "https://upload.wikimedia.org/wikipedia/en/9/9e/KinnPorsche_series_poster.jpg",
+    "Category": "Thai BL",
+    "Description": "The second son of a major mafia family is assigned a bodyguard with hidden martial arts skills.",
+    "Year": "2022",
+    "Rating": 9.5,
+    "TotalEpisodes": 14,
+    "AddedAt": "2026-10-20T04:00:33.7539704Z"
+  },
+  {
+    "Id": 15,
+    "IsContent": true,
+    "Title": "Crash Landing on You",
+    "PosterUrl": "https://upload.wikimedia.org/wikipedia/en/5/5e/Crash_Landing_on_You_poster.png",
+    "Category": "Korean Drama",
+    "Description": "A paragliding mishap drops a South Korean heiress in North Korea into the life of an army officer.",
+    "Year": "2019",
+    "Rating": 9.6,
+    "TotalEpisodes": 16,
+    "AddedAt": "2026-10-14T04:00:33.7539711Z"
+  },
+  {
+    "Id": 24,
+    "IsContent": true,
+    "Title": "Lovely Runner",
+    "PosterUrl": "https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png",
+    "Category": "Korean Drama",
+    "Description": "A passionate fan travels back in time to save her favorite idol from a tragic fate.",
+    "Year": "2024",
+    "Rating": 9.4,
+    "TotalEpisodes": 16,
+    "AddedAt": "2026-10-22T04:00:33.7539739Z"
+  },
+  {
+    "Id": 20005,
+    "IsContent": true,
+    "Title": "KhemJira",
+    "PosterUrl": "https://static.tvmaze.com/uploads/images/original_untouched/581/1454779.jpg",
+    "Category": "Thai BL",
+    "Description": "Born with a curse, Khemjira journeys to Isan to seek help from a formidable local shaman.",
+    "Year": "2025",
+    "Rating": 9.2,
+    "TotalEpisodes": 12,
+    "AddedAt": "2026-10-30T04:00:33.7539746Z"
+  },
+  {
+    "Id": 20004,
+    "IsContent": true,
+    "Title": "Daung With You",
+    "PosterUrl": "https://static.tvmaze.com/uploads/images/original_untouched/611/1528703.jpg",
+    "Category": "Thai BL",
+    "Description": "A cheerful Decorative Arts student sparks a sweet campus romance with a jazz music major.",
+    "Year": "2026",
+    "Rating": 9,
+    "TotalEpisodes": 12,
+    "AddedAt": "2026-11-01T04:00:33.7539752Z"
+  }
+]

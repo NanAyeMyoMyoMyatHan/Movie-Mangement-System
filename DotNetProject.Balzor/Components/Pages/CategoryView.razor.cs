@@ -3,6 +3,7 @@ using DotNetProject.Domain.Features.Contents;
 using DotNetProject.Domain.Features.Movies;
 using DotNetProject.Domain.Features.Thai;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,39 +52,65 @@ namespace DotNetProject.Balzor.Components.Pages
         protected bool IsLoading { get; set; } = true;
         protected string? ToastMessage { get; set; }
 
-        protected override async Task OnParametersSetAsync()
-        {
-            CurrentSlug = NormalizeSlug(CategorySlug);
-            ConfigureCategoryMeta();
-            await LoadCategoryDataAsync();
-        }
-
         protected override async Task OnInitializedAsync()
         {
+            Nav.LocationChanged += HandleLocationChanged;
             FavoriteService.OnChange += HandleFavoritesChanged;
             await RefreshFavoriteCacheAsync();
         }
 
+        protected override async Task OnParametersSetAsync()
+        {
+            var detectedSlug = NormalizeSlug(CategorySlug);
+            if (detectedSlug != CurrentSlug || !AllItems.Any())
+            {
+                CurrentSlug = detectedSlug;
+                ConfigureCategoryMeta();
+                await LoadCategoryDataAsync();
+            }
+        }
+
+        private async void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
+        {
+            await InvokeAsync(async () =>
+            {
+                var detectedSlug = NormalizeSlug(CategorySlug);
+                if (detectedSlug != CurrentSlug)
+                {
+                    CurrentSlug = detectedSlug;
+                    ConfigureCategoryMeta();
+                    await LoadCategoryDataAsync();
+                    StateHasChanged();
+                }
+            });
+        }
+
         private string NormalizeSlug(string? slug)
         {
+            // 1. First inspect the route parameter
+            if (!string.IsNullOrWhiteSpace(slug))
+            {
+                var s = slug.Trim().ToLower();
+                if (s.Contains("korean") || s.Contains("drama") || s.Contains("k-drama"))
+                    return "korean-drama";
+                if (s.Contains("bl") || s.Contains("thai"))
+                    return "bl-series";
+                if (s.Contains("movie"))
+                    return "movies";
+                if (s.Contains("new"))
+                    return "new-releases";
+            }
+
+            // 2. Next inspect the active browser URI
             var uri = Nav.Uri.ToLower();
-            if (uri.Contains("bl-series") || uri.Contains("thai-bl"))
-                return "bl-series";
             if (uri.Contains("korean-drama") || uri.Contains("k-drama"))
                 return "korean-drama";
+            if (uri.Contains("bl-series") || uri.Contains("thai-bl"))
+                return "bl-series";
             if (uri.Contains("movies") || uri.Contains("movie"))
                 return "movies";
             if (uri.Contains("new-releases"))
                 return "new-releases";
-
-            if (!string.IsNullOrWhiteSpace(slug))
-            {
-                var s = slug.Trim().ToLower();
-                if (s.Contains("bl") || s.Contains("thai")) return "bl-series";
-                if (s.Contains("korean") || s.Contains("drama")) return "korean-drama";
-                if (s.Contains("movie")) return "movies";
-                return "new-releases";
-            }
 
             return "new-releases";
         }
@@ -132,8 +159,12 @@ namespace DotNetProject.Balzor.Components.Pages
 
         protected async Task SetCategory(string slug)
         {
+            if (CurrentSlug == slug && AllItems.Any()) return;
+            CurrentSlug = slug;
+            ConfigureCategoryMeta();
             Nav.NavigateTo($"category/{slug}");
-            await Task.CompletedTask;
+            await LoadCategoryDataAsync();
+            StateHasChanged();
         }
 
         private async Task LoadCategoryDataAsync()
@@ -178,7 +209,7 @@ namespace DotNetProject.Balzor.Components.Pages
                 {
                     foreach (var t in res.Data.Items)
                     {
-                        var poster = CleanPosterUrl(t.PosterUrl);
+                        var poster = CleanPosterUrl(t.PosterUrl, t.Title);
                         AllItems.Add(new CategoryItemDto
                         {
                             Id = t.Id,
@@ -218,7 +249,7 @@ namespace DotNetProject.Balzor.Components.Pages
                 {
                     foreach (var d in res.Data.Items)
                     {
-                        var poster = CleanPosterUrl(d.PosterUrl);
+                        var poster = CleanPosterUrl(d.PosterUrl, d.Title);
                         AllItems.Add(new CategoryItemDto
                         {
                             Id = d.ContentId,
@@ -247,6 +278,7 @@ namespace DotNetProject.Balzor.Components.Pages
             AddSeedIfMissing(17, true, "Itaewon Class", "https://upload.wikimedia.org/wikipedia/en/9/99/Itaewon_Class.jpg", "2020", "Korean Drama", 9.1, 16, "An ex-con and his ambitious crew open a small street bar in Itaewon to defeat a rival food giant.");
             AddSeedIfMissing(18, true, "Business Proposal", "https://upload.wikimedia.org/wikipedia/en/1/19/A_Business_Proposal.jpg", "2022", "Korean Drama", 9.2, 12, "An employee goes on a blind date in place of her friend, only to discover the date is her company CEO.");
             AddSeedIfMissing(19, true, "True Beauty", "https://upload.wikimedia.org/wikipedia/en/7/76/True_Beauty_TV_series_poster.jpg", "2020", "Korean Drama", 9.0, 16, "A high school girl masters makeup artistry to transform herself into the most popular girl at school.");
+            AddSeedIfMissing(20, true, "Twenty-Five Twenty-One", "https://upload.wikimedia.org/wikipedia/en/1/15/Twenty-Five_Twenty-One.jpg", "2022", "Korean Drama", 9.2, 16, "In a time when dreams seem out of reach, a teen fencer pursues big ambitions and meets a hardworking young man.");
         }
 
         private async Task LoadMoviesAsync()
@@ -258,7 +290,7 @@ namespace DotNetProject.Balzor.Components.Pages
                 {
                     foreach (var m in res.Data.Items)
                     {
-                        var poster = CleanPosterUrl(m.PosterUrl);
+                        var poster = CleanPosterUrl(m.PosterUrl, m.Title);
                         AllItems.Add(new CategoryItemDto
                         {
                             Id = m.Id,
@@ -302,8 +334,15 @@ namespace DotNetProject.Balzor.Components.Pages
                 .ToList();
         }
 
-        private static string? CleanPosterUrl(string? url)
+        private static string? CleanPosterUrl(string? url, string? title = null)
         {
+            if (title != null && title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase))
+                return "/images/kingdom.jpg";
+            if (title != null && title.Contains("Daung", StringComparison.OrdinalIgnoreCase))
+                return "/images/daung_with_you.jpg";
+            if (title != null && title.Contains("Khem", StringComparison.OrdinalIgnoreCase))
+                return "/images/khemjira.jpg";
+
             if (string.IsNullOrWhiteSpace(url)) return null;
             if (url.Contains("static.tvmaze.com") && url.Contains("1245252"))
                 return "/images/kingdom.jpg";
@@ -343,7 +382,7 @@ namespace DotNetProject.Balzor.Components.Pages
                     Id = id,
                     IsContent = isContent,
                     Title = title,
-                    PosterUrl = CleanPosterUrl(poster),
+                    PosterUrl = CleanPosterUrl(poster, title),
                     Year = year,
                     Category = category,
                     Rating = rating,
@@ -433,6 +472,7 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public void Dispose()
         {
+            Nav.LocationChanged -= HandleLocationChanged;
             FavoriteService.OnChange -= HandleFavoritesChanged;
         }
     }
