@@ -1,0 +1,247 @@
+@page "/admin/contents/import"
+@layout AdminLayout
+@using DotNetProject.Balzor.Components.Shared
+@using DotNetProject.Balzor.Components.Layout
+@rendermode InteractiveServer
+
+<PageTitle>Import Drama from TMDB — NangWorld Admin</PageTitle>
+
+<div class="admin-page-header">
+    <div>
+        <h1>Import from TMDB API</h1>
+        <p>Search and insert dramas and series that are not on your PC into the database with 1 click.</p>
+    </div>
+    <div>
+        <a href="/admin/contents" class="btn-admin btn-admin-edit" style="text-decoration:none;">← Back to Dramas</a>
+    </div>
+</div>
+
+<div class="admin-content-area">
+    <!-- Notice Card -->
+    <div style="background:rgba(24,59,54,0.06); border:1px solid rgba(24,59,54,0.15); border-radius:14px; padding:16px 20px; margin-bottom:24px; display:flex; align-items:center; gap:14px;">
+        <div style="font-size:24px;">🌐</div>
+        <div>
+            <div style="font-weight:700; color:#183B36; font-size:14px;">TMDB Free API Integration</div>
+            <div style="font-size:13px; color:#5A6E66; margin-top:2px;">
+                Dramas not in your PC will be automatically fetched with official posters, banners, descriptions, and episode lists. Existing dramas in your database are strictly protected and will not be overwritten.
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Box Card -->
+    <div class="admin-card" style="padding: 24px; margin-bottom: 24px;">
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+            <div style="flex:1; min-width:280px; position:relative;">
+                <input type="text" class="admin-search-input" style="width:100%; padding:12px 16px; border-radius:12px; border:1px solid rgba(24,59,54,0.2); font-size:14px;"
+                       placeholder="Enter Drama Title (e.g. Queen of Tears, Lovely Runner, KinnPorsche, Crash Landing on You)..."
+                       @bind="_searchQuery" @bind:event="oninput" @onkeyup="HandleKeyUp" />
+            </div>
+
+            <select class="admin-select" style="padding:12px 14px; border-radius:12px; border:1px solid rgba(24,59,54,0.2); font-size:14px;" @bind="_selectedContentTypeId">
+                <option value="2">Korean Drama</option>
+                <option value="3">Thai Series / BL</option>
+                <option value="1">Movie</option>
+            </select>
+
+            <button class="btn-admin btn-admin-primary" style="padding:12px 24px; font-size:14px; border-radius:12px;" @onclick="SearchAsync" disabled="@_isSearching">
+                @if (_isSearching)
+                {
+                    <span>Searching…</span>
+                }
+                else
+                {
+                    <span>🔍 Search TMDB</span>
+                }
+            </button>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(_statusMessage))
+        {
+            <div style="margin-top:16px; padding:12px 16px; border-radius:10px; background:@(_isError ? "rgba(222,113,73,0.1)" : "rgba(16,185,129,0.1)"); color:@(_isError ? "#DE7149" : "#10B981"); font-size:13.5px; font-weight:600;">
+                @_statusMessage
+            </div>
+        }
+    </div>
+
+    <!-- Search Results -->
+    @if (_results != null)
+    {
+        <div style="margin-bottom:16px; font-size:14px; font-weight:700; color:#232C24;">
+            Found @_results.Count results:
+        </div>
+
+        @if (_results.Count == 0)
+        {
+            <div class="admin-card" style="padding:40px; text-align:center; color:#7B977D;">
+                No dramas found matching "@_lastSearchedQuery". Try another keyword or English title.
+            </div>
+        }
+        else
+        {
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:20px;">
+                @foreach (var item in _results)
+                {
+                    <div class="admin-card" style="padding:0; overflow:hidden; display:flex; flex-direction:column; border-radius:16px; transition:transform 0.2s ease, box-shadow 0.2s ease;">
+                        <div style="display:flex; gap:16px; padding:16px;">
+                            <img src="@item.PosterUrl" alt="@item.Title" style="width:90px; height:130px; object-fit:cover; border-radius:10px; flex-shrink:0; background:#E5EAE6;" />
+                            
+                            <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
+                                <div style="font-weight:700; font-size:15px; color:#183B36; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    @item.Title
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(item.OriginalTitle) && item.OriginalTitle != item.Title)
+                                {
+                                    <div style="font-size:12px; color:#7B977D; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                        @item.OriginalTitle
+                                    </div>
+                                }
+
+                                <div style="display:flex; gap:6px; align-items:center; margin-top:6px; flex-wrap:wrap;">
+                                    @if (!string.IsNullOrWhiteSpace(item.ReleaseDate))
+                                    {
+                                        <span style="font-size:11.5px; background:rgba(24,59,54,0.08); padding:2px 8px; border-radius:6px; font-weight:600; color:#183B36;">
+                                            @item.ReleaseDate.Split('-')[0]
+                                        </span>
+                                    }
+                                    <span style="font-size:11.5px; background:rgba(24,59,54,0.08); padding:2px 8px; border-radius:6px; font-weight:600; color:#183B36;">
+                                        @item.Country
+                                    </span>
+                                    @if (item.VoteAverage > 0)
+                                    {
+                                        <span style="font-size:11.5px; background:rgba(222,113,73,0.15); color:#DE7149; padding:2px 8px; border-radius:6px; font-weight:700;">
+                                            ★ @item.VoteAverage
+                                        </span>
+                                    }
+                                </div>
+
+                                <div style="font-size:12px; color:#5A6E66; margin-top:8px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; line-height:1.4;">
+                                    @item.Overview
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Bar -->
+                        <div style="padding:12px 16px; background:rgba(24,59,54,0.03); border-top:1px solid rgba(24,59,54,0.08); display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
+                            @if (item.AlreadyInDatabase)
+                            {
+                                <span style="font-size:12px; font-weight:700; color:#10B981; display:flex; align-items:center; gap:4px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    Already in Database
+                                </span>
+                                <a href="/drama/@item.ExistingContentId" target="_blank" class="btn-admin btn-admin-edit" style="font-size:12px; padding:6px 12px; text-decoration:none;">
+                                    View
+                                </a>
+                            }
+                            else
+                            {
+                                <span style="font-size:12px; color:#7B977D;">Not in PC / DB</span>
+                                <button type="button" class="btn-admin btn-admin-primary" style="font-size:12px; padding:6px 14px;"
+                                        @onclick="() => ImportItemAsync(item)" disabled="@_importingIds.Contains(item.Id)">
+                                    @if (_importingIds.Contains(item.Id))
+                                    {
+                                        <span>Importing…</span>
+                                    }
+                                    else
+                                    {
+                                        <span>➕ Import to DB</span>
+                                    }
+                                </button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Inject] private TmdbService TmdbService { get; set; } = default!;
+
+    private string _searchQuery = "";
+    private string _lastSearchedQuery = "";
+    private int _selectedContentTypeId = 2; // Default Korean Drama
+    private bool _isSearching = false;
+    private string? _statusMessage;
+    private bool _isError = false;
+    private List<TmdbSearchResultDto>? _results;
+    private readonly HashSet<int> _importingIds = new();
+
+    private async Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchAsync();
+        }
+    }
+
+    private async Task SearchAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_searchQuery))
+        {
+            _statusMessage = "Please enter a drama or movie title to search.";
+            _isError = true;
+            return;
+        }
+
+        _isSearching = true;
+        _statusMessage = null;
+        _isError = false;
+        _lastSearchedQuery = _searchQuery.Trim();
+
+        try
+        {
+            string mediaType = _selectedContentTypeId == 1 ? "movie" : "tv";
+            _results = await TmdbService.SearchAsync(_lastSearchedQuery, mediaType);
+
+            if (_results == null || _results.Count == 0)
+            {
+                _statusMessage = $"No matching titles found for \"{_lastSearchedQuery}\".";
+            }
+        }
+        catch (Exception ex)
+        {
+            _isError = true;
+            _statusMessage = $"Search error: {ex.Message}";
+        }
+        finally
+        {
+            _isSearching = false;
+        }
+    }
+
+    private async Task ImportItemAsync(TmdbSearchResultDto item)
+    {
+        _importingIds.Add(item.Id);
+        _statusMessage = $"Importing \"{item.Title}\" and fetching episodes from TMDB…";
+        _isError = false;
+        StateHasChanged();
+
+        try
+        {
+            var res = await TmdbService.ImportDramaAsync(item.Id, _selectedContentTypeId);
+            if (res.IsSuccess)
+            {
+                item.AlreadyInDatabase = true;
+                item.ExistingContentId = res.ContentId;
+                _statusMessage = $"🎉 {res.Message}";
+                _isError = false;
+            }
+            else
+            {
+                _isError = true;
+                _statusMessage = res.Message;
+            }
+        }
+        catch (Exception ex)
+        {
+            _isError = true;
+            _statusMessage = $"Import failed: {ex.Message}";
+        }
+        finally
+        {
+            _importingIds.Remove(item.Id);
+            StateHasChanged();
+        }
+    }
+}

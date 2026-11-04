@@ -25,6 +25,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<WatchLaterService>();
 builder.Services.AddScoped<FavoriteService>();
 builder.Services.AddScoped<WatchHistoryService>();
+builder.Services.AddScoped<TmdbService>();
 
 var app = builder.Build();
 
