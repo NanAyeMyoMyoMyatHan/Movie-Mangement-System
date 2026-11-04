@@ -444,12 +444,22 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public Task PlayDramaAsync(long contentId, string title, string? desc, string? posterUrl)
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo($"/login?returnUrl=/drama/{contentId}");
+                return Task.CompletedTask;
+            }
             NavigateToDrama(contentId);
             return Task.CompletedTask;
         }
 
         public void PlayKinnPorsche()
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo("/login?returnUrl=/drama/7");
+                return;
+            }
             NavigateToDrama(7); // KinnPorsche
         }
 

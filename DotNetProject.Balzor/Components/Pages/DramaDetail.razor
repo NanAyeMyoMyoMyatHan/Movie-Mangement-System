@@ -544,7 +544,7 @@ else if (Drama != null)
         </div>
 
         <!-- Video Player (Revealed when episode or play is clicked!) -->
-        @if (IsPlayingVideo)
+        @if (IsPlayingVideo && AuthService.IsAuthenticated())
         {
             <div id="videoPlayerBox" class="drama-theater-player">
                 <div class="drama-player-bar">
@@ -588,12 +588,22 @@ else if (Drama != null)
                 <p class="drama-synopsis">@Drama.Description</p>
 
                 <div class="drama-hero-buttons">
-                    <button class="drama-btn-play-hero" @onclick="StartPlayingFirstEpisode">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <polygon points="6 4 19 12 6 20 6 4"></polygon>
-                        </svg>
-                        <span>Play</span>
-                    </button>
+                    @if (AuthService.IsAuthenticated())
+                    {
+                        <button class="drama-btn-play-hero" @onclick="StartPlayingFirstEpisode">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="6 4 19 12 6 20 6 4"></polygon>
+                            </svg>
+                            <span>Play</span>
+                        </button>
+                    }
+                    else
+                    {
+                        <a href="/login?returnUrl=/drama/@Id" class="drama-btn-play-hero" style="background:#DE7149; text-decoration:none;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                            <span>Sign In to Watch</span>
+                        </a>
+                    }
 
                     <button class="drama-btn-action-hero" @onclick="ToggleWatchlist">
                         @if (IsWatchlisted)
@@ -670,11 +680,23 @@ else if (Drama != null)
 
                         <div class="drama-ep-right-wrap">
                             <span class="drama-ep-duration">@(currentEp.Duration.HasValue && currentEp.Duration.Value > 0 ? $"{currentEp.Duration.Value} min" : "70 min")</span>
-                            <button type="button" class="drama-ep-circle-play-btn" @onclick="() => PlayEpisode(currentEp)" title="Play Episode @currentEp.EpisodeNumber">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <polygon points="6 4 19 12 6 20 6 4"></polygon>
-                                </svg>
-                            </button>
+                            @if (AuthService.IsAuthenticated())
+                            {
+                                <button type="button" class="drama-ep-circle-play-btn" @onclick="() => PlayEpisode(currentEp)" title="Play Episode @currentEp.EpisodeNumber">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                        <polygon points="6 4 19 12 6 20 6 4"></polygon>
+                                    </svg>
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="drama-ep-circle-play-btn" @onclick="() => PlayEpisode(currentEp)" title="Sign in to stream Episode @currentEp.EpisodeNumber" style="border-color: rgba(222, 113, 73, 0.4); color: #DE7149;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                </button>
+                            }
                             <button type="button" class="drama-ep-dots-menu-btn" title="Options" @onclick:stopPropagation="true">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                     <circle cx="12" cy="5" r="1.5"></circle>

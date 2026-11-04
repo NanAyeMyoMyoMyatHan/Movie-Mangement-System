@@ -25,6 +25,9 @@ namespace DotNetProject.Balzor.Components.Pages
         [Inject]
         private WatchHistoryService WatchHistoryService { get; set; } = default!;
 
+        [Inject]
+        public AuthService AuthService { get; set; } = default!;
+
         [Parameter]
         public long Id { get; set; }
 
@@ -100,7 +103,7 @@ namespace DotNetProject.Balzor.Components.Pages
                         ActiveVideoUrl = !string.IsNullOrWhiteSpace(selectedEp.VideoUrl) ? selectedEp.VideoUrl : "/videos/video_2026-08-04_13-49-33.mp4";
                         ActiveVideoPoster = !string.IsNullOrWhiteSpace(selectedEp.ThumbnailUrl) ? selectedEp.ThumbnailUrl : Drama.PosterUrl;
 
-                        if (Autoplay == true)
+                        if (Autoplay == true && AuthService.IsAuthenticated())
                         {
                             await PlayEpisode(selectedEp);
                         }
@@ -154,6 +157,12 @@ namespace DotNetProject.Balzor.Components.Pages
 
         protected async Task PlayEpisode(EpisodeDto ep)
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo($"/login?returnUrl=/drama/{Id}?ep={ep.EpisodeNumber}");
+                return;
+            }
+
             ActiveEpisodeNumber = ep.EpisodeNumber;
             ActiveVideoTitle = !string.IsNullOrWhiteSpace(ep.Title) ? ep.Title : $"{Drama?.Title} - Episode {ep.EpisodeNumber}";
             ActiveVideoDescription = !string.IsNullOrWhiteSpace(ep.Description) ? ep.Description : Drama?.Description ?? "";
@@ -194,6 +203,12 @@ namespace DotNetProject.Balzor.Components.Pages
 
         protected async Task StartPlayingFirstEpisode()
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo($"/login?returnUrl=/drama/{Id}");
+                return;
+            }
+
             var ep = Episodes.FirstOrDefault(e => e.EpisodeNumber == ActiveEpisodeNumber) ?? Episodes.FirstOrDefault();
             if (ep != null)
             {
@@ -244,6 +259,12 @@ namespace DotNetProject.Balzor.Components.Pages
 
         protected async Task ToggleWatchlist()
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo($"/login?returnUrl=/drama/{Id}");
+                return;
+            }
+
             if (Drama == null) return;
 
             var item = new WatchLaterItem
@@ -266,6 +287,12 @@ namespace DotNetProject.Balzor.Components.Pages
 
         protected async Task ToggleFavorite()
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo($"/login?returnUrl=/drama/{Id}");
+                return;
+            }
+
             if (Drama == null) return;
 
             var item = new FavoriteItem
