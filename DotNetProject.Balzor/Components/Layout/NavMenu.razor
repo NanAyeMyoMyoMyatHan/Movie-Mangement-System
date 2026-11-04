@@ -94,6 +94,20 @@
 
     <!-- Bottom Actions & User Profile -->
     <div class="myflix-bottom-nav">
+        @if (AuthService.IsAdmin())
+        {
+            <NavLink href="/admin" class="myflix-category-link admin-highlight">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>Admin Panel</span>
+                <span class="nav-admin-dot"></span>
+            </NavLink>
+        }
+
         <NavLink href="/settings" class="myflix-category-link">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"></circle>
