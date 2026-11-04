@@ -3,6 +3,10 @@ using DotNetProject.Domain.Features.Contents;
 using DotNetProject.Domain.Features.Movies;
 using DotNetProject.Domain.Features.Thai;
 using Microsoft.AspNetCore.Components;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DotNetProject.Balzor.Components.Pages
 {
@@ -16,6 +20,9 @@ namespace DotNetProject.Balzor.Components.Pages
 
         [Inject]
         private FavoriteService FavoriteService { get; set; } = default!;
+
+        [Inject]
+        private WatchLaterService WatchLaterService { get; set; } = default!;
 
         [Inject]
         private WatchHistoryService WatchHistoryService { get; set; } = default!;
@@ -32,12 +39,22 @@ namespace DotNetProject.Balzor.Components.Pages
         protected HashSet<long> FavoriteThaiIds { get; set; } = new();
         protected HashSet<long> FavoriteMovieIds { get; set; } = new();
 
+        protected HashSet<long> WatchLaterDramaIds { get; set; } = new();
+        protected HashSet<long> WatchLaterThaiIds { get; set; } = new();
+        protected HashSet<long> WatchLaterMovieIds { get; set; } = new();
+
         protected bool IsLoading { get; set; } = true;
         protected string? ErrorMessage { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             IsLoading = true;
+
+            // Subscribe to reactive service changes
+            FavoriteService.OnChange += HandleFavoritesChanged;
+            WatchLaterService.OnChange += HandleWatchLaterChanged;
+            WatchHistoryService.OnChange += HandleHistoryChange;
+            AuthService.OnAuthStateChanged += HandleAuthChange;
 
             // Drama Section
             try
@@ -108,6 +125,18 @@ namespace DotNetProject.Balzor.Components.Pages
             }
             catch { }
 
+            // Fallback for Movies if empty
+            if (Movies == null || !Movies.Any())
+            {
+                Movies = new List<MovieListItemResponse>
+                {
+                    new(10002, "Your Name", 2016, "https://upload.wikimedia.org/wikipedia/en/0/0b/Your_Name_poster.png"),
+                    new(10003, "Spirited Away", 2001, "https://upload.wikimedia.org/wikipedia/en/d/db/Spirited_Away_Japanese_poster.png"),
+                    new(10004, "Train to Busan", 2016, "https://upload.wikimedia.org/wikipedia/en/9/95/Train_to_Busan.jpg"),
+                    new(30001, "Parasite", 2019, "https://upload.wikimedia.org/wikipedia/en/5/53/Parasite_%282019_film%29.png")
+                };
+            }
+
             // Thai Section
             try
             {
@@ -137,18 +166,28 @@ namespace DotNetProject.Balzor.Components.Pages
                 Thais = GetFallbackThaiList();
             }
 
-            // Load Favorites cache
+            // Load user-specific caches
+            await RefreshFavoritesCacheAsync();
+            await RefreshWatchLaterCacheAsync();
+            await LoadContinueWatchingAsync();
+
+            IsLoading = false;
+        }
+
+        private async Task RefreshFavoritesCacheAsync()
+        {
             var favs = await FavoriteService.GetFavoritesAsync();
             FavoriteDramaIds = favs.Where(f => f.IsContent && f.Category != null && f.Category.Contains("Korean", StringComparison.OrdinalIgnoreCase)).Select(f => f.Id).ToHashSet();
             FavoriteThaiIds = favs.Where(f => f.IsContent && f.Category != null && f.Category.Contains("Thai", StringComparison.OrdinalIgnoreCase)).Select(f => f.Id).ToHashSet();
             FavoriteMovieIds = favs.Where(f => !f.IsContent || (f.Category != null && f.Category.Contains("Movie", StringComparison.OrdinalIgnoreCase))).Select(f => f.Id).ToHashSet();
+        }
 
-            // Load Continue Watching history & subscribe to reactive changes
-            WatchHistoryService.OnChange += HandleHistoryChange;
-            AuthService.OnAuthStateChanged += HandleAuthChange;
-            await LoadContinueWatchingAsync();
-
-            IsLoading = false;
+        private async Task RefreshWatchLaterCacheAsync()
+        {
+            var items = await WatchLaterService.GetItemsAsync();
+            WatchLaterDramaIds = items.Where(w => w.IsContent && w.Category != null && w.Category.Contains("Korean", StringComparison.OrdinalIgnoreCase)).Select(w => w.Id).ToHashSet();
+            WatchLaterThaiIds = items.Where(w => w.IsContent && w.Category != null && w.Category.Contains("Thai", StringComparison.OrdinalIgnoreCase)).Select(w => w.Id).ToHashSet();
+            WatchLaterMovieIds = items.Where(w => !w.IsContent || (w.Category != null && w.Category.Contains("Movie", StringComparison.OrdinalIgnoreCase))).Select(w => w.Id).ToHashSet();
         }
 
         private static string? CleanPoster(string? url, string? title)
@@ -198,6 +237,26 @@ namespace DotNetProject.Balzor.Components.Pages
             await InvokeAsync(StateHasChanged);
         }
 
+        private async void HandleFavoritesChanged()
+        {
+            await RefreshFavoritesCacheAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+
+        private async void HandleWatchLaterChanged()
+        {
+            await RefreshWatchLaterCacheAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+
+        private async void HandleAuthChange()
+        {
+            await RefreshFavoritesCacheAsync();
+            await RefreshWatchLaterCacheAsync();
+            await LoadContinueWatchingAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+
         public async Task ToggleFavoriteDrama(ContentListItemResponse drama)
         {
             var item = new FavoriteItem
@@ -215,6 +274,27 @@ namespace DotNetProject.Balzor.Components.Pages
             bool added = await FavoriteService.ToggleFavoriteAsync(item);
             if (added) FavoriteDramaIds.Add(drama.ContentId);
             else FavoriteDramaIds.Remove(drama.ContentId);
+            StateHasChanged();
+        }
+
+        public async Task ToggleWatchLaterDrama(ContentListItemResponse drama)
+        {
+            var item = new WatchLaterItem
+            {
+                Id = drama.ContentId,
+                IsContent = true,
+                Title = drama.Title,
+                PosterUrl = CleanPoster(drama.PosterUrl, drama.Title),
+                Category = "Korean Drama",
+                Description = drama.Description,
+                TotalEpisodes = 16,
+                CurrentEpisode = 1,
+                Status = "Want to Watch",
+                AddedAt = DateTime.UtcNow
+            };
+            bool added = await WatchLaterService.ToggleWatchLaterAsync(item);
+            if (added) WatchLaterDramaIds.Add(drama.ContentId);
+            else WatchLaterDramaIds.Remove(drama.ContentId);
             StateHasChanged();
         }
 
@@ -238,6 +318,27 @@ namespace DotNetProject.Balzor.Components.Pages
             StateHasChanged();
         }
 
+        public async Task ToggleWatchLaterThai(ThaiListItemResponse thai)
+        {
+            var item = new WatchLaterItem
+            {
+                Id = thai.Id,
+                IsContent = true,
+                Title = thai.Title,
+                PosterUrl = CleanPoster(thai.PosterUrl, thai.Title),
+                Category = "Thai BL",
+                Description = $"{thai.Title} is an emotional Thai romance drama.",
+                TotalEpisodes = 12,
+                CurrentEpisode = 1,
+                Status = "Want to Watch",
+                AddedAt = DateTime.UtcNow
+            };
+            bool added = await WatchLaterService.ToggleWatchLaterAsync(item);
+            if (added) WatchLaterThaiIds.Add(thai.Id);
+            else WatchLaterThaiIds.Remove(thai.Id);
+            StateHasChanged();
+        }
+
         public async Task ToggleFavoriteMovie(MovieListItemResponse movie)
         {
             var item = new FavoriteItem
@@ -255,6 +356,49 @@ namespace DotNetProject.Balzor.Components.Pages
             bool added = await FavoriteService.ToggleFavoriteAsync(item);
             if (added) FavoriteMovieIds.Add(movie.Id);
             else FavoriteMovieIds.Remove(movie.Id);
+            StateHasChanged();
+        }
+
+        public async Task ToggleWatchLaterMovie(MovieListItemResponse movie)
+        {
+            var item = new WatchLaterItem
+            {
+                Id = movie.Id,
+                IsContent = false,
+                Title = movie.Title,
+                PosterUrl = CleanPoster(movie.PosterUrl, movie.Title),
+                Category = "Movie",
+                Description = $"{movie.Title} is an exciting cinematic feature film.",
+                TotalEpisodes = 1,
+                CurrentEpisode = 1,
+                Status = "Want to Watch",
+                AddedAt = DateTime.UtcNow
+            };
+            bool added = await WatchLaterService.ToggleWatchLaterAsync(item);
+            if (added) WatchLaterMovieIds.Add(movie.Id);
+            else WatchLaterMovieIds.Remove(movie.Id);
+            StateHasChanged();
+        }
+
+        public async Task ToggleHeroWatchLater()
+        {
+            long kinnPorscheId = 7;
+            var item = new WatchLaterItem
+            {
+                Id = kinnPorscheId,
+                IsContent = true,
+                Title = "KinnPorsche",
+                PosterUrl = "https://upload.wikimedia.org/wikipedia/en/9/9e/KinnPorsche_series_poster.jpg",
+                Category = "Thai BL",
+                Description = "The second son of a mafia family, Kinn, is assigned a bodyguard, Porsche.",
+                TotalEpisodes = 14,
+                CurrentEpisode = 1,
+                Status = "Want to Watch",
+                AddedAt = DateTime.UtcNow
+            };
+            bool added = await WatchLaterService.ToggleWatchLaterAsync(item);
+            if (added) WatchLaterThaiIds.Add(kinnPorscheId);
+            else WatchLaterThaiIds.Remove(kinnPorscheId);
             StateHasChanged();
         }
 
@@ -286,35 +430,10 @@ namespace DotNetProject.Balzor.Components.Pages
             }
         }
 
-        public void PlayContent(string title, string? desc, string? posterUrl, int ep = 1, string? videoUrl = null)
-        {
-            long id = 23;
-            if (title.Contains("Fool In Love", StringComparison.OrdinalIgnoreCase)) id = 20002;
-            else if (title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase)) id = 20003;
-            else if (title.Contains("Daung", StringComparison.OrdinalIgnoreCase)) id = 20004;
-            else if (title.Contains("Khem", StringComparison.OrdinalIgnoreCase)) id = 20005;
-            else if (title.Contains("Bad Buddy", StringComparison.OrdinalIgnoreCase)) id = 6;
-            else if (title.Contains("2gether", StringComparison.OrdinalIgnoreCase)) id = 5;
-            else if (title.Contains("KinnPorsche", StringComparison.OrdinalIgnoreCase)) id = 7;
-            else if (title.Contains("TharnType", StringComparison.OrdinalIgnoreCase)) id = 8;
-            else if (title.Contains("SOTUS", StringComparison.OrdinalIgnoreCase)) id = 9;
-            else if (title.Contains("Thousand Stars", StringComparison.OrdinalIgnoreCase)) id = 10;
-            else if (title.Contains("Crash Landing", StringComparison.OrdinalIgnoreCase)) id = 15;
-            else if (title.Contains("Vincenzo", StringComparison.OrdinalIgnoreCase)) id = 21;
-            else if (title.Contains("The Glory", StringComparison.OrdinalIgnoreCase)) id = 22;
-            else if (title.Contains("Lovely Runner", StringComparison.OrdinalIgnoreCase)) id = 24;
-            else if (title.Contains("Alchemy", StringComparison.OrdinalIgnoreCase)) id = 23;
-
-            Nav.NavigateTo($"/drama/{id}?ep={ep}&autoplay=true");
-        }
-
-        private void HandleAuthChange()
-        {
-            InvokeAsync(StateHasChanged);
-        }
-
         public void Dispose()
         {
+            FavoriteService.OnChange -= HandleFavoritesChanged;
+            WatchLaterService.OnChange -= HandleWatchLaterChanged;
             WatchHistoryService.OnChange -= HandleHistoryChange;
             AuthService.OnAuthStateChanged -= HandleAuthChange;
         }

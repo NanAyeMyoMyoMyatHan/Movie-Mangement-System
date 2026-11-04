@@ -218,45 +218,35 @@ namespace DotNetProject.Balzor.Components.Shared
             var inputNoSpace = cleanInput.Replace(" ", "").ToLowerInvariant();
             var cleanPwd = password.Trim();
 
-            // 1. Authenticate against SQL Server Users table via AppDbContext
+            // 1. Direct Authentication against SQL Server Users table via AppDbContext
             try
             {
                 using var scope = _serviceProvider.CreateScope();
                 var db = scope.ServiceProvider.GetService<AppDbContext>();
                 if (db != null)
                 {
-                    var user = await db.Users.FirstOrDefaultAsync(u =>
-                        !u.IsDeleted &&
-                        (u.Email == cleanInput ||
-                         u.UserName == cleanInput ||
-                         (u.DisplayName != null && u.DisplayName == cleanInput) ||
-                         u.UserName == inputNoSpace ||
-                         (u.DisplayName != null && u.DisplayName == inputNoSpace)) &&
-                        u.Password == cleanPwd);
+                    var users = await db.Users.Where(u => !u.IsDeleted).ToListAsync();
+                    var matched = users.FirstOrDefault(u =>
+                        (string.Equals(u.UserName?.Trim(), cleanInput, StringComparison.OrdinalIgnoreCase) ||
+                         string.Equals(u.DisplayName?.Trim(), cleanInput, StringComparison.OrdinalIgnoreCase) ||
+                         string.Equals(u.Email?.Trim(), cleanInput, StringComparison.OrdinalIgnoreCase) ||
+                         string.Equals(u.UserName?.Replace(" ", "").Trim(), inputNoSpace, StringComparison.OrdinalIgnoreCase) ||
+                         string.Equals(u.DisplayName?.Replace(" ", "").Trim(), inputNoSpace, StringComparison.OrdinalIgnoreCase)) &&
+                        string.Equals(u.Password?.Trim(), cleanPwd, StringComparison.Ordinal));
 
-                    if (user == null)
+                    if (matched != null)
                     {
-                        var candidates = await db.Users.Where(u => !u.IsDeleted && u.Password == cleanPwd).ToListAsync();
-                        user = candidates.FirstOrDefault(u =>
-                            u.Email.Equals(cleanInput, StringComparison.OrdinalIgnoreCase) ||
-                            u.UserName.Equals(cleanInput, StringComparison.OrdinalIgnoreCase) ||
-                            (u.DisplayName != null && u.DisplayName.Equals(cleanInput, StringComparison.OrdinalIgnoreCase)) ||
-                            u.UserName.Replace(" ", "").Equals(inputNoSpace, StringComparison.OrdinalIgnoreCase) ||
-                            (u.DisplayName != null && u.DisplayName.Replace(" ", "").Equals(inputNoSpace, StringComparison.OrdinalIgnoreCase)));
-                    }
-
-                    if (user != null)
-                    {
-                        bool isAdmin = user.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase) ||
-                                       user.Email.Equals("admin@nangworld.com", StringComparison.OrdinalIgnoreCase);
+                        var role = !string.IsNullOrWhiteSpace(matched.Role)
+                            ? matched.Role.Trim()
+                            : (matched.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : "User");
 
                         _currentUser = new CurrentUserDto
                         {
-                            Id = user.Id,
-                            UserName = user.UserName,
-                            DisplayName = !string.IsNullOrWhiteSpace(user.DisplayName) ? user.DisplayName : user.UserName,
-                            Email = user.Email,
-                            Role = isAdmin ? "Admin" : "User",
+                            Id = matched.Id,
+                            UserName = matched.UserName,
+                            DisplayName = !string.IsNullOrWhiteSpace(matched.DisplayName) ? matched.DisplayName : matched.UserName,
+                            Email = matched.Email,
+                            Role = role,
                             LoggedInAt = DateTime.UtcNow
                         };
 
@@ -267,16 +257,19 @@ namespace DotNetProject.Balzor.Components.Shared
                         {
                             IsSuccess = true,
                             Message = $"{_currentUser.Role} login successful.",
-                            Id = user.Id,
-                            UserName = user.UserName,
+                            Id = matched.Id,
+                            UserName = matched.UserName,
                             DisplayName = _currentUser.DisplayName,
-                            Email = user.Email,
+                            Email = matched.Email,
                             Role = _currentUser.Role
                         };
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AuthService] Direct DB Login Exception: {ex.Message}");
+            }
 
             // 2. Try WebApi Authentication
             try
@@ -297,9 +290,9 @@ namespace DotNetProject.Balzor.Components.Shared
                     _currentUser = new CurrentUserDto
                     {
                         Id = res.Id,
-                        UserName = res.UserName,
-                        DisplayName = !string.IsNullOrWhiteSpace(res.DisplayName) ? res.DisplayName : res.UserName,
-                        Email = res.Email,
+                        UserName = res.UserName ?? cleanInput,
+                        DisplayName = !string.IsNullOrWhiteSpace(res.DisplayName) ? res.DisplayName : (res.UserName ?? cleanInput),
+                        Email = res.Email ?? cleanInput,
                         Role = isAdmin ? "Admin" : "User",
                         LoggedInAt = DateTime.UtcNow
                     };
@@ -363,14 +356,15 @@ namespace DotNetProject.Balzor.Components.Shared
             };
         }
 
-        public async Task<UserCreateResponseModel> RegisterAsync(string username, string displayName, string email, string password)
+        public async Task<UserCreateResponseModel> RegisterAsync(string username, string displayName, string email, string password, string role = "User")
         {
             var cleanUName = username.Trim();
             var cleanDName = string.IsNullOrWhiteSpace(displayName) ? cleanUName : displayName.Trim();
             var cleanMail = email.Trim();
             var cleanPass = password.Trim();
+            var cleanRole = string.IsNullOrWhiteSpace(role) ? "User" : role.Trim();
 
-            // 1. Insert into SQL Server Users table directly
+            // 1. Direct Insert into SQL Server Users table directly
             try
             {
                 using var scope = _serviceProvider.CreateScope();
@@ -396,6 +390,7 @@ namespace DotNetProject.Balzor.Components.Shared
                         DisplayName = cleanDName,
                         Email = cleanMail,
                         Password = cleanPass,
+                        Role = cleanUName.Equals("admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : cleanRole,
                         CreatedAt = DateTime.UtcNow,
                         IsDeleted = false
                     };
@@ -413,7 +408,7 @@ namespace DotNetProject.Balzor.Components.Shared
                             DisplayName = cleanDName,
                             Email = cleanMail,
                             Password = cleanPass,
-                            Role = cleanUName.Equals("admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : "User",
+                            Role = dbUser.Role,
                             CreatedAt = DateTime.UtcNow
                         });
                         SaveAccountsToFile();
@@ -426,7 +421,10 @@ namespace DotNetProject.Balzor.Components.Shared
                     };
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AuthService] Direct DB Register Exception: {ex.Message}");
+            }
 
             // 2. Fallback to WebApi registration if direct DB scope was unavailable
             try
@@ -470,7 +468,7 @@ namespace DotNetProject.Balzor.Components.Shared
                     DisplayName = cleanDName,
                     Email = cleanMail,
                     Password = cleanPass,
-                    Role = cleanUName.Equals("admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : "User",
+                    Role = cleanUName.Equals("admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : cleanRole,
                     CreatedAt = DateTime.UtcNow
                 });
                 SaveAccountsToFile();
@@ -481,6 +479,76 @@ namespace DotNetProject.Balzor.Components.Shared
                 IsSuccess = true,
                 Message = "Registration successful! You can now log in."
             };
+        }
+
+        // Methods for Admin User & Role Management
+        public async Task<List<User>> GetAllUsersFromDbAsync()
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetService<AppDbContext>();
+                if (db != null)
+                {
+                    return await db.Users
+                        .OrderByDescending(u => u.Id)
+                        .ToListAsync();
+                }
+            }
+            catch { }
+
+            return new List<User>();
+        }
+
+        public async Task<bool> UpdateUserRoleInDbAsync(int userId, string newRole)
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetService<AppDbContext>();
+                if (db != null)
+                {
+                    var user = await db.Users.FindAsync(userId);
+                    if (user != null)
+                    {
+                        user.Role = newRole;
+                        await db.SaveChangesAsync();
+
+                        // Sync session if updating active user
+                        if (_currentUser.Id == userId)
+                        {
+                            _currentUser.Role = newRole;
+                            SaveSession();
+                            OnAuthStateChanged?.Invoke();
+                        }
+                        return true;
+                    }
+                }
+            }
+            catch { }
+            return false;
+        }
+
+        public async Task<bool> ToggleUserDeletedInDbAsync(int userId)
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetService<AppDbContext>();
+                if (db != null)
+                {
+                    var user = await db.Users.FindAsync(userId);
+                    if (user != null)
+                    {
+                        user.IsDeleted = !user.IsDeleted;
+                        user.DeletedAt = user.IsDeleted ? DateTime.UtcNow : null;
+                        await db.SaveChangesAsync();
+                        return true;
+                    }
+                }
+            }
+            catch { }
+            return false;
         }
 
         public Task LogoutAsync()

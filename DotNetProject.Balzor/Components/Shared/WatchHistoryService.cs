@@ -1,3 +1,6 @@
+using DotNetProject.Database.AppDbModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,26 +27,32 @@ namespace DotNetProject.Balzor.Components.Shared
     public class WatchHistoryService : IDisposable
     {
         private readonly AuthService _authService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly List<WatchHistoryItem> _history = new();
         private string _activeUserKey = "guest";
+        private int _activeUserId = 0;
 
         public event Action? OnChange;
 
-        public WatchHistoryService(AuthService authService)
+        public WatchHistoryService(AuthService authService, IServiceProvider serviceProvider)
         {
             _authService = authService;
+            _serviceProvider = serviceProvider;
             _activeUserKey = _authService.GetCurrentUserKey();
+            _activeUserId = _authService.CurrentUser.Id;
             _authService.OnAuthStateChanged += HandleAuthStateChanged;
-            LoadHistoryForActiveUser();
+            _ = LoadHistoryForActiveUserAsync();
         }
 
-        private void HandleAuthStateChanged()
+        private async void HandleAuthStateChanged()
         {
             var newKey = _authService.GetCurrentUserKey();
-            if (_activeUserKey != newKey)
+            var newId = _authService.CurrentUser.Id;
+            if (_activeUserKey != newKey || _activeUserId != newId)
             {
                 _activeUserKey = newKey;
-                LoadHistoryForActiveUser();
+                _activeUserId = newId;
+                await LoadHistoryForActiveUserAsync();
                 OnChange?.Invoke();
             }
         }
@@ -94,11 +103,55 @@ namespace DotNetProject.Balzor.Components.Shared
             catch { }
         }
 
-        private void LoadHistoryForActiveUser()
+        public async Task LoadHistoryForActiveUserAsync()
         {
             _history.Clear();
-            var filePath = GetStoragePath(_activeUserKey);
 
+            // 1. If authenticated, load from SQL Server UserContinueWatching table
+            if (_activeUserId > 0)
+            {
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    var db = scope.ServiceProvider.GetService<AppDbContext>();
+                    if (db != null)
+                    {
+                        var dbRows = await db.UserContinueWatchings
+                            .Where(w => w.UserId == _activeUserId && !w.IsDeleted)
+                            .OrderByDescending(w => w.LastWatchedAt)
+                            .Take(20)
+                            .ToListAsync();
+
+                        if (dbRows.Any())
+                        {
+                            foreach (var r in dbRows)
+                            {
+                                int pct = r.DurationSeconds > 0 
+                                    ? (int)Math.Min(100, Math.Round((double)r.ProgressSeconds / r.DurationSeconds * 100))
+                                    : (r.ProgressSeconds > 0 ? 50 : 35);
+
+                                _history.Add(new WatchHistoryItem
+                                {
+                                    ContentId = r.ContentId,
+                                    IsContent = r.IsContent,
+                                    Title = r.Title,
+                                    PosterUrl = r.PosterUrl,
+                                    EpisodeNumber = r.EpisodeNumber,
+                                    TotalEpisodes = r.TotalEpisodes > 0 ? r.TotalEpisodes : 16,
+                                    ProgressPercentage = pct,
+                                    LastWatchedAt = r.LastWatchedAt
+                                });
+                            }
+                            SaveToFile();
+                            return;
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            // 2. Fallback to per-user JSON file
+            var filePath = GetStoragePath(_activeUserKey);
             if (File.Exists(filePath))
             {
                 try
@@ -114,8 +167,8 @@ namespace DotNetProject.Balzor.Components.Shared
                 catch { }
             }
 
-            // Provide default continue watching only if file does not exist yet for admin and default accounts
-            if (_activeUserKey == "u_1005_admin" || _activeUserKey == "guest" || _activeUserKey.Contains("admin"))
+            // 3. For guest or admin initial seed only if no history exists
+            if (_activeUserKey == "u_1005_admin" || _activeUserKey == "guest")
             {
                 _history.AddRange(GetDefaultSeeds());
                 SaveToFile();
@@ -164,58 +217,6 @@ namespace DotNetProject.Balzor.Components.Shared
                     VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
                     ProgressPercentage = 45,
                     LastWatchedAt = DateTime.UtcNow.AddHours(-12)
-                },
-                new WatchHistoryItem
-                {
-                    ContentId = 15,
-                    IsContent = true,
-                    Title = "Crash Landing on You",
-                    Description = "A paragliding mishap drops a South Korean heiress in North Korea into the life of an army officer.",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/5/5e/Crash_Landing_on_You_poster.png",
-                    EpisodeNumber = 12,
-                    TotalEpisodes = 16,
-                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
-                    ProgressPercentage = 80,
-                    LastWatchedAt = DateTime.UtcNow.AddDays(-1)
-                },
-                new WatchHistoryItem
-                {
-                    ContentId = 24,
-                    IsContent = true,
-                    Title = "Lovely Runner",
-                    Description = "A passionate fan travels back in time to save her favorite idol from a tragic fate.",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png",
-                    EpisodeNumber = 8,
-                    TotalEpisodes = 16,
-                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
-                    ProgressPercentage = 50,
-                    LastWatchedAt = DateTime.UtcNow.AddDays(-2)
-                },
-                new WatchHistoryItem
-                {
-                    ContentId = 21,
-                    IsContent = true,
-                    Title = "Vincenzo",
-                    Description = "A Korean-Italian mafia lawyer gives a conglomerate a taste of its own medicine.",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/5/5b/Vincenzo_TV_series.jpg",
-                    EpisodeNumber = 4,
-                    TotalEpisodes = 20,
-                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
-                    ProgressPercentage = 30,
-                    LastWatchedAt = DateTime.UtcNow.AddDays(-3)
-                },
-                new WatchHistoryItem
-                {
-                    ContentId = 22,
-                    IsContent = true,
-                    Title = "The Glory",
-                    Description = "Years after surviving horrific high school bullying, a woman puts an elaborate revenge scheme into motion.",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/7/79/The_Glory_TV_series.jpg",
-                    EpisodeNumber = 10,
-                    TotalEpisodes = 16,
-                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
-                    ProgressPercentage = 70,
-                    LastWatchedAt = DateTime.UtcNow.AddDays(-4)
                 }
             };
         }
@@ -229,7 +230,7 @@ namespace DotNetProject.Balzor.Components.Shared
             return Task.FromResult(list);
         }
 
-        public Task RecordWatchAsync(
+        public async Task RecordWatchAsync(
             long contentId,
             string title,
             string? description,
@@ -240,6 +241,7 @@ namespace DotNetProject.Balzor.Components.Shared
             bool isContent = true,
             int progressPercentage = 40)
         {
+            // 1. Update in-memory
             var existing = _history.FirstOrDefault(h => h.ContentId == contentId && h.IsContent == isContent);
             if (existing != null)
             {
@@ -249,15 +251,10 @@ namespace DotNetProject.Balzor.Components.Shared
                 existing.ProgressPercentage = progressPercentage;
                 if (!string.IsNullOrWhiteSpace(posterUrl)) existing.PosterUrl = posterUrl;
                 if (!string.IsNullOrWhiteSpace(videoUrl)) existing.VideoUrl = videoUrl;
-                if (!string.IsNullOrWhiteSpace(description)) existing.Description = description;
-
-                // Move to front
-                _history.Remove(existing);
-                _history.Insert(0, existing);
             }
             else
             {
-                var newItem = new WatchHistoryItem
+                _history.Insert(0, new WatchHistoryItem
                 {
                     ContentId = contentId,
                     IsContent = isContent,
@@ -269,28 +266,93 @@ namespace DotNetProject.Balzor.Components.Shared
                     VideoUrl = videoUrl,
                     ProgressPercentage = progressPercentage,
                     LastWatchedAt = DateTime.UtcNow
-                };
-                _history.Insert(0, newItem);
+                });
             }
 
             SaveToFile();
-            NotifyStateChanged();
-            return Task.CompletedTask;
-        }
 
-        public Task RemoveFromHistoryAsync(long contentId, bool isContent = true)
-        {
-            var existing = _history.FirstOrDefault(h => h.ContentId == contentId && h.IsContent == isContent);
-            if (existing != null)
+            // 2. Save directly to SQL Server UserContinueWatching table
+            if (_activeUserId > 0)
             {
-                _history.Remove(existing);
-                SaveToFile();
-                NotifyStateChanged();
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    var db = scope.ServiceProvider.GetService<AppDbContext>();
+                    if (db != null)
+                    {
+                        var dbItem = await db.UserContinueWatchings.FirstOrDefaultAsync(w =>
+                            w.UserId == _activeUserId &&
+                            w.ContentId == contentId &&
+                            w.IsContent == isContent &&
+                            !w.IsDeleted);
+
+                        if (dbItem != null)
+                        {
+                            dbItem.EpisodeNumber = episodeNumber;
+                            dbItem.TotalEpisodes = totalEpisodes > 0 ? totalEpisodes : dbItem.TotalEpisodes;
+                            dbItem.ProgressSeconds = progressPercentage;
+                            dbItem.DurationSeconds = 100;
+                            dbItem.LastWatchedAt = DateTime.UtcNow;
+                            if (!string.IsNullOrWhiteSpace(posterUrl)) dbItem.PosterUrl = posterUrl;
+                        }
+                        else
+                        {
+                            db.UserContinueWatchings.Add(new UserContinueWatching
+                            {
+                                UserId = _activeUserId,
+                                ContentId = contentId,
+                                IsContent = isContent,
+                                Title = title,
+                                PosterUrl = posterUrl,
+                                EpisodeNumber = episodeNumber,
+                                TotalEpisodes = totalEpisodes > 0 ? totalEpisodes : 16,
+                                ProgressSeconds = progressPercentage,
+                                DurationSeconds = 100,
+                                LastWatchedAt = DateTime.UtcNow,
+                                IsDeleted = false
+                            });
+                        }
+
+                        await db.SaveChangesAsync();
+                    }
+                }
+                catch { }
             }
-            return Task.CompletedTask;
+
+            OnChange?.Invoke();
         }
 
-        private void NotifyStateChanged() => OnChange?.Invoke();
+        public async Task RemoveFromHistoryAsync(long contentId, bool isContent = true)
+        {
+            _history.RemoveAll(h => h.ContentId == contentId && h.IsContent == isContent);
+            SaveToFile();
+
+            if (_activeUserId > 0)
+            {
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    var db = scope.ServiceProvider.GetService<AppDbContext>();
+                    if (db != null)
+                    {
+                        var dbItem = await db.UserContinueWatchings.FirstOrDefaultAsync(w =>
+                            w.UserId == _activeUserId &&
+                            w.ContentId == contentId &&
+                            w.IsContent == isContent &&
+                            !w.IsDeleted);
+
+                        if (dbItem != null)
+                        {
+                            dbItem.IsDeleted = true;
+                            await db.SaveChangesAsync();
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            OnChange?.Invoke();
+        }
 
         public void Dispose()
         {

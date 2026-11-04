@@ -1,30 +1,713 @@
 @page "/admin/users"
 @layout AdminLayout
 @using DotNetProject.Balzor.Components.Layout
+@using DotNetProject.Balzor.Components.Shared
+@using DotNetProject.Database.AppDbModels
+@inject AuthService AuthService
 @rendermode InteractiveServer
 
-<PageTitle>Users — NangWorld Admin</PageTitle>
+<PageTitle>Users &amp; Roles — NangWorld Admin</PageTitle>
 
 <div class="admin-page-header">
     <div>
-        <h1>Users</h1>
-        <p>Manage registered user accounts and access levels.</p>
+        <h1>User &amp; Role Management</h1>
+        <p>Manage registered accounts, assign administrative privileges, and monitor platform members.</p>
+    </div>
+    <div class="admin-header-actions">
+        <button type="button" class="btn-admin btn-admin-primary" @onclick="OpenCreateModal">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add New User
+        </button>
     </div>
 </div>
 
-<div class="admin-content-area">
-    <div class="admin-card" style="text-align:center;padding:3rem 2rem;">
-        <div style="width:56px;height:56px;border-radius:14px;background:rgba(222, 113, 73, 0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-terracotta)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
+@if (!string.IsNullOrEmpty(SuccessMessage))
+{
+    <div class="user-alert success">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>@SuccessMessage</span>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="user-alert error">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>@ErrorMessage</span>
+    </div>
+}
+
+<!-- Stats Overview -->
+<div class="admin-stat-grid" style="margin-bottom: 24px;">
+    <div class="admin-stat-card">
+        <div class="admin-stat-top">
+            <div class="admin-stat-icon blush">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </div>
+            <span class="admin-stat-chip blush">Total Members</span>
         </div>
-        <h2 style="font-size:1.1rem;color:var(--brand-green);margin:0 0 .5rem;">User Management</h2>
-        <p style="font-size:.85rem;color:var(--text-muted);max-width:340px;margin:0 auto;">
-            User management requires authentication and role-based API endpoints.
-            This section will be enabled once the <strong>Users API</strong> is connected.
-        </p>
+        <div class="admin-stat-value">@UsersList.Count</div>
+        <div class="admin-stat-label">Registered in SQL Server DB</div>
+    </div>
+
+    <div class="admin-stat-card">
+        <div class="admin-stat-top">
+            <div class="admin-stat-icon honey">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <span class="admin-stat-chip honey">Administrators</span>
+        </div>
+        <div class="admin-stat-value">@UsersList.Count(u => u.Role != null && u.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase))</div>
+        <div class="admin-stat-label">Full Administrative Control</div>
+    </div>
+
+    <div class="admin-stat-card">
+        <div class="admin-stat-top">
+            <div class="admin-stat-icon mint">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+            </div>
+            <span class="admin-stat-chip mint">Standard Users</span>
+        </div>
+        <div class="admin-stat-value">@UsersList.Count(u => u.Role == null || !u.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase))</div>
+        <div class="admin-stat-label">Streaming &amp; Watchlist Access</div>
     </div>
 </div>
+
+<!-- Filter and Search Bar -->
+<div class="admin-card" style="margin-bottom: 24px; padding: 16px 20px;">
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+        <div style="display: flex; gap: 12px; align-items: center; flex: 1; min-width: 260px;">
+            <div class="search-input-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" placeholder="Search by name, username, or email..." @bind="SearchQuery" @bind:event="oninput" class="search-box-input" />
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+            <button type="button" class="filter-chip @(SelectedRoleFilter == "All" ? "active" : "")" @onclick='() => SelectedRoleFilter = "All"'>All</button>
+            <button type="button" class="filter-chip @(SelectedRoleFilter == "Admin" ? "active" : "")" @onclick='() => SelectedRoleFilter = "Admin"'>Admins</button>
+            <button type="button" class="filter-chip @(SelectedRoleFilter == "User" ? "active" : "")" @onclick='() => SelectedRoleFilter = "User"'>Standard Users</button>
+        </div>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="admin-card">
+    <div class="admin-card-header">
+        <div>
+            <h2>Database User Directory</h2>
+            <p>Showing @FilteredUsers.Count user records</p>
+        </div>
+        <button type="button" class="btn-admin btn-admin-edit" style="font-size:.78rem" @onclick="LoadUsersAsync">
+            Refresh List
+        </button>
+    </div>
+
+    @if (IsLoading)
+    {
+        <div style="text-align: center; padding: 40px; color: #9ab4ae;">
+            <p>Loading database users...</p>
+        </div>
+    }
+    else if (!FilteredUsers.Any())
+    {
+        <div style="text-align: center; padding: 50px 20px; color: #9ab4ae;">
+            <p>No user accounts matched the filter.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Created</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Privileges &amp; Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in FilteredUsers)
+                    {
+                        var isAdmin = (user.Role != null && user.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase)) || user.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase);
+                        <tr class="@(user.IsDeleted ? "row-deleted" : "")">
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="user-tbl-avatar @(isAdmin ? "avatar-admin" : "avatar-user")">
+                                        @((!string.IsNullOrWhiteSpace(user.DisplayName) ? user.DisplayName : user.UserName).Substring(0, 1).ToUpper())
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 700; color: #F4EFEA;">@(!string.IsNullOrWhiteSpace(user.DisplayName) ? user.DisplayName : user.UserName)</div>
+                                        <div style="font-size: 12px; color: #8fa8a2;">@@@user.UserName</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="color: #cad7d4; font-size: 13px;">@user.Email</td>
+                            <td>
+                                @if (isAdmin)
+                                {
+                                    <span class="role-badge badge-admin">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                        <span>Admin</span>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="role-badge badge-user">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        <span>User</span>
+                                    </span>
+                                }
+                            </td>
+                            <td style="color: #8fa8a2; font-size: 12px;">
+                                @user.CreatedAt.ToString("MMM dd, yyyy")
+                            </td>
+                            <td>
+                                @if (user.IsDeleted)
+                                {
+                                    <span class="status-badge badge-inactive">Inactive</span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge badge-active">Active</span>
+                                }
+                            </td>
+                            <td style="text-align: right;">
+                                <div style="display: inline-flex; gap: 8px; align-items: center;">
+                                    @if (!user.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <button type="button" class="btn-action-pill @(isAdmin ? "demote" : "promote")"
+                                                @onclick="() => ToggleUserRole(user)"
+                                                title="@(isAdmin ? "Revoke Admin privileges" : "Grant Admin privileges")">
+                                            @(isAdmin ? "Demote to User" : "Make Admin")
+                                        </button>
+
+                                        <button type="button" class="btn-action-icon @(user.IsDeleted ? "restore" : "delete")"
+                                                @onclick="() => ToggleUserDelete(user)"
+                                                title="@(user.IsDeleted ? "Restore account" : "Deactivate account")">
+                                            @if (user.IsDeleted)
+                                            {
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                                            }
+                                            else
+                                            {
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                            }
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span style="font-size: 11px; color: #8fa8a2; font-style: italic;">Protected</span>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- Modal: Add New User -->
+@if (ShowCreateModal)
+{
+    <div class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Add User Account</h3>
+                <button type="button" class="modal-close-btn" @onclick="CloseCreateModal">&times;</button>
+            </div>
+
+            <form @onsubmit="HandleCreateUser">
+                <div class="modal-body">
+                    <div class="form-group-admin">
+                        <label>Username</label>
+                        <input type="text" class="input-admin" placeholder="e.g. kpop_fan" @bind="NewUsername" required />
+                    </div>
+
+                    <div class="form-group-admin">
+                        <label>Display Name</label>
+                        <input type="text" class="input-admin" placeholder="e.g. Min-ho Lee" @bind="NewDisplayName" required />
+                    </div>
+
+                    <div class="form-group-admin">
+                        <label>Email Address</label>
+                        <input type="email" class="input-admin" placeholder="e.g. user@example.com" @bind="NewEmail" required />
+                    </div>
+
+                    <div class="form-group-admin">
+                        <label>Password</label>
+                        <input type="password" class="input-admin" placeholder="Enter secure password" @bind="NewPassword" required />
+                    </div>
+
+                    <div class="form-group-admin">
+                        <label>Assigned Role</label>
+                        <select class="input-admin" @bind="NewRole">
+                            <option value="User">Standard User (Streaming &amp; Watchlist)</option>
+                            <option value="Admin">Administrator (Full Access)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-cancel" @onclick="CloseCreateModal">Cancel</button>
+                    <button type="submit" class="btn-modal-save" disabled="@IsSubmitting">
+                        @(IsSubmitting ? "Saving..." : "Create Account")
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<style>
+    .search-input-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(244, 239, 234, 0.12);
+        border-radius: 12px;
+        padding: 8px 16px;
+        flex: 1;
+        color: #cad7d4;
+    }
+
+    .search-box-input {
+        background: transparent;
+        border: none;
+        color: #F4EFEA;
+        font-size: 14px;
+        outline: none;
+        width: 100%;
+    }
+
+    .filter-chip {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(244, 239, 234, 0.1);
+        color: #cad7d4;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .filter-chip.active {
+        background: #DE7149;
+        color: #fff;
+        border-color: #DE7149;
+    }
+
+    .user-tbl-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 15px;
+    }
+
+    .avatar-admin {
+        background: rgba(222, 113, 73, 0.2);
+        color: #DE7149;
+        border: 1px solid rgba(222, 113, 73, 0.4);
+    }
+
+    .avatar-user {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10B981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+    }
+
+    .badge-admin {
+        background: rgba(222, 113, 73, 0.15);
+        color: #DE7149;
+        border: 1px solid rgba(222, 113, 73, 0.3);
+    }
+
+    .badge-user {
+        background: rgba(16, 185, 129, 0.12);
+        color: #10B981;
+        border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .badge-active {
+        background: rgba(16, 185, 129, 0.12);
+        color: #10B981;
+    }
+
+    .badge-inactive {
+        background: rgba(239, 68, 68, 0.12);
+        color: #ef4444;
+    }
+
+    .row-deleted {
+        opacity: 0.55;
+    }
+
+    .btn-action-pill {
+        border: none;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .btn-action-pill.promote {
+        background: rgba(222, 113, 73, 0.15);
+        color: #DE7149;
+    }
+
+    .btn-action-pill.promote:hover {
+        background: #DE7149;
+        color: #fff;
+    }
+
+    .btn-action-pill.demote {
+        background: rgba(255, 255, 255, 0.08);
+        color: #cad7d4;
+    }
+
+    .btn-action-pill.demote:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+    }
+
+    .btn-action-icon {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 6px;
+        color: #8fa8a2;
+        transition: all 0.15s ease;
+    }
+
+    .btn-action-icon.delete:hover {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
+    }
+
+    .btn-action-icon.restore:hover {
+        color: #10B981;
+        background: rgba(16, 185, 129, 0.1);
+    }
+
+    .user-alert {
+        padding: 12px 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .user-alert.success {
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        color: #34d399;
+    }
+
+    .user-alert.error {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.35);
+        color: #f87171;
+    }
+
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 20px;
+    }
+
+    .modal-card {
+        background: #0F2420;
+        border: 1px solid rgba(244, 239, 234, 0.15);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 480px;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+        color: #F4EFEA;
+    }
+
+    .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .modal-header h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .modal-close-btn {
+        background: transparent;
+        border: none;
+        color: #8fa8a2;
+        font-size: 24px;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .modal-body {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .form-group-admin {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .form-group-admin label {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #cad7d4;
+    }
+
+    .input-admin {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(244, 239, 234, 0.15);
+        border-radius: 10px;
+        padding: 10px 14px;
+        color: #F4EFEA;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .input-admin:focus {
+        border-color: #DE7149;
+    }
+
+    .modal-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 18px 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-modal-cancel {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #cad7d4;
+        padding: 8px 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .btn-modal-save {
+        background: #DE7149;
+        border: none;
+        color: #fff;
+        padding: 8px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 700;
+    }
+
+    .btn-modal-save:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>
+
+@code {
+    private List<User> UsersList = new();
+    private bool IsLoading = true;
+    private string SearchQuery = "";
+    private string SelectedRoleFilter = "All";
+
+    private string? SuccessMessage;
+    private string? ErrorMessage;
+
+    private bool ShowCreateModal = false;
+    private bool IsSubmitting = false;
+
+    private string NewUsername = "";
+    private string NewDisplayName = "";
+    private string NewEmail = "";
+    private string NewPassword = "";
+    private string NewRole = "User";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsersAsync();
+    }
+
+    private async Task LoadUsersAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            UsersList = await AuthService.GetAllUsersFromDbAsync();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Failed to load database users: " + ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private List<User> FilteredUsers
+    {
+        get
+        {
+            var list = UsersList.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(SearchQuery))
+            {
+                var q = SearchQuery.Trim().ToLower();
+                list = list.Where(u =>
+                    (u.UserName != null && u.UserName.ToLower().Contains(q)) ||
+                    (u.DisplayName != null && u.DisplayName.ToLower().Contains(q)) ||
+                    (u.Email != null && u.Email.ToLower().Contains(q)));
+            }
+
+            if (SelectedRoleFilter == "Admin")
+            {
+                list = list.Where(u => (u.Role != null && u.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase)) || u.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase));
+            }
+            else if (SelectedRoleFilter == "User")
+            {
+                list = list.Where(u => (u.Role == null || !u.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase)) && !u.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase));
+            }
+
+            return list.ToList();
+        }
+    }
+
+    private async Task ToggleUserRole(User user)
+    {
+        ErrorMessage = null;
+        SuccessMessage = null;
+
+        var isCurrentlyAdmin = user.Role != null && user.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase);
+        var targetRole = isCurrentlyAdmin ? "User" : "Admin";
+
+        var ok = await AuthService.UpdateUserRoleInDbAsync(user.Id, targetRole);
+        if (ok)
+        {
+            user.Role = targetRole;
+            SuccessMessage = $"Updated {user.DisplayName ?? user.UserName}'s role to {targetRole} in database.";
+        }
+        else
+        {
+            ErrorMessage = "Failed to update role in database.";
+        }
+    }
+
+    private async Task ToggleUserDelete(User user)
+    {
+        ErrorMessage = null;
+        SuccessMessage = null;
+
+        var ok = await AuthService.ToggleUserDeletedInDbAsync(user.Id);
+        if (ok)
+        {
+            user.IsDeleted = !user.IsDeleted;
+            SuccessMessage = user.IsDeleted
+                ? $"Deactivated user {user.DisplayName ?? user.UserName}."
+                : $"Restored user {user.DisplayName ?? user.UserName}.";
+        }
+        else
+        {
+            ErrorMessage = "Failed to toggle user status in database.";
+        }
+    }
+
+    private void OpenCreateModal()
+    {
+        NewUsername = "";
+        NewDisplayName = "";
+        NewEmail = "";
+        NewPassword = "";
+        NewRole = "User";
+        ShowCreateModal = true;
+    }
+
+    private void CloseCreateModal()
+    {
+        ShowCreateModal = false;
+    }
+
+    private async Task HandleCreateUser()
+    {
+        ErrorMessage = null;
+        SuccessMessage = null;
+        IsSubmitting = true;
+
+        try
+        {
+            var res = await AuthService.RegisterAsync(NewUsername, NewDisplayName, NewEmail, NewPassword, NewRole);
+            if (res != null && res.IsSuccess)
+            {
+                SuccessMessage = $"User '{NewDisplayName}' created successfully in database!";
+                CloseCreateModal();
+                await LoadUsersAsync();
+            }
+            else
+            {
+                ErrorMessage = res?.Message ?? "Failed to create user.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Create user error: " + ex.Message;
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
+    }
+}

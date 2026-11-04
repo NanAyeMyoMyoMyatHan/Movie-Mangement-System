@@ -36,6 +36,9 @@ namespace DotNetProject.Balzor.Components.Pages
         private FavoriteService FavoriteService { get; set; } = default!;
 
         [Inject]
+        private WatchLaterService WatchLaterService { get; set; } = default!;
+
+        [Inject]
         public AuthService AuthService { get; set; } = default!;
 
         [Parameter]
@@ -50,6 +53,7 @@ namespace DotNetProject.Balzor.Components.Pages
         protected List<CategoryItemDto> FilteredItems { get; set; } = new();
 
         protected HashSet<long> FavoriteIds { get; set; } = new();
+        protected HashSet<long> WatchLaterIds { get; set; } = new();
         protected string SearchQuery { get; set; } = "";
         protected string SortBy { get; set; } = "year";
         protected bool IsLoading { get; set; } = true;
@@ -59,8 +63,10 @@ namespace DotNetProject.Balzor.Components.Pages
         {
             Nav.LocationChanged += HandleLocationChanged;
             FavoriteService.OnChange += HandleFavoritesChanged;
+            WatchLaterService.OnChange += HandleWatchLaterChanged;
             AuthService.OnAuthStateChanged += HandleAuthChanged;
             await RefreshFavoriteCacheAsync();
+            await RefreshWatchLaterCacheAsync();
         }
 
         protected override async Task OnParametersSetAsync()
@@ -90,10 +96,6 @@ namespace DotNetProject.Balzor.Components.Pages
             });
         }
 
-        private void HandleAuthChanged()
-        {
-            InvokeAsync(StateHasChanged);
-        }
 
         private string ExtractSlug(string? uri, string? paramSlug = null)
         {
@@ -132,6 +134,19 @@ namespace DotNetProject.Balzor.Components.Pages
         {
             var favs = await FavoriteService.GetFavoritesAsync();
             FavoriteIds = favs.Select(f => f.Id).ToHashSet();
+        }
+
+        private async Task RefreshWatchLaterCacheAsync()
+        {
+            var items = await WatchLaterService.GetItemsAsync();
+            WatchLaterIds = items.Select(w => w.Id).ToHashSet();
+        }
+
+        private async void HandleAuthChanged()
+        {
+            await RefreshFavoriteCacheAsync();
+            await RefreshWatchLaterCacheAsync();
+            await InvokeAsync(StateHasChanged);
         }
 
         private void ConfigureCategoryMeta()
@@ -470,9 +485,40 @@ namespace DotNetProject.Balzor.Components.Pages
             StateHasChanged();
         }
 
+        public async Task ToggleWatchLater(CategoryItemDto item)
+        {
+            var wlItem = new WatchLaterItem
+            {
+                Id = item.Id,
+                IsContent = item.IsContent,
+                Title = item.Title,
+                PosterUrl = item.PosterUrl,
+                Category = item.Category,
+                Description = item.Description,
+                TotalEpisodes = item.TotalEpisodes,
+                CurrentEpisode = 1,
+                Status = "Want to Watch",
+                AddedAt = DateTime.UtcNow
+            };
+
+            bool added = await WatchLaterService.ToggleWatchLaterAsync(wlItem);
+            ToastMessage = added ? $"Added \"{item.Title}\" to Watch Later" : $"Removed \"{item.Title}\" from Watch Later";
+            StateHasChanged();
+
+            await Task.Delay(2600);
+            ToastMessage = null;
+            StateHasChanged();
+        }
+
         private async void HandleFavoritesChanged()
         {
             await RefreshFavoriteCacheAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+
+        private async void HandleWatchLaterChanged()
+        {
+            await RefreshWatchLaterCacheAsync();
             await InvokeAsync(StateHasChanged);
         }
 
@@ -487,6 +533,7 @@ namespace DotNetProject.Balzor.Components.Pages
         {
             Nav.LocationChanged -= HandleLocationChanged;
             FavoriteService.OnChange -= HandleFavoritesChanged;
+            WatchLaterService.OnChange -= HandleWatchLaterChanged;
             AuthService.OnAuthStateChanged -= HandleAuthChanged;
         }
     }

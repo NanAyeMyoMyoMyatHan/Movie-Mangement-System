@@ -67,7 +67,7 @@
             </div>
             <span class="admin-stat-chip blush">Users</span>
         </div>
-        <div class="admin-stat-value">—</div>
+        <div class="admin-stat-value">@(_userCount > 0 ? _userCount.ToString() : "—")</div>
         <div class="admin-stat-label">Registered Users</div>
         <div class="admin-stat-bar"><div class="admin-stat-bar-fill blush" style="width:80%"></div></div>
     </a>

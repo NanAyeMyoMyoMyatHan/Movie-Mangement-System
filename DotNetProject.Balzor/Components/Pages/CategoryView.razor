@@ -171,19 +171,29 @@ else
                         </button>
                     </div>
 
-                    <!-- Heart Favorite Button top-right -->
-                    <button type="button"
-                            class="cat-card-heart @(FavoriteIds.Contains(item.Id) ? "active" : "")"
-                            title="@(FavoriteIds.Contains(item.Id) ? "Remove from Favorites" : "Add to Favorites")"
-                            @onclick:stopPropagation="true"
-                            @onclick="() => ToggleFavorite(item)">
-                        <svg width="15" height="15" viewBox="0 0 24 24"
-                             fill="@(FavoriteIds.Contains(item.Id) ? "#DE7149" : "none")"
-                             stroke="@(FavoriteIds.Contains(item.Id) ? "#DE7149" : "currentColor")"
-                             stroke-width="2.2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
-                    </button>
+                    <!-- Action Buttons top-right: Watch Later & Favorite -->
+                    <div class="cat-card-actions" @onclick:stopPropagation="true">
+                        <button type="button"
+                                class="cat-card-later @(WatchLaterIds.Contains(item.Id) ? "active" : "")"
+                                title="@(WatchLaterIds.Contains(item.Id) ? "Remove from Watch Later" : "Add to Watch Later")"
+                                @onclick="() => ToggleWatchLater(item)">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="@(WatchLaterIds.Contains(item.Id) ? "#10B981" : "none")" stroke="@(WatchLaterIds.Contains(item.Id) ? "#10B981" : "currentColor")" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </button>
+                        <button type="button"
+                                class="cat-card-heart @(FavoriteIds.Contains(item.Id) ? "active" : "")"
+                                title="@(FavoriteIds.Contains(item.Id) ? "Remove from Favorites" : "Add to Favorites")"
+                                @onclick="() => ToggleFavorite(item)">
+                            <svg width="13" height="13" viewBox="0 0 24 24"
+                                 fill="@(FavoriteIds.Contains(item.Id) ? "#DE7149" : "none")"
+                                 stroke="@(FavoriteIds.Contains(item.Id) ? "#DE7149" : "currentColor")"
+                                 stroke-width="2.2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                    </div>
 
                     <!-- Rating Tag top-left -->
                     <span class="cat-rating-tag">

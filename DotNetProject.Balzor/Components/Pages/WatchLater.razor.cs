@@ -154,9 +154,10 @@ namespace DotNetProject.Balzor.Components.Pages
             });
         }
 
-        private void HandleAuthChange()
+        private async void HandleAuthChange()
         {
-            InvokeAsync(StateHasChanged);
+            await LoadItemsAsync();
+            await InvokeAsync(StateHasChanged);
         }
 
         public void Dispose()

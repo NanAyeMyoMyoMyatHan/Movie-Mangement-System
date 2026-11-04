@@ -386,35 +386,76 @@
     transform: scale(1);
 }
 
-/* Heart favorite button on poster */
-.cat-card-heart {
+/* Action buttons on poster top-right */
+.cat-card-actions {
     position: absolute;
     top: 9px;
     right: 9px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 4;
+}
+
+.cat-card-later {
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: rgba(15, 36, 32, 0.55);
+    background: rgba(15, 36, 32, 0.65);
     backdrop-filter: blur(6px);
-    border: 1px solid rgba(222, 113, 73, 0.3);
+    border: 1px solid rgba(244, 239, 234, 0.25);
+    color: #F4EFEA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.cat-card-later:hover {
+    transform: scale(1.15);
+    background: rgba(15, 36, 32, 0.9);
+    color: #10B981;
+    border-color: #10B981;
+}
+
+.cat-card-later.active {
+    background: #10B981;
+    border-color: #10B981;
+    color: #FFFFFF;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.cat-card-later.active svg {
+    fill: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+}
+
+.cat-card-heart {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(15, 36, 32, 0.65);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(222, 113, 73, 0.4);
     color: #DE7149;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 4;
     transition: transform 0.15s ease, background 0.2s ease;
 }
 
 .cat-card-heart:hover {
     transform: scale(1.15);
-    background: rgba(15, 36, 32, 0.85);
+    background: rgba(15, 36, 32, 0.9);
 }
 
 .cat-card-heart.active {
     background: #DE7149;
     border-color: #DE7149;
     color: #FFFFFF;
+    box-shadow: 0 0 10px rgba(222, 113, 73, 0.4);
 }
 
 .cat-card-heart.active svg {

@@ -1,3 +1,6 @@
+using DotNetProject.Database.AppDbModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,40 +13,46 @@ namespace DotNetProject.Balzor.Components.Shared
     public class WatchLaterItem
     {
         public long Id { get; set; }
-        public bool IsContent { get; set; } = true; // true = Drama / Series, false = Movie
+        public bool IsContent { get; set; } = true;
         public string Title { get; set; } = string.Empty;
         public string? PosterUrl { get; set; }
-        public string? Category { get; set; } = "Korean Drama"; // "Korean Drama", "Thai BL", "Movie"
+        public string? Category { get; set; } = "Korean Drama";
         public string? Description { get; set; }
         public int TotalEpisodes { get; set; } = 16;
         public int CurrentEpisode { get; set; } = 1;
-        public string Status { get; set; } = "Want to Watch"; // "Want to Watch", "Watching", "Completed"
+        public string Status { get; set; } = "Want to Watch";
         public DateTime AddedAt { get; set; } = DateTime.UtcNow;
     }
 
     public class WatchLaterService : IDisposable
     {
         private readonly AuthService _authService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly List<WatchLaterItem> _items = new();
         private string _activeUserKey = "guest";
+        private int _activeUserId = 0;
 
         public event Action? OnChange;
 
-        public WatchLaterService(AuthService authService)
+        public WatchLaterService(AuthService authService, IServiceProvider serviceProvider)
         {
             _authService = authService;
+            _serviceProvider = serviceProvider;
             _activeUserKey = _authService.GetCurrentUserKey();
+            _activeUserId = _authService.CurrentUser.Id;
             _authService.OnAuthStateChanged += HandleAuthStateChanged;
-            LoadItemsForActiveUser();
+            _ = LoadItemsForActiveUserAsync();
         }
 
-        private void HandleAuthStateChanged()
+        private async void HandleAuthStateChanged()
         {
             var newKey = _authService.GetCurrentUserKey();
-            if (_activeUserKey != newKey)
+            var newId = _authService.CurrentUser.Id;
+            if (_activeUserKey != newKey || _activeUserId != newId)
             {
                 _activeUserKey = newKey;
-                LoadItemsForActiveUser();
+                _activeUserId = newId;
+                await LoadItemsForActiveUserAsync();
                 OnChange?.Invoke();
             }
         }
@@ -94,11 +103,52 @@ namespace DotNetProject.Balzor.Components.Shared
             catch { }
         }
 
-        private void LoadItemsForActiveUser()
+        public async Task LoadItemsForActiveUserAsync()
         {
             _items.Clear();
-            var filePath = GetStoragePath(_activeUserKey);
 
+            // 1. If authenticated, load from SQL Server UserWatchLater table
+            if (_activeUserId > 0)
+            {
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    var db = scope.ServiceProvider.GetService<AppDbContext>();
+                    if (db != null)
+                    {
+                        var dbRows = await db.UserWatchLaters
+                            .Where(w => w.UserId == _activeUserId && !w.IsDeleted)
+                            .OrderByDescending(w => w.AddedAt)
+                            .ToListAsync();
+
+                        if (dbRows.Any())
+                        {
+                            foreach (var r in dbRows)
+                            {
+                                _items.Add(new WatchLaterItem
+                                {
+                                    Id = r.ContentId,
+                                    IsContent = r.IsContent,
+                                    Title = r.Title,
+                                    PosterUrl = r.PosterUrl,
+                                    Category = r.Category,
+                                    Description = r.Description,
+                                    TotalEpisodes = r.TotalEpisodes,
+                                    CurrentEpisode = r.CurrentEpisode,
+                                    Status = r.Status,
+                                    AddedAt = r.AddedAt
+                                });
+                            }
+                            SaveToFile();
+                            return;
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            // 2. Load from per-user JSON file
+            var filePath = GetStoragePath(_activeUserKey);
             if (File.Exists(filePath))
             {
                 try
@@ -114,7 +164,7 @@ namespace DotNetProject.Balzor.Components.Shared
                 catch { }
             }
 
-            // Provide default curated watch later items only if file does not exist yet for admin and default accounts
+            // 3. For guest and admin accounts, seed default curated items if file does not exist
             if (_activeUserKey == "u_1005_admin" || _activeUserKey == "guest" || _activeUserKey.Contains("admin"))
             {
                 _items.AddRange(GetDefaultSeeds());
@@ -141,14 +191,27 @@ namespace DotNetProject.Balzor.Components.Shared
                 },
                 new WatchLaterItem
                 {
+                    Id = 20005,
+                    IsContent = true,
+                    Title = "KhemJira",
+                    PosterUrl = "/images/khemjira.jpg",
+                    Category = "Thai BL",
+                    Description = "Born under a spiritual curse, Khemjira journeys to Isan to seek salvation from a powerful shaman.",
+                    TotalEpisodes = 12,
+                    CurrentEpisode = 1,
+                    Status = "Want to Watch",
+                    AddedAt = DateTime.UtcNow.AddDays(-2)
+                },
+                new WatchLaterItem
+                {
                     Id = 21,
                     IsContent = true,
                     Title = "Vincenzo",
                     PosterUrl = "https://upload.wikimedia.org/wikipedia/en/5/5b/Vincenzo_TV_series.jpg",
                     Category = "Korean Drama",
-                    Description = "A Korean-Italian mafia lawyer gives a conglomerate a taste of its own medicine.",
+                    Description = "A Korean-Italian mafia lawyer gives an untouchable conglomerate a taste of its own medicine.",
                     TotalEpisodes = 20,
-                    CurrentEpisode = 4,
+                    CurrentEpisode = 8,
                     Status = "Watching",
                     AddedAt = DateTime.UtcNow.AddDays(-3)
                 },
@@ -159,82 +222,35 @@ namespace DotNetProject.Balzor.Components.Shared
                     Title = "The Glory",
                     PosterUrl = "https://upload.wikimedia.org/wikipedia/en/7/79/The_Glory_TV_series.jpg",
                     Category = "Korean Drama",
-                    Description = "Years after surviving brutal bullying, a woman puts an elaborate revenge scheme into motion.",
+                    Description = "Years after surviving horrific high school bullying, a woman puts an elaborate revenge scheme into motion.",
                     TotalEpisodes = 16,
-                    CurrentEpisode = 10,
-                    Status = "Watching",
-                    AddedAt = DateTime.UtcNow.AddDays(-4)
-                },
-                new WatchLaterItem
-                {
-                    Id = 20003,
-                    IsContent = true,
-                    Title = "Kingdom",
-                    PosterUrl = "/images/kingdom.jpg",
-                    Category = "Korean Drama",
-                    Description = "While strange rumors grip the kingdom, the crown prince investigates a deadly plague.",
-                    TotalEpisodes = 12,
                     CurrentEpisode = 1,
                     Status = "Want to Watch",
                     AddedAt = DateTime.UtcNow.AddDays(-5)
                 },
                 new WatchLaterItem
                 {
-                    Id = 24,
-                    IsContent = true,
-                    Title = "Lovely Runner",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png",
-                    Category = "Korean Drama",
-                    Description = "A passionate fan travels back in time to save her favorite idol from a tragic fate.",
-                    TotalEpisodes = 16,
-                    CurrentEpisode = 8,
+                    Id = 10003,
+                    IsContent = false,
+                    Title = "Spirited Away",
+                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/d/db/Spirited_Away_Japanese_poster.png",
+                    Category = "Movie",
+                    Description = "A young girl wanders into a strange world ruled by spirits, witches, and gods.",
+                    TotalEpisodes = 1,
+                    CurrentEpisode = 1,
                     Status = "Want to Watch",
                     AddedAt = DateTime.UtcNow.AddDays(-7)
-                },
-                new WatchLaterItem
-                {
-                    Id = 6,
-                    IsContent = true,
-                    Title = "Bad Buddy",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/b/b7/Bad_Buddy_Series_2021_poster.jpg",
-                    Category = "Thai BL",
-                    Description = "Two rival families live next door, but their sons secretly develop deep feelings.",
-                    TotalEpisodes = 12,
-                    CurrentEpisode = 6,
-                    Status = "Want to Watch",
-                    AddedAt = DateTime.UtcNow.AddDays(-8)
-                },
-                new WatchLaterItem
-                {
-                    Id = 20005,
-                    IsContent = true,
-                    Title = "KhemJira",
-                    PosterUrl = "/images/khemjira.jpg",
-                    Category = "Thai BL",
-                    Description = "Born with a curse, Khemjira journeys to Isan to seek help from a formidable local shaman.",
-                    TotalEpisodes = 12,
-                    CurrentEpisode = 1,
-                    Status = "Want to Watch",
-                    AddedAt = DateTime.UtcNow.AddDays(-9)
-                },
-                new WatchLaterItem
-                {
-                    Id = 20002,
-                    IsContent = true,
-                    Title = "Fool In Love",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/3/3c/Fool_in_love_the_series.jpg",
-                    Category = "Thai BL",
-                    Description = "The heir of Araya Group meets an intelligent young successor, sparking unexpected love.",
-                    TotalEpisodes = 6,
-                    CurrentEpisode = 1,
-                    Status = "Want to Watch",
-                    AddedAt = DateTime.UtcNow.AddDays(-10)
                 }
             };
         }
 
-        public Task<List<WatchLaterItem>> GetItemsAsync(string? categoryFilter = null, string? sortBy = null)
+        public async Task<List<WatchLaterItem>> GetItemsAsync(string? categoryFilter = null, string? sortBy = null)
         {
+            if (!_items.Any())
+            {
+                await LoadItemsForActiveUserAsync();
+            }
+
             var query = _items.AsEnumerable();
 
             if (!string.IsNullOrWhiteSpace(categoryFilter) && categoryFilter != "All")
@@ -270,41 +286,43 @@ namespace DotNetProject.Balzor.Components.Shared
                 query = query.OrderByDescending(i => i.AddedAt);
             }
 
-            return Task.FromResult(query.ToList());
+            return query.ToList();
         }
 
-        public Task<int> GetCountAsync()
+        public async Task<int> GetCountAsync()
         {
-            return Task.FromResult(_items.Count);
+            if (!_items.Any())
+            {
+                await LoadItemsForActiveUserAsync();
+            }
+            return _items.Count;
         }
 
-        public Task<bool> IsInWatchLaterAsync(long id, bool isContent = true)
+        public async Task<bool> IsInWatchLaterAsync(long id, bool isContent = true)
         {
-            bool exists = _items.Any(i => i.Id == id && i.IsContent == isContent);
-            return Task.FromResult(exists);
+            if (!_items.Any())
+            {
+                await LoadItemsForActiveUserAsync();
+            }
+            return _items.Any(i => i.Id == id && i.IsContent == isContent);
         }
 
-        public Task<bool> ToggleWatchLaterAsync(WatchLaterItem item)
+        public async Task<bool> ToggleWatchLaterAsync(WatchLaterItem item)
         {
             var existing = _items.FirstOrDefault(i => i.Id == item.Id && i.IsContent == item.IsContent);
             if (existing != null)
             {
-                _items.Remove(existing);
-                SaveToFile();
-                NotifyStateChanged();
-                return Task.FromResult(false); // Removed from watch later
+                await RemoveItemAsync(item.Id, item.IsContent);
+                return false;
             }
             else
             {
-                item.AddedAt = DateTime.UtcNow;
-                _items.Insert(0, item);
-                SaveToFile();
-                NotifyStateChanged();
-                return Task.FromResult(true); // Added to watch later
+                await AddItemAsync(item);
+                return true;
             }
         }
 
-        public Task AddItemAsync(WatchLaterItem item)
+        public async Task AddItemAsync(WatchLaterItem item)
         {
             var existing = _items.FirstOrDefault(i => i.Id == item.Id && i.IsContent == item.IsContent);
             if (existing == null)
@@ -320,21 +338,92 @@ namespace DotNetProject.Balzor.Components.Shared
                 _items.Remove(existing);
                 _items.Insert(0, existing);
             }
+
             SaveToFile();
+
+            // Persist to SQL Server UserWatchLater table if authenticated
+            if (_activeUserId > 0)
+            {
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    var db = scope.ServiceProvider.GetService<AppDbContext>();
+                    if (db != null)
+                    {
+                        var dbWL = await db.UserWatchLaters.FirstOrDefaultAsync(w =>
+                            w.UserId == _activeUserId &&
+                            w.ContentId == item.Id &&
+                            w.IsContent == item.IsContent);
+
+                        if (dbWL == null)
+                        {
+                            db.UserWatchLaters.Add(new UserWatchLater
+                            {
+                                UserId = _activeUserId,
+                                ContentId = item.Id,
+                                IsContent = item.IsContent,
+                                Title = item.Title,
+                                PosterUrl = item.PosterUrl,
+                                Category = item.Category,
+                                Description = item.Description,
+                                TotalEpisodes = item.TotalEpisodes,
+                                CurrentEpisode = item.CurrentEpisode,
+                                Status = item.Status,
+                                AddedAt = DateTime.UtcNow,
+                                IsDeleted = false
+                            });
+                        }
+                        else
+                        {
+                            dbWL.IsDeleted = false;
+                            dbWL.CurrentEpisode = item.CurrentEpisode;
+                            dbWL.Status = item.Status;
+                            dbWL.AddedAt = DateTime.UtcNow;
+                        }
+                        await db.SaveChangesAsync();
+                    }
+                }
+                catch { }
+            }
+
             NotifyStateChanged();
-            return Task.CompletedTask;
         }
 
-        public Task RemoveItemAsync(long id, bool isContent = true)
+        public async Task RemoveItemAsync(long id, bool isContent = true)
         {
             var existing = _items.FirstOrDefault(i => i.Id == id && i.IsContent == isContent);
             if (existing != null)
             {
                 _items.Remove(existing);
                 SaveToFile();
+
+                // Soft-delete from SQL Server UserWatchLater table if authenticated
+                if (_activeUserId > 0)
+                {
+                    try
+                    {
+                        using var scope = _serviceProvider.CreateScope();
+                        var db = scope.ServiceProvider.GetService<AppDbContext>();
+                        if (db != null)
+                        {
+                            var dbWL = await db.UserWatchLaters.FirstOrDefaultAsync(w =>
+                                w.UserId == _activeUserId &&
+                                w.ContentId == id &&
+                                w.IsContent == isContent &&
+                                !w.IsDeleted);
+
+                            if (dbWL != null)
+                            {
+                                dbWL.IsDeleted = true;
+                                await db.SaveChangesAsync();
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
                 NotifyStateChanged();
             }
-            return Task.CompletedTask;
         }
 
         private void NotifyStateChanged() => OnChange?.Invoke();

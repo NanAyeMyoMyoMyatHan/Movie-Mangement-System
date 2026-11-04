@@ -7,14 +7,23 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
     public partial class AdminDashboard
     {
         [Inject] private HttpClientService ApiClient { get; set; } = default!;
+        [Inject] private AuthService AuthService { get; set; } = default!;
 
         private bool _loading = true;
         private int _movieCount;
         private int _contentCount;
+        private int _userCount;
         private List<MovieListItemResponse> _recentMovies = new();
 
         protected override async Task OnInitializedAsync()
         {
+            // Load real user count from DB
+            try
+            {
+                var users = await AuthService.GetAllUsersFromDbAsync();
+                _userCount = users.Count(u => !u.IsDeleted);
+            }
+            catch { }
             // Load movies (first page, 5 items for recent list)
             var movieResult = await ApiClient.GetMoviesPagedAsync(new GetMoviePagedListRequest
             {

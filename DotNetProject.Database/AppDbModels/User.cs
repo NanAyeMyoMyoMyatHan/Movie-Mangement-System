@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace DotNetProject.Database.AppDbModels;
@@ -20,6 +20,8 @@ public partial class User
     public string Email { get; set; } = null!;
 
     public string Password { get; set; } = null!;
+
+    public string Role { get; set; } = "User";
 
     public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 

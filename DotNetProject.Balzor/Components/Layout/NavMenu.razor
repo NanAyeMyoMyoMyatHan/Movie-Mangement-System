@@ -140,16 +140,28 @@
     {
         WatchLaterService.OnChange += HandleChange;
         FavoriteService.OnChange += HandleChange;
-        AuthService.OnAuthStateChanged += HandleChange;
+        AuthService.OnAuthStateChanged += HandleAuthChange;
 
+        await RefreshCountsAsync();
+    }
+
+    private async Task RefreshCountsAsync()
+    {
         WatchCount = await WatchLaterService.GetCountAsync();
         FavoriteCount = await FavoriteService.GetCountAsync();
     }
 
     private async void HandleChange()
     {
-        WatchCount = await WatchLaterService.GetCountAsync();
-        FavoriteCount = await FavoriteService.GetCountAsync();
+        await RefreshCountsAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void HandleAuthChange()
+    {
+        await WatchLaterService.LoadItemsForActiveUserAsync();
+        await FavoriteService.LoadFavoritesForActiveUserAsync();
+        await RefreshCountsAsync();
         await InvokeAsync(StateHasChanged);
     }
 
@@ -163,6 +175,6 @@
     {
         WatchLaterService.OnChange -= HandleChange;
         FavoriteService.OnChange -= HandleChange;
-        AuthService.OnAuthStateChanged -= HandleChange;
+        AuthService.OnAuthStateChanged -= HandleAuthChange;
     }
 }
