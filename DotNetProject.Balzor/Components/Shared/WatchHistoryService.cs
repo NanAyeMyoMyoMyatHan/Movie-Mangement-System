@@ -96,6 +96,7 @@ namespace DotNetProject.Balzor.Components.Shared
         {
             try
             {
+                if (_activeUserId <= 0) return;
                 var filePath = GetStoragePath(_activeUserKey);
                 var json = JsonSerializer.Serialize(_history, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(filePath, json);
@@ -107,50 +108,53 @@ namespace DotNetProject.Balzor.Components.Shared
         {
             _history.Clear();
 
-            // 1. If authenticated, load from SQL Server UserContinueWatching table
-            if (_activeUserId > 0)
+            // When user is not authenticated (Guest), continue watching is strictly 0 items. No dummy seeds.
+            if (_activeUserId <= 0 || !_authService.IsAuthenticated())
             {
-                try
-                {
-                    using var scope = _serviceProvider.CreateScope();
-                    var db = scope.ServiceProvider.GetService<AppDbContext>();
-                    if (db != null)
-                    {
-                        var dbRows = await db.UserContinueWatchings
-                            .Where(w => w.UserId == _activeUserId && !w.IsDeleted)
-                            .OrderByDescending(w => w.LastWatchedAt)
-                            .Take(20)
-                            .ToListAsync();
-
-                        if (dbRows.Any())
-                        {
-                            foreach (var r in dbRows)
-                            {
-                                int pct = r.DurationSeconds > 0 
-                                    ? (int)Math.Min(100, Math.Round((double)r.ProgressSeconds / r.DurationSeconds * 100))
-                                    : (r.ProgressSeconds > 0 ? 50 : 35);
-
-                                _history.Add(new WatchHistoryItem
-                                {
-                                    ContentId = r.ContentId,
-                                    IsContent = r.IsContent,
-                                    Title = r.Title,
-                                    PosterUrl = r.PosterUrl,
-                                    EpisodeNumber = r.EpisodeNumber,
-                                    TotalEpisodes = r.TotalEpisodes > 0 ? r.TotalEpisodes : 16,
-                                    ProgressPercentage = pct,
-                                    LastWatchedAt = r.LastWatchedAt
-                                });
-                            }
-                            SaveToFile();
-                            return;
-                        }
-                    }
-                }
-                catch { }
+                return;
             }
 
-            // 2. Fallback to per-user JSON file
+            // 1. If authenticated, load from SQL Server UserContinueWatching table
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetService<AppDbContext>();
+                if (db != null)
+                {
+                    var dbRows = await db.UserContinueWatchings
+                        .Where(w => w.UserId == _activeUserId && !w.IsDeleted)
+                        .OrderByDescending(w => w.LastWatchedAt)
+                        .Take(20)
+                        .ToListAsync();
+
+                    if (dbRows.Any())
+                    {
+                        foreach (var r in dbRows)
+                        {
+                            int pct = r.DurationSeconds > 0 
+                                ? (int)Math.Min(100, Math.Round((double)r.ProgressSeconds / r.DurationSeconds * 100))
+                                : (r.ProgressSeconds > 0 ? 50 : 35);
+
+                            _history.Add(new WatchHistoryItem
+                            {
+                                ContentId = r.ContentId,
+                                IsContent = r.IsContent,
+                                Title = r.Title,
+                                PosterUrl = r.PosterUrl,
+                                EpisodeNumber = r.EpisodeNumber,
+                                TotalEpisodes = r.TotalEpisodes > 0 ? r.TotalEpisodes : 16,
+                                ProgressPercentage = pct,
+                                LastWatchedAt = r.LastWatchedAt
+                            });
+                        }
+                        SaveToFile();
+                        return;
+                    }
+                }
+            }
+            catch { }
+
+            // 2. Fallback to per-user JSON file if db was temporarily unreachable
             var filePath = GetStoragePath(_activeUserKey);
             if (File.Exists(filePath))
             {
@@ -161,73 +165,28 @@ namespace DotNetProject.Balzor.Components.Shared
                     if (loaded != null)
                     {
                         _history.AddRange(loaded);
-                        return;
                     }
                 }
                 catch { }
             }
+        }
 
-            // 3. For guest or admin initial seed only if no history exists
-            if (_activeUserKey == "u_1005_admin" || _activeUserKey == "guest")
+        public async Task<List<WatchHistoryItem>> GetHistoryAsync(int limit = 10)
+        {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
             {
-                _history.AddRange(GetDefaultSeeds());
-                SaveToFile();
+                return new List<WatchHistoryItem>();
             }
-        }
 
-        private static List<WatchHistoryItem> GetDefaultSeeds()
-        {
-            return new List<WatchHistoryItem>
+            if (!_history.Any())
             {
-                new WatchHistoryItem
-                {
-                    ContentId = 20004,
-                    IsContent = true,
-                    Title = "Daung With You",
-                    Description = "A bright, cheerful Decorative Arts student falls in love at first sight with a reserved Jazz music student.",
-                    PosterUrl = "/images/daung_with_you.jpg",
-                    EpisodeNumber = 9,
-                    TotalEpisodes = 12,
-                    VideoUrl = "/videos/daung-with-you/EP9 1080P.mp4",
-                    ProgressPercentage = 45,
-                    LastWatchedAt = DateTime.UtcNow.AddMinutes(-30)
-                },
-                new WatchHistoryItem
-                {
-                    ContentId = 23,
-                    IsContent = true,
-                    Title = "Alchemy of Souls",
-                    Description = "A powerful sorceress whose soul is trapped in another body becomes involved with a young nobleman.",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg",
-                    EpisodeNumber = 1,
-                    TotalEpisodes = 30,
-                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
-                    ProgressPercentage = 60,
-                    LastWatchedAt = DateTime.UtcNow.AddHours(-3)
-                },
-                new WatchHistoryItem
-                {
-                    ContentId = 6,
-                    IsContent = true,
-                    Title = "Bad Buddy",
-                    Description = "Two rival families live next door, but their sons secretly develop deep feelings.",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/b/b7/Bad_Buddy_Series_2021_poster.jpg",
-                    EpisodeNumber = 6,
-                    TotalEpisodes = 12,
-                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4",
-                    ProgressPercentage = 45,
-                    LastWatchedAt = DateTime.UtcNow.AddHours(-12)
-                }
-            };
-        }
+                await LoadHistoryForActiveUserAsync();
+            }
 
-        public Task<List<WatchHistoryItem>> GetHistoryAsync(int limit = 10)
-        {
-            var list = _history
+            return _history
                 .OrderByDescending(h => h.LastWatchedAt)
                 .Take(limit)
                 .ToList();
-            return Task.FromResult(list);
         }
 
         public async Task RecordWatchAsync(
@@ -241,6 +200,11 @@ namespace DotNetProject.Balzor.Components.Shared
             bool isContent = true,
             int progressPercentage = 40)
         {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return;
+            }
+
             // 1. Update in-memory
             var existing = _history.FirstOrDefault(h => h.ContentId == contentId && h.IsContent == isContent);
             if (existing != null)
@@ -272,84 +236,83 @@ namespace DotNetProject.Balzor.Components.Shared
             SaveToFile();
 
             // 2. Save directly to SQL Server UserContinueWatching table
-            if (_activeUserId > 0)
+            try
             {
-                try
+                using var scope = _serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetService<AppDbContext>();
+                if (db != null)
                 {
-                    using var scope = _serviceProvider.CreateScope();
-                    var db = scope.ServiceProvider.GetService<AppDbContext>();
-                    if (db != null)
+                    var dbItem = await db.UserContinueWatchings.FirstOrDefaultAsync(w =>
+                        w.UserId == _activeUserId &&
+                        w.ContentId == contentId &&
+                        w.IsContent == isContent &&
+                        !w.IsDeleted);
+
+                    if (dbItem != null)
                     {
-                        var dbItem = await db.UserContinueWatchings.FirstOrDefaultAsync(w =>
-                            w.UserId == _activeUserId &&
-                            w.ContentId == contentId &&
-                            w.IsContent == isContent &&
-                            !w.IsDeleted);
-
-                        if (dbItem != null)
-                        {
-                            dbItem.EpisodeNumber = episodeNumber;
-                            dbItem.TotalEpisodes = totalEpisodes > 0 ? totalEpisodes : dbItem.TotalEpisodes;
-                            dbItem.ProgressSeconds = progressPercentage;
-                            dbItem.DurationSeconds = 100;
-                            dbItem.LastWatchedAt = DateTime.UtcNow;
-                            if (!string.IsNullOrWhiteSpace(posterUrl)) dbItem.PosterUrl = posterUrl;
-                        }
-                        else
-                        {
-                            db.UserContinueWatchings.Add(new UserContinueWatching
-                            {
-                                UserId = _activeUserId,
-                                ContentId = contentId,
-                                IsContent = isContent,
-                                Title = title,
-                                PosterUrl = posterUrl,
-                                EpisodeNumber = episodeNumber,
-                                TotalEpisodes = totalEpisodes > 0 ? totalEpisodes : 16,
-                                ProgressSeconds = progressPercentage,
-                                DurationSeconds = 100,
-                                LastWatchedAt = DateTime.UtcNow,
-                                IsDeleted = false
-                            });
-                        }
-
-                        await db.SaveChangesAsync();
+                        dbItem.EpisodeNumber = episodeNumber;
+                        dbItem.TotalEpisodes = totalEpisodes > 0 ? totalEpisodes : dbItem.TotalEpisodes;
+                        dbItem.ProgressSeconds = progressPercentage;
+                        dbItem.DurationSeconds = 100;
+                        dbItem.LastWatchedAt = DateTime.UtcNow;
+                        if (!string.IsNullOrWhiteSpace(posterUrl)) dbItem.PosterUrl = posterUrl;
                     }
+                    else
+                    {
+                        db.UserContinueWatchings.Add(new UserContinueWatching
+                        {
+                            UserId = _activeUserId,
+                            ContentId = contentId,
+                            IsContent = isContent,
+                            Title = title,
+                            PosterUrl = posterUrl,
+                            EpisodeNumber = episodeNumber,
+                            TotalEpisodes = totalEpisodes > 0 ? totalEpisodes : 16,
+                            ProgressSeconds = progressPercentage,
+                            DurationSeconds = 100,
+                            LastWatchedAt = DateTime.UtcNow,
+                            IsDeleted = false
+                        });
+                    }
+
+                    await db.SaveChangesAsync();
                 }
-                catch { }
             }
+            catch { }
 
             OnChange?.Invoke();
         }
 
         public async Task RemoveFromHistoryAsync(long contentId, bool isContent = true)
         {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return;
+            }
+
             _history.RemoveAll(h => h.ContentId == contentId && h.IsContent == isContent);
             SaveToFile();
 
-            if (_activeUserId > 0)
+            try
             {
-                try
+                using var scope = _serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetService<AppDbContext>();
+                if (db != null)
                 {
-                    using var scope = _serviceProvider.CreateScope();
-                    var db = scope.ServiceProvider.GetService<AppDbContext>();
-                    if (db != null)
-                    {
-                        var dbItem = await db.UserContinueWatchings.FirstOrDefaultAsync(w =>
-                            w.UserId == _activeUserId &&
-                            w.ContentId == contentId &&
-                            w.IsContent == isContent &&
-                            !w.IsDeleted);
+                    var dbItem = await db.UserContinueWatchings.FirstOrDefaultAsync(w =>
+                        w.UserId == _activeUserId &&
+                        w.ContentId == contentId &&
+                        w.IsContent == isContent &&
+                        !w.IsDeleted);
 
-                        if (dbItem != null)
-                        {
-                            dbItem.IsDeleted = true;
-                            await db.SaveChangesAsync();
-                        }
+                    if (dbItem != null)
+                    {
+                        dbItem.IsDeleted = true;
+                        await db.SaveChangesAsync();
                     }
                 }
-                catch { }
             }
+            catch { }
 
             OnChange?.Invoke();
         }

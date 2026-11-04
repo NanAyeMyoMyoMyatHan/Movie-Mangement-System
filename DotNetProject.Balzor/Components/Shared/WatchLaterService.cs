@@ -96,6 +96,7 @@ namespace DotNetProject.Balzor.Components.Shared
         {
             try
             {
+                if (_activeUserId <= 0) return;
                 var filePath = GetStoragePath(_activeUserKey);
                 var json = JsonSerializer.Serialize(_items, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(filePath, json);
@@ -107,47 +108,50 @@ namespace DotNetProject.Balzor.Components.Shared
         {
             _items.Clear();
 
-            // 1. If authenticated, load from SQL Server UserWatchLater table
-            if (_activeUserId > 0)
+            // When user is not authenticated (Guest), personal lists are strictly 0 items. No dummy seeds.
+            if (_activeUserId <= 0 || !_authService.IsAuthenticated())
             {
-                try
-                {
-                    using var scope = _serviceProvider.CreateScope();
-                    var db = scope.ServiceProvider.GetService<AppDbContext>();
-                    if (db != null)
-                    {
-                        var dbRows = await db.UserWatchLaters
-                            .Where(w => w.UserId == _activeUserId && !w.IsDeleted)
-                            .OrderByDescending(w => w.AddedAt)
-                            .ToListAsync();
-
-                        if (dbRows.Any())
-                        {
-                            foreach (var r in dbRows)
-                            {
-                                _items.Add(new WatchLaterItem
-                                {
-                                    Id = r.ContentId,
-                                    IsContent = r.IsContent,
-                                    Title = r.Title,
-                                    PosterUrl = r.PosterUrl,
-                                    Category = r.Category,
-                                    Description = r.Description,
-                                    TotalEpisodes = r.TotalEpisodes,
-                                    CurrentEpisode = r.CurrentEpisode,
-                                    Status = r.Status,
-                                    AddedAt = r.AddedAt
-                                });
-                            }
-                            SaveToFile();
-                            return;
-                        }
-                    }
-                }
-                catch { }
+                return;
             }
 
-            // 2. Load from per-user JSON file
+            // 1. If authenticated, load exclusively from SQL Server UserWatchLater table
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetService<AppDbContext>();
+                if (db != null)
+                {
+                    var dbRows = await db.UserWatchLaters
+                        .Where(w => w.UserId == _activeUserId && !w.IsDeleted)
+                        .OrderByDescending(w => w.AddedAt)
+                        .ToListAsync();
+
+                    if (dbRows.Any())
+                    {
+                        foreach (var r in dbRows)
+                        {
+                            _items.Add(new WatchLaterItem
+                            {
+                                Id = r.ContentId,
+                                IsContent = r.IsContent,
+                                Title = r.Title,
+                                PosterUrl = r.PosterUrl,
+                                Category = r.Category,
+                                Description = r.Description,
+                                TotalEpisodes = r.TotalEpisodes,
+                                CurrentEpisode = r.CurrentEpisode,
+                                Status = r.Status,
+                                AddedAt = r.AddedAt
+                            });
+                        }
+                        SaveToFile();
+                        return;
+                    }
+                }
+            }
+            catch { }
+
+            // 2. Fallback to per-user JSON file if db was temporarily unreachable
             var filePath = GetStoragePath(_activeUserKey);
             if (File.Exists(filePath))
             {
@@ -158,94 +162,19 @@ namespace DotNetProject.Balzor.Components.Shared
                     if (loaded != null)
                     {
                         _items.AddRange(loaded);
-                        return;
                     }
                 }
                 catch { }
             }
+        }
 
-            // 3. For guest and admin accounts, seed default curated items if file does not exist
-            if (_activeUserKey == "u_1005_admin" || _activeUserKey == "guest" || _activeUserKey.Contains("admin"))
+        public async Task<List<WatchLaterItem>> GetItemsAsync(string? categoryFilter = null, string? statusFilter = null)
+        {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
             {
-                _items.AddRange(GetDefaultSeeds());
-                SaveToFile();
+                return new List<WatchLaterItem>();
             }
-        }
 
-        private static List<WatchLaterItem> GetDefaultSeeds()
-        {
-            return new List<WatchLaterItem>
-            {
-                new WatchLaterItem
-                {
-                    Id = 20004,
-                    IsContent = true,
-                    Title = "Daung With You",
-                    PosterUrl = "/images/daung_with_you.jpg",
-                    Category = "Thai BL",
-                    Description = "A cheerful Decorative Arts student sparks a sweet campus romance with a jazz music major.",
-                    TotalEpisodes = 12,
-                    CurrentEpisode = 9,
-                    Status = "Watching",
-                    AddedAt = DateTime.UtcNow.AddDays(-1)
-                },
-                new WatchLaterItem
-                {
-                    Id = 20005,
-                    IsContent = true,
-                    Title = "KhemJira",
-                    PosterUrl = "/images/khemjira.jpg",
-                    Category = "Thai BL",
-                    Description = "Born under a spiritual curse, Khemjira journeys to Isan to seek salvation from a powerful shaman.",
-                    TotalEpisodes = 12,
-                    CurrentEpisode = 1,
-                    Status = "Want to Watch",
-                    AddedAt = DateTime.UtcNow.AddDays(-2)
-                },
-                new WatchLaterItem
-                {
-                    Id = 21,
-                    IsContent = true,
-                    Title = "Vincenzo",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/5/5b/Vincenzo_TV_series.jpg",
-                    Category = "Korean Drama",
-                    Description = "A Korean-Italian mafia lawyer gives an untouchable conglomerate a taste of its own medicine.",
-                    TotalEpisodes = 20,
-                    CurrentEpisode = 8,
-                    Status = "Watching",
-                    AddedAt = DateTime.UtcNow.AddDays(-3)
-                },
-                new WatchLaterItem
-                {
-                    Id = 22,
-                    IsContent = true,
-                    Title = "The Glory",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/7/79/The_Glory_TV_series.jpg",
-                    Category = "Korean Drama",
-                    Description = "Years after surviving horrific high school bullying, a woman puts an elaborate revenge scheme into motion.",
-                    TotalEpisodes = 16,
-                    CurrentEpisode = 1,
-                    Status = "Want to Watch",
-                    AddedAt = DateTime.UtcNow.AddDays(-5)
-                },
-                new WatchLaterItem
-                {
-                    Id = 10003,
-                    IsContent = false,
-                    Title = "Spirited Away",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/d/db/Spirited_Away_Japanese_poster.png",
-                    Category = "Movie",
-                    Description = "A young girl wanders into a strange world ruled by spirits, witches, and gods.",
-                    TotalEpisodes = 1,
-                    CurrentEpisode = 1,
-                    Status = "Want to Watch",
-                    AddedAt = DateTime.UtcNow.AddDays(-7)
-                }
-            };
-        }
-
-        public async Task<List<WatchLaterItem>> GetItemsAsync(string? categoryFilter = null, string? sortBy = null)
-        {
             if (!_items.Any())
             {
                 await LoadItemsForActiveUserAsync();
@@ -267,30 +196,23 @@ namespace DotNetProject.Balzor.Components.Shared
                 {
                     query = query.Where(i => !i.IsContent || (i.Category != null && i.Category.Contains("Movie", StringComparison.OrdinalIgnoreCase)));
                 }
-                else if (categoryFilter.Equals("Watching", StringComparison.OrdinalIgnoreCase))
-                {
-                    query = query.Where(i => i.Status == "Watching");
-                }
-                else if (categoryFilter.Equals("Completed", StringComparison.OrdinalIgnoreCase))
-                {
-                    query = query.Where(i => i.Status == "Completed");
-                }
             }
 
-            if (sortBy == "title")
+            if (!string.IsNullOrWhiteSpace(statusFilter) && statusFilter != "All")
             {
-                query = query.OrderBy(i => i.Title);
-            }
-            else
-            {
-                query = query.OrderByDescending(i => i.AddedAt);
+                query = query.Where(i => i.Status.Equals(statusFilter, StringComparison.OrdinalIgnoreCase));
             }
 
-            return query.ToList();
+            return query.OrderByDescending(i => i.AddedAt).ToList();
         }
 
         public async Task<int> GetCountAsync()
         {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return 0;
+            }
+
             if (!_items.Any())
             {
                 await LoadItemsForActiveUserAsync();
@@ -300,6 +222,11 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task<bool> IsInWatchLaterAsync(long id, bool isContent = true)
         {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return false;
+            }
+
             if (!_items.Any())
             {
                 await LoadItemsForActiveUserAsync();
@@ -309,6 +236,11 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task<bool> ToggleWatchLaterAsync(WatchLaterItem item)
         {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return false;
+            }
+
             var existing = _items.FirstOrDefault(i => i.Id == item.Id && i.IsContent == item.IsContent);
             if (existing != null)
             {
@@ -324,38 +256,37 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task AddItemAsync(WatchLaterItem item)
         {
-            var existing = _items.FirstOrDefault(i => i.Id == item.Id && i.IsContent == item.IsContent);
-            if (existing == null)
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return;
+            }
+
+            if (!_items.Any(i => i.Id == item.Id && i.IsContent == item.IsContent))
             {
                 item.AddedAt = DateTime.UtcNow;
                 _items.Insert(0, item);
-            }
-            else
-            {
-                existing.CurrentEpisode = item.CurrentEpisode;
-                if (!string.IsNullOrWhiteSpace(item.Status)) existing.Status = item.Status;
-                existing.AddedAt = DateTime.UtcNow;
-                _items.Remove(existing);
-                _items.Insert(0, existing);
-            }
+                SaveToFile();
 
-            SaveToFile();
-
-            // Persist to SQL Server UserWatchLater table if authenticated
-            if (_activeUserId > 0)
-            {
+                // Direct SQL Server insertion
                 try
                 {
                     using var scope = _serviceProvider.CreateScope();
                     var db = scope.ServiceProvider.GetService<AppDbContext>();
                     if (db != null)
                     {
-                        var dbWL = await db.UserWatchLaters.FirstOrDefaultAsync(w =>
+                        var dbItem = await db.UserWatchLaters.FirstOrDefaultAsync(w =>
                             w.UserId == _activeUserId &&
                             w.ContentId == item.Id &&
                             w.IsContent == item.IsContent);
 
-                        if (dbWL == null)
+                        if (dbItem != null)
+                        {
+                            dbItem.IsDeleted = false;
+                            dbItem.AddedAt = DateTime.UtcNow;
+                            dbItem.Status = item.Status;
+                            dbItem.CurrentEpisode = item.CurrentEpisode;
+                        }
+                        else
                         {
                             db.UserWatchLaters.Add(new UserWatchLater
                             {
@@ -373,60 +304,137 @@ namespace DotNetProject.Balzor.Components.Shared
                                 IsDeleted = false
                             });
                         }
-                        else
-                        {
-                            dbWL.IsDeleted = false;
-                            dbWL.CurrentEpisode = item.CurrentEpisode;
-                            dbWL.Status = item.Status;
-                            dbWL.AddedAt = DateTime.UtcNow;
-                        }
                         await db.SaveChangesAsync();
                     }
                 }
                 catch { }
-            }
 
-            NotifyStateChanged();
+                OnChange?.Invoke();
+            }
         }
 
         public async Task RemoveItemAsync(long id, bool isContent = true)
         {
-            var existing = _items.FirstOrDefault(i => i.Id == id && i.IsContent == isContent);
-            if (existing != null)
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
             {
-                _items.Remove(existing);
+                return;
+            }
+
+            var removed = _items.RemoveAll(i => i.Id == id && i.IsContent == isContent);
+            if (removed > 0)
+            {
                 SaveToFile();
 
-                // Soft-delete from SQL Server UserWatchLater table if authenticated
-                if (_activeUserId > 0)
+                // Direct SQL Server soft-delete
+                try
                 {
-                    try
+                    using var scope = _serviceProvider.CreateScope();
+                    var db = scope.ServiceProvider.GetService<AppDbContext>();
+                    if (db != null)
                     {
-                        using var scope = _serviceProvider.CreateScope();
-                        var db = scope.ServiceProvider.GetService<AppDbContext>();
-                        if (db != null)
-                        {
-                            var dbWL = await db.UserWatchLaters.FirstOrDefaultAsync(w =>
-                                w.UserId == _activeUserId &&
-                                w.ContentId == id &&
-                                w.IsContent == isContent &&
-                                !w.IsDeleted);
+                        var dbItem = await db.UserWatchLaters.FirstOrDefaultAsync(w =>
+                            w.UserId == _activeUserId &&
+                            w.ContentId == id &&
+                            w.IsContent == isContent &&
+                            !w.IsDeleted);
 
-                            if (dbWL != null)
-                            {
-                                dbWL.IsDeleted = true;
-                                await db.SaveChangesAsync();
-                            }
+                        if (dbItem != null)
+                        {
+                            dbItem.IsDeleted = true;
+                            await db.SaveChangesAsync();
                         }
                     }
-                    catch { }
                 }
+                catch { }
 
-                NotifyStateChanged();
+                OnChange?.Invoke();
             }
         }
 
-        private void NotifyStateChanged() => OnChange?.Invoke();
+        public async Task UpdateStatusAsync(long id, string newStatus, bool isContent = true)
+        {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return;
+            }
+
+            var item = _items.FirstOrDefault(i => i.Id == id && i.IsContent == isContent);
+            if (item != null)
+            {
+                item.Status = newStatus;
+                SaveToFile();
+
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    var db = scope.ServiceProvider.GetService<AppDbContext>();
+                    if (db != null)
+                    {
+                        var dbItem = await db.UserWatchLaters.FirstOrDefaultAsync(w =>
+                            w.UserId == _activeUserId &&
+                            w.ContentId == id &&
+                            w.IsContent == isContent &&
+                            !w.IsDeleted);
+
+                        if (dbItem != null)
+                        {
+                            dbItem.Status = newStatus;
+                            await db.SaveChangesAsync();
+                        }
+                    }
+                }
+                catch { }
+
+                OnChange?.Invoke();
+            }
+        }
+
+        public async Task UpdateEpisodeProgressAsync(long id, int currentEpisode, bool isContent = true)
+        {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return;
+            }
+
+            var item = _items.FirstOrDefault(i => i.Id == id && i.IsContent == isContent);
+            if (item != null)
+            {
+                item.CurrentEpisode = currentEpisode;
+                if (currentEpisode >= item.TotalEpisodes)
+                {
+                    item.Status = "Completed";
+                }
+                else if (currentEpisode > 1)
+                {
+                    item.Status = "Watching";
+                }
+                SaveToFile();
+
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    var db = scope.ServiceProvider.GetService<AppDbContext>();
+                    if (db != null)
+                    {
+                        var dbItem = await db.UserWatchLaters.FirstOrDefaultAsync(w =>
+                            w.UserId == _activeUserId &&
+                            w.ContentId == id &&
+                            w.IsContent == isContent &&
+                            !w.IsDeleted);
+
+                        if (dbItem != null)
+                        {
+                            dbItem.CurrentEpisode = item.CurrentEpisode;
+                            dbItem.Status = item.Status;
+                            await db.SaveChangesAsync();
+                        }
+                    }
+                }
+                catch { }
+
+                OnChange?.Invoke();
+            }
+        }
 
         public void Dispose()
         {

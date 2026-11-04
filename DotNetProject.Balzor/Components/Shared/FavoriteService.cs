@@ -96,6 +96,7 @@ namespace DotNetProject.Balzor.Components.Shared
         {
             try
             {
+                if (_activeUserId <= 0) return;
                 var filePath = GetStoragePath(_activeUserKey);
                 var json = JsonSerializer.Serialize(_favorites, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(filePath, json);
@@ -107,47 +108,50 @@ namespace DotNetProject.Balzor.Components.Shared
         {
             _favorites.Clear();
 
-            // 1. If authenticated, load from SQL Server UserFavorites table
-            if (_activeUserId > 0)
+            // When user is not authenticated (Guest), personal lists are strictly 0 items. No dummy seeds.
+            if (_activeUserId <= 0 || !_authService.IsAuthenticated())
             {
-                try
-                {
-                    using var scope = _serviceProvider.CreateScope();
-                    var db = scope.ServiceProvider.GetService<AppDbContext>();
-                    if (db != null)
-                    {
-                        var dbRows = await db.UserFavorites
-                            .Where(f => f.UserId == _activeUserId && !f.IsDeleted)
-                            .OrderByDescending(f => f.AddedAt)
-                            .ToListAsync();
-
-                        if (dbRows.Any())
-                        {
-                            foreach (var r in dbRows)
-                            {
-                                _favorites.Add(new FavoriteItem
-                                {
-                                    Id = r.ContentId,
-                                    IsContent = r.IsContent,
-                                    Title = r.Title,
-                                    PosterUrl = r.PosterUrl,
-                                    Category = r.Category,
-                                    Description = r.Description,
-                                    Year = r.Year ?? "2024",
-                                    Rating = r.Rating,
-                                    TotalEpisodes = r.TotalEpisodes,
-                                    AddedAt = r.AddedAt
-                                });
-                            }
-                            SaveToFile();
-                            return;
-                        }
-                    }
-                }
-                catch { }
+                return;
             }
 
-            // 2. Load from per-user JSON file
+            // 1. If authenticated, load exclusively from SQL Server UserFavorites table
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetService<AppDbContext>();
+                if (db != null)
+                {
+                    var dbRows = await db.UserFavorites
+                        .Where(f => f.UserId == _activeUserId && !f.IsDeleted)
+                        .OrderByDescending(f => f.AddedAt)
+                        .ToListAsync();
+
+                    if (dbRows.Any())
+                    {
+                        foreach (var r in dbRows)
+                        {
+                            _favorites.Add(new FavoriteItem
+                            {
+                                Id = r.ContentId,
+                                IsContent = r.IsContent,
+                                Title = r.Title,
+                                PosterUrl = r.PosterUrl,
+                                Category = r.Category,
+                                Description = r.Description,
+                                Year = r.Year ?? "2024",
+                                Rating = r.Rating,
+                                TotalEpisodes = r.TotalEpisodes,
+                                AddedAt = r.AddedAt
+                            });
+                        }
+                        SaveToFile();
+                        return;
+                    }
+                }
+            }
+            catch { }
+
+            // 2. Fallback to per-user JSON file if db was temporarily unreachable
             var filePath = GetStoragePath(_activeUserKey);
             if (File.Exists(filePath))
             {
@@ -158,107 +162,19 @@ namespace DotNetProject.Balzor.Components.Shared
                     if (loaded != null)
                     {
                         _favorites.AddRange(loaded);
-                        return;
                     }
                 }
                 catch { }
             }
-
-            // 3. For guest and admin accounts, seed initial curated favorites if file does not exist
-            if (_activeUserKey == "u_1005_admin" || _activeUserKey == "guest" || _activeUserKey.Contains("admin"))
-            {
-                _favorites.AddRange(GetDefaultSeeds());
-                SaveToFile();
-            }
-        }
-
-        private static List<FavoriteItem> GetDefaultSeeds()
-        {
-            return new List<FavoriteItem>
-            {
-                new FavoriteItem
-                {
-                    Id = 23,
-                    IsContent = true,
-                    Title = "Alchemy of Souls",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg",
-                    Category = "Korean Drama",
-                    Description = "A powerful sorceress whose soul is trapped in another body becomes involved with a young nobleman.",
-                    Year = "2022",
-                    Rating = 9.4,
-                    TotalEpisodes = 30,
-                    AddedAt = DateTime.UtcNow.AddDays(-10)
-                },
-                new FavoriteItem
-                {
-                    Id = 20003,
-                    IsContent = true,
-                    Title = "Kingdom",
-                    PosterUrl = "/images/kingdom.jpg",
-                    Category = "Korean Drama",
-                    Description = "While strange rumors grip the kingdom, the crown prince becomes their only hope against a deadly plague.",
-                    Year = "2019",
-                    Rating = 9.1,
-                    TotalEpisodes = 12,
-                    AddedAt = DateTime.UtcNow.AddDays(-8)
-                },
-                new FavoriteItem
-                {
-                    Id = 20002,
-                    IsContent = true,
-                    Title = "Fool In Love",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/3/3c/Fool_in_love_the_series.jpg",
-                    Category = "Thai BL",
-                    Description = "The confident heir to the Araya Group crosses paths with an intelligent young successor with a boxer past.",
-                    Year = "2026",
-                    Rating = 9.3,
-                    TotalEpisodes = 6,
-                    AddedAt = DateTime.UtcNow.AddDays(-6)
-                },
-                new FavoriteItem
-                {
-                    Id = 7,
-                    IsContent = true,
-                    Title = "KinnPorsche",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/9/9e/KinnPorsche_series_poster.jpg",
-                    Category = "Thai BL",
-                    Description = "The second son of a major mafia family is assigned a bodyguard with hidden martial arts skills.",
-                    Year = "2022",
-                    Rating = 9.5,
-                    TotalEpisodes = 14,
-                    AddedAt = DateTime.UtcNow.AddDays(-14)
-                },
-                new FavoriteItem
-                {
-                    Id = 24,
-                    IsContent = true,
-                    Title = "Lovely Runner",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png",
-                    Category = "Korean Drama",
-                    Description = "A devoted fan journeys back in time to change the destiny of her beloved idol.",
-                    Year = "2024",
-                    Rating = 9.4,
-                    TotalEpisodes = 16,
-                    AddedAt = DateTime.UtcNow.AddDays(-4)
-                },
-                new FavoriteItem
-                {
-                    Id = 10002,
-                    IsContent = false,
-                    Title = "Your Name",
-                    PosterUrl = "https://upload.wikimedia.org/wikipedia/en/0/0b/Your_Name_poster.png",
-                    Category = "Movie",
-                    Description = "Two high school students discover they can swap bodies across time and distance.",
-                    Year = "2016",
-                    Rating = 9.5,
-                    TotalEpisodes = 1,
-                    AddedAt = DateTime.UtcNow.AddDays(-20)
-                }
-            };
         }
 
         public async Task<List<FavoriteItem>> GetFavoritesAsync(string? categoryFilter = null, string? sortBy = null)
         {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return new List<FavoriteItem>();
+            }
+
             if (!_favorites.Any())
             {
                 await LoadFavoritesForActiveUserAsync();
@@ -300,6 +216,11 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task<int> GetCountAsync()
         {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return 0;
+            }
+
             if (!_favorites.Any())
             {
                 await LoadFavoritesForActiveUserAsync();
@@ -309,6 +230,11 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task<bool> IsFavoriteAsync(long id, bool isContent = true)
         {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return false;
+            }
+
             if (!_favorites.Any())
             {
                 await LoadFavoritesForActiveUserAsync();
@@ -318,6 +244,11 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task<bool> ToggleFavoriteAsync(FavoriteItem item)
         {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return false;
+            }
+
             var existing = _favorites.FirstOrDefault(i => i.Id == item.Id && i.IsContent == item.IsContent);
             if (existing != null)
             {
@@ -333,98 +264,98 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task AddFavoriteAsync(FavoriteItem item)
         {
-            var existing = _favorites.FirstOrDefault(i => i.Id == item.Id && i.IsContent == item.IsContent);
-            if (existing == null)
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return;
+            }
+
+            if (!_favorites.Any(i => i.Id == item.Id && i.IsContent == item.IsContent))
             {
                 item.AddedAt = DateTime.UtcNow;
                 _favorites.Insert(0, item);
                 SaveToFile();
 
-                // Persist to SQL Server UserFavorites table if authenticated
-                if (_activeUserId > 0)
+                // Direct SQL Server insertion
+                try
                 {
-                    try
+                    using var scope = _serviceProvider.CreateScope();
+                    var db = scope.ServiceProvider.GetService<AppDbContext>();
+                    if (db != null)
                     {
-                        using var scope = _serviceProvider.CreateScope();
-                        var db = scope.ServiceProvider.GetService<AppDbContext>();
-                        if (db != null)
+                        var dbItem = await db.UserFavorites.FirstOrDefaultAsync(f =>
+                            f.UserId == _activeUserId &&
+                            f.ContentId == item.Id &&
+                            f.IsContent == item.IsContent);
+
+                        if (dbItem != null)
                         {
-                            var dbFav = await db.UserFavorites.FirstOrDefaultAsync(f =>
-                                f.UserId == _activeUserId &&
-                                f.ContentId == item.Id &&
-                                f.IsContent == item.IsContent);
-
-                            if (dbFav == null)
-                            {
-                                db.UserFavorites.Add(new UserFavorite
-                                {
-                                    UserId = _activeUserId,
-                                    ContentId = item.Id,
-                                    IsContent = item.IsContent,
-                                    Title = item.Title,
-                                    PosterUrl = item.PosterUrl,
-                                    Category = item.Category,
-                                    Description = item.Description,
-                                    Year = item.Year,
-                                    Rating = item.Rating,
-                                    TotalEpisodes = item.TotalEpisodes,
-                                    AddedAt = DateTime.UtcNow,
-                                    IsDeleted = false
-                                });
-                            }
-                            else
-                            {
-                                dbFav.IsDeleted = false;
-                                dbFav.AddedAt = DateTime.UtcNow;
-                            }
-                            await db.SaveChangesAsync();
+                            dbItem.IsDeleted = false;
+                            dbItem.AddedAt = DateTime.UtcNow;
                         }
+                        else
+                        {
+                            db.UserFavorites.Add(new UserFavorite
+                            {
+                                UserId = _activeUserId,
+                                ContentId = item.Id,
+                                IsContent = item.IsContent,
+                                Title = item.Title,
+                                PosterUrl = item.PosterUrl,
+                                Category = item.Category,
+                                Description = item.Description,
+                                Year = item.Year,
+                                Rating = item.Rating,
+                                TotalEpisodes = item.TotalEpisodes,
+                                AddedAt = DateTime.UtcNow,
+                                IsDeleted = false
+                            });
+                        }
+                        await db.SaveChangesAsync();
                     }
-                    catch { }
                 }
+                catch { }
 
-                NotifyStateChanged();
+                OnChange?.Invoke();
             }
         }
 
         public async Task RemoveFavoriteAsync(long id, bool isContent = true)
         {
-            var existing = _favorites.FirstOrDefault(i => i.Id == id && i.IsContent == isContent);
-            if (existing != null)
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
             {
-                _favorites.Remove(existing);
+                return;
+            }
+
+            var removed = _favorites.RemoveAll(i => i.Id == id && i.IsContent == isContent);
+            if (removed > 0)
+            {
                 SaveToFile();
 
-                // Soft-delete from SQL Server UserFavorites table if authenticated
-                if (_activeUserId > 0)
+                // Direct SQL Server soft-delete
+                try
                 {
-                    try
+                    using var scope = _serviceProvider.CreateScope();
+                    var db = scope.ServiceProvider.GetService<AppDbContext>();
+                    if (db != null)
                     {
-                        using var scope = _serviceProvider.CreateScope();
-                        var db = scope.ServiceProvider.GetService<AppDbContext>();
-                        if (db != null)
-                        {
-                            var dbFav = await db.UserFavorites.FirstOrDefaultAsync(f =>
-                                f.UserId == _activeUserId &&
-                                f.ContentId == id &&
-                                f.IsContent == isContent &&
-                                !f.IsDeleted);
+                        var dbItem = await db.UserFavorites.FirstOrDefaultAsync(f =>
+                            f.UserId == _activeUserId &&
+                            f.ContentId == id &&
+                            f.IsContent == isContent &&
+                            !f.IsDeleted);
 
-                            if (dbFav != null)
-                            {
-                                dbFav.IsDeleted = true;
-                                await db.SaveChangesAsync();
-                            }
+                        if (dbItem != null)
+                        {
+                            dbItem.IsDeleted = true;
+                            await db.SaveChangesAsync();
                         }
                     }
-                    catch { }
                 }
+                catch { }
 
-                NotifyStateChanged();
+                OnChange?.Invoke();
             }
         }
-
-        private void NotifyStateChanged() => OnChange?.Invoke();
 
         public void Dispose()
         {

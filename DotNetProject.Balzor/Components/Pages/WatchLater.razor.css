@@ -620,3 +620,93 @@
     background: #c7562c;
     transform: translateY(-2px);
 }
+
+/* Guest Authentication Gate */
+.watch-guest-gate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 55vh;
+    padding: 40px 20px;
+}
+
+.watch-guest-card {
+    text-align: center;
+    max-width: 500px;
+    background: #0F2420;
+    border: 1px solid rgba(244, 239, 234, 0.12);
+    border-radius: 24px;
+    padding: 48px 36px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    color: #F4EFEA;
+}
+
+.watch-guest-icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 22px;
+    background: rgba(222, 113, 73, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    border: 1px solid rgba(222, 113, 73, 0.25);
+    color: #DE7149;
+}
+
+.watch-guest-card h2 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    color: #F4EFEA;
+}
+
+.watch-guest-card p {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: #9ab4ae;
+    margin-bottom: 28px;
+}
+
+.watch-guest-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.watch-guest-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 280px;
+    padding: 13px 24px;
+    background: #DE7149;
+    color: #fff;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.15s ease, background 0.15s ease;
+    box-shadow: 0 6px 18px rgba(222, 113, 73, 0.35);
+}
+
+.watch-guest-btn-primary:hover {
+    background: #c7562c;
+    transform: translateY(-1px);
+}
+
+.watch-guest-btn-secondary {
+    color: #9ab4ae;
+    font-size: 13.5px;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 6px 12px;
+    transition: color 0.15s ease;
+}
+
+.watch-guest-btn-secondary:hover {
+    color: #F4EFEA;
+}

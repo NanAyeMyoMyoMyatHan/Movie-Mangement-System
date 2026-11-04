@@ -37,7 +37,10 @@
                     </svg>
                     <span>Watch Later</span>
                 </div>
-                <span class="myflix-badge">@WatchCount</span>
+                @if (AuthService.IsAuthenticated() && WatchCount > 0)
+                {
+                    <span class="myflix-badge">@WatchCount</span>
+                }
             </NavLink>
 
             <NavLink href="/favorites" class="myflix-nav-item">
@@ -47,7 +50,10 @@
                     </svg>
                     <span>Favorites</span>
                 </div>
-                <span class="myflix-badge">@FavoriteCount</span>
+                @if (AuthService.IsAuthenticated() && FavoriteCount > 0)
+                {
+                    <span class="myflix-badge">@FavoriteCount</span>
+                }
             </NavLink>
         </nav>
 

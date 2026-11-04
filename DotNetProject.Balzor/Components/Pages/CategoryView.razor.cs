@@ -462,6 +462,12 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public async Task ToggleFavorite(CategoryItemDto item)
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo("/login?returnUrl=/category/" + CurrentSlug);
+                return;
+            }
+
             var favItem = new FavoriteItem
             {
                 Id = item.Id,
@@ -487,6 +493,12 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public async Task ToggleWatchLater(CategoryItemDto item)
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo("/login?returnUrl=/category/" + CurrentSlug);
+                return;
+            }
+
             var wlItem = new WatchLaterItem
             {
                 Id = item.Id,

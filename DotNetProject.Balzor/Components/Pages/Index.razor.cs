@@ -259,6 +259,11 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public async Task ToggleFavoriteDrama(ContentListItemResponse drama)
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo("/login?returnUrl=/");
+                return;
+            }
             var item = new FavoriteItem
             {
                 Id = drama.ContentId,
@@ -279,6 +284,11 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public async Task ToggleWatchLaterDrama(ContentListItemResponse drama)
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo("/login?returnUrl=/");
+                return;
+            }
             var item = new WatchLaterItem
             {
                 Id = drama.ContentId,
@@ -300,6 +310,11 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public async Task ToggleFavoriteThai(ThaiListItemResponse thai)
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo("/login?returnUrl=/");
+                return;
+            }
             var item = new FavoriteItem
             {
                 Id = thai.Id,
@@ -320,6 +335,11 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public async Task ToggleWatchLaterThai(ThaiListItemResponse thai)
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo("/login?returnUrl=/");
+                return;
+            }
             var item = new WatchLaterItem
             {
                 Id = thai.Id,
@@ -341,6 +361,11 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public async Task ToggleFavoriteMovie(MovieListItemResponse movie)
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo("/login?returnUrl=/");
+                return;
+            }
             var item = new FavoriteItem
             {
                 Id = movie.Id,
@@ -361,6 +386,11 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public async Task ToggleWatchLaterMovie(MovieListItemResponse movie)
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo("/login?returnUrl=/");
+                return;
+            }
             var item = new WatchLaterItem
             {
                 Id = movie.Id,
@@ -382,6 +412,11 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public async Task ToggleHeroWatchLater()
         {
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo("/login?returnUrl=/");
+                return;
+            }
             long kinnPorscheId = 7;
             var item = new WatchLaterItem
             {
