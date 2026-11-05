@@ -124,7 +124,23 @@ namespace DotNetProject.Balzor.Components.Shared
 
             LoadLocalAccounts();
 
-            // Always default to Guest on startup (No auto-login)
+            try
+            {
+                var sessionPath = GetSessionFilePath();
+                if (File.Exists(sessionPath))
+                {
+                    var json = File.ReadAllText(sessionPath);
+                    var user = JsonSerializer.Deserialize<CurrentUserDto>(json);
+                    if (user != null && user.IsAuthenticated)
+                    {
+                        _currentUser = user;
+                        _isInitialized = true;
+                        return;
+                    }
+                }
+            }
+            catch { }
+
             _currentUser = new CurrentUserDto();
             _isInitialized = true;
         }
@@ -165,7 +181,13 @@ namespace DotNetProject.Balzor.Components.Shared
 
         private void SaveSession()
         {
-            // In-memory session: do not write to file so project restarts always start clean as Guest
+            try
+            {
+                var path = GetSessionFilePath();
+                var json = JsonSerializer.Serialize(_currentUser, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(path, json);
+            }
+            catch { }
         }
 
         private void ClearSessionFile()

@@ -27,6 +27,26 @@ builder.Services.AddScoped<FavoriteService>();
 builder.Services.AddScoped<WatchHistoryService>();
 builder.Services.AddScoped<TmdbService>();
 
+// Clean startup: delete any leftover session file on server boot so fresh runs always start clean as Guest!
+try
+{
+    var contentRoot = builder.Environment.ContentRootPath;
+    var baseDir = AppContext.BaseDirectory;
+    var possibleSessionFiles = new[]
+    {
+        Path.Combine(contentRoot, "Storage", "auth_session.json"),
+        Path.Combine(baseDir, "Storage", "auth_session.json")
+    };
+    foreach (var file in possibleSessionFiles)
+    {
+        if (File.Exists(file))
+        {
+            File.Delete(file);
+        }
+    }
+}
+catch { }
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
