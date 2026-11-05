@@ -552,20 +552,28 @@ else if (Drama != null)
                         <span>@ActiveVideoTitle</span>
                         <span class="drama-ep-badge">EP @ActiveEpisodeNumber</span>
                     </div>
-                    <button type="button" class="drama-player-close" @onclick="StopPlaying" title="Close Video Player">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="18" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        @if (IsYoutubeUrl(ActiveVideoUrl))
+                        {
+                            <button type="button" class="btn-toggle-stream" @onclick="TogglePlayerMode" title="Toggle between YouTube & Direct Video Stream" style="background: rgba(222, 113, 73, 0.15); border: 1px solid rgba(222, 113, 73, 0.3); color: #DE7149; border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                                @(UseDirectStream ? "📺 Switch to YouTube" : "⚡ Switch to Direct Stream")
+                            </button>
+                        }
+                        <button type="button" class="drama-player-close" @onclick="StopPlaying" title="Close Video Player">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="18" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                @if (!string.IsNullOrWhiteSpace(ActiveVideoUrl) && (ActiveVideoUrl.Contains("youtube.com") || ActiveVideoUrl.Contains("youtu.be")))
+                @if (IsYoutubeUrl(ActiveVideoUrl) && !UseDirectStream)
                 {
-                    <iframe class="drama-video" src="@ActiveVideoUrl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%; height:480px; border-radius:12px;"></iframe>
+                    <iframe class="drama-video" src="@ActiveVideoUrl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%; height:480px; border-radius:12px; display:block;"></iframe>
                 }
                 else
                 {
-                    <video class="drama-video" src="@ActiveVideoUrl" controls autoplay poster="@ActiveVideoPoster" preload="auto">
+                    <video class="drama-video" src="@GetPlaybackUrl()" controls autoplay poster="@ActiveVideoPoster" preload="auto" style="width:100%; max-height:520px; border-radius:12px; display:block;">
                         Your browser does not support the video tag.
                     </video>
                 }

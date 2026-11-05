@@ -45,6 +45,7 @@ namespace DotNetProject.Balzor.Components.Pages
         protected bool IsPlayingVideo { get; set; } = false;
         protected bool IsWatchlisted { get; set; } = false;
         protected bool IsFavorited { get; set; } = false;
+        protected bool UseDirectStream { get; set; } = false;
 
         protected string ActiveVideoTitle { get; set; } = "";
         protected string ActiveVideoDescription { get; set; } = "";
@@ -138,6 +139,8 @@ namespace DotNetProject.Balzor.Components.Pages
 
         protected static string? CleanPoster(string? url, string? title)
         {
+            if (title != null && (title.Contains("Queen", StringComparison.OrdinalIgnoreCase) || title.Contains("Tears", StringComparison.OrdinalIgnoreCase)))
+                return "https://upload.wikimedia.org/wikipedia/en/e/e2/Queen_of_Tears_poster.png";
             if (title != null && title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase))
                 return "/images/kingdom.jpg";
             if (title != null && title.Contains("Daung", StringComparison.OrdinalIgnoreCase))
@@ -153,6 +156,29 @@ namespace DotNetProject.Balzor.Components.Pages
             if (url.Contains("static.tvmaze.com") && url.Contains("1454779"))
                 return "/images/khemjira.jpg";
             return url;
+        }
+
+        protected bool IsYoutubeUrl(string? url)
+        {
+            if (string.IsNullOrWhiteSpace(url)) return false;
+            return url.Contains("youtube.com", StringComparison.OrdinalIgnoreCase) || 
+                   url.Contains("youtu.be", StringComparison.OrdinalIgnoreCase);
+        }
+
+        protected void TogglePlayerMode()
+        {
+            UseDirectStream = !UseDirectStream;
+            StateHasChanged();
+        }
+
+        protected string GetPlaybackUrl()
+        {
+            if (IsYoutubeUrl(ActiveVideoUrl) && UseDirectStream)
+            {
+                // Direct stream fallback for regions/networks where YouTube embeds are blocked
+                return "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+            }
+            return !string.IsNullOrWhiteSpace(ActiveVideoUrl) ? ActiveVideoUrl : "/videos/video_2026-08-04_13-49-33.mp4";
         }
 
         protected async Task PlayEpisode(EpisodeDto ep)
