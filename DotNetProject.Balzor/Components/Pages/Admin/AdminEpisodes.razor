@@ -3,9 +3,11 @@
 @using DotNetProject.Balzor.Components.Shared
 @using DotNetProject.Balzor.Components.Layout
 @using DotNetProject.Domain.Features.Contents
+@using DotNetProject.Database.AppDbModels
 @rendermode InteractiveServer
 @inject HttpClientService ApiClient
 @inject NavigationManager Nav
+@inject AppDbContext Db
 
 <PageTitle>Episodes Management — NangWorld Admin</PageTitle>
 
@@ -145,12 +147,19 @@
                                         @ep.Status
                                     </span>
                                 </td>
-                                <td>
-                                    <button class="btn-admin btn-admin-primary" style="padding:0.35rem 0.75rem;font-size:0.8rem;display:inline-flex;align-items:center;gap:4px;" @onclick="() => PlayEpisode(ep)">
+                                <td style="white-space: nowrap;">
+                                    <button class="btn-admin btn-admin-primary" style="padding:0.35rem 0.65rem;font-size:0.8rem;display:inline-flex;align-items:center;gap:4px;" @onclick="() => PlayEpisode(ep)">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                                             <polygon points="5 3 19 12 5 21 5 3"></polygon>
                                         </svg>
                                         Play
+                                    </button>
+                                    <button class="btn-admin btn-admin-edit" style="padding:0.35rem 0.65rem;font-size:0.8rem;display:inline-flex;align-items:center;gap:4px;margin-left:4px;" @onclick="() => EditEpisode(ep)">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                        Edit URL
                                     </button>
                                 </td>
                             </tr>
@@ -160,6 +169,64 @@
             </div>
         }
     </div>
+
+    <!-- Edit Episode Video URL Modal -->
+    @if (EditingEpisode != null)
+    {
+        <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
+            <div style="background:#FFFFFF;border-radius:18px;max-width:540px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.3);overflow:hidden;border:1px solid #CCE9DC;">
+                <div style="padding:16px 22px;background:#F4FAF6;border-bottom:1px solid #CCE9DC;display:flex;align-items:center;justify-content:space-between;">
+                    <h3 style="margin:0;font-size:16px;color:#1F4233;font-weight:700;">
+                        ✏ Edit Episode @EditingEpisode.EpisodeNumber Video & Info
+                    </h3>
+                    <button type="button" @onclick="CloseEditModal" style="border:none;background:transparent;cursor:pointer;font-size:18px;color:#7B977D;">✕</button>
+                </div>
+
+                <div style="padding:22px;display:flex;flex-direction:column;gap:14px;">
+                    @if (!string.IsNullOrEmpty(EditSuccessMessage))
+                    {
+                        <div style="padding:10px 14px;border-radius:8px;background:rgba(16,185,129,0.12);color:#10B981;font-size:13px;font-weight:600;">
+                            @EditSuccessMessage
+                        </div>
+                    }
+
+                    <div>
+                        <label style="display:block;font-size:13px;font-weight:700;color:#285843;margin-bottom:6px;">Video URL / Stream Link <span style="color:#DE7149;">*</span></label>
+                        <input type="text" class="admin-input" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid #CCE9DC;font-size:13px;"
+                               @bind="EditVideoUrl" placeholder="e.g. /videos/... or https://www.youtube.com/embed/... or direct .mp4" />
+                        <span style="font-size:11.5px;color:#7B977D;margin-top:4px;display:block;">
+                            Supports YouTube embed links, local D:\ files (/videos/...), or online direct MP4 streams.
+                        </span>
+                    </div>
+
+                    <div>
+                        <label style="display:block;font-size:13px;font-weight:700;color:#285843;margin-bottom:6px;">Episode Title</label>
+                        <input type="text" class="admin-input" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid #CCE9DC;font-size:13px;"
+                               @bind="EditTitle" placeholder="Episode title" />
+                    </div>
+
+                    <div>
+                        <label style="display:block;font-size:13px;font-weight:700;color:#285843;margin-bottom:6px;">Episode Synopsis / Description</label>
+                        <textarea class="admin-input" rows="3" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid #CCE9DC;font-size:13px;"
+                                  @bind="EditDescription" placeholder="Short description of this episode..."></textarea>
+                    </div>
+
+                    <div>
+                        <label style="display:block;font-size:13px;font-weight:700;color:#285843;margin-bottom:6px;">Thumbnail URL</label>
+                        <input type="text" class="admin-input" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid #CCE9DC;font-size:13px;"
+                               @bind="EditThumbnailUrl" placeholder="https://..." />
+                    </div>
+                </div>
+
+                <div style="padding:14px 22px;background:#F8FAF9;border-top:1px solid #CCE9DC;display:flex;justify-content:flex-end;gap:10px;">
+                    <button type="button" class="btn-admin btn-admin-edit" @onclick="CloseEditModal">Cancel</button>
+                    <button type="button" class="btn-admin btn-admin-primary" @onclick="SaveEpisodeChangesAsync" disabled="@IsSavingEpisode">
+                        @(IsSavingEpisode ? "Saving..." : "Save Changes")
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
@@ -239,5 +306,70 @@
     private void ClosePlayer()
     {
         CurrentPlayingEpisode = null;
+    }
+
+    private EpisodeDto? EditingEpisode;
+    private string EditVideoUrl = "";
+    private string EditTitle = "";
+    private string EditDescription = "";
+    private string EditThumbnailUrl = "";
+    private string? EditSuccessMessage;
+    private bool IsSavingEpisode = false;
+
+    private void EditEpisode(EpisodeDto ep)
+    {
+        EditingEpisode = ep;
+        EditVideoUrl = ep.VideoUrl ?? "";
+        EditTitle = ep.Title ?? "";
+        EditDescription = ep.Description ?? "";
+        EditThumbnailUrl = ep.ThumbnailUrl ?? "";
+        EditSuccessMessage = null;
+    }
+
+    private void CloseEditModal()
+    {
+        EditingEpisode = null;
+        EditSuccessMessage = null;
+    }
+
+    private async Task SaveEpisodeChangesAsync()
+    {
+        if (EditingEpisode == null) return;
+
+        IsSavingEpisode = true;
+        EditSuccessMessage = null;
+
+        try
+        {
+            var dbEpisode = await Db.Episodes.FindAsync(EditingEpisode.EpisodeId);
+            if (dbEpisode != null)
+            {
+                dbEpisode.VideoUrl = EditVideoUrl.Trim();
+                dbEpisode.Title = EditTitle.Trim();
+                dbEpisode.Description = EditDescription.Trim();
+                dbEpisode.ThumbnailUrl = EditThumbnailUrl.Trim();
+                dbEpisode.UpdatedAt = DateTime.UtcNow;
+
+                await Db.SaveChangesAsync();
+
+                EditingEpisode.VideoUrl = dbEpisode.VideoUrl;
+                EditingEpisode.Title = dbEpisode.Title;
+                EditingEpisode.Description = dbEpisode.Description;
+                EditingEpisode.ThumbnailUrl = dbEpisode.ThumbnailUrl;
+
+                EditSuccessMessage = "Saved successfully!";
+                await Task.Delay(500);
+                CloseEditModal();
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Failed to update episode: " + ex.Message;
+        }
+        finally
+        {
+            IsSavingEpisode = false;
+        }
     }
 }
