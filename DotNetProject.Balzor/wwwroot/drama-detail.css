@@ -57,14 +57,14 @@
     transform: scale(1.08);
 }
 
-/* Main Theater Card (Dashboard Forest Jade Theme) */
+/* Main Theater Card (Dreamy Pastel Theme) */
 .drama-theater-card {
-    background: #151026;
+    background: #FAF5FF;
     border-radius: 24px;
     padding: 36px 40px 48px;
-    color: #F5F3FF;
-    box-shadow: 0 16px 40px rgba(15, 36, 32, 0.16);
-    border: 1px solid rgba(244, 239, 234, 0.08);
+    color: #2E1065;
+    box-shadow: 0 16px 40px rgba(139, 92, 246, 0.12);
+    border: 1.5px solid rgba(167, 139, 250, 0.32);
     box-sizing: border-box;
 }
 
@@ -83,14 +83,14 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 20px;
-    background: #1B1530;
-    border-bottom: 1px solid rgba(244, 239, 234, 0.08);
+    background: #F3E8FF;
+    border-bottom: 1px solid rgba(167, 139, 250, 0.25);
 }
 
 .drama-player-title {
     font-size: 14.5px;
     font-weight: 700;
-    color: #F5F3FF;
+    color: #2E1065;
     display: flex;
     align-items: center;
     gap: 10px;

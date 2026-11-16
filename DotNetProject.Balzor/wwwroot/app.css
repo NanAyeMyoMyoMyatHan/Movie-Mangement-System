@@ -1,49 +1,50 @@
 /* ========================================================
    NANGWORLD STREAMING PLATFORM - DESIGN SYSTEM
-   Modern Dark Cinema Experience (Soft Violet & Soft Pink)
+   Dreamy Light Pastel Theme (Soft Violet & Soft Pink)
    ======================================================== */
 
 :root {
-    /* Color Palette: Soft Violet & Soft Pink */
-    --color-obsidian-950: #0B0813;
-    --color-obsidian-900: #110D1D;
-    --color-obsidian-850: #151026;
-    --color-obsidian-800: #1B1530;
-    --color-obsidian-700: #261F40;
+    /* Color Palette: Dreamy Light Pastel (Soft Violet & Soft Pink) */
+    --color-pastel-lavender: #FAF5FF;
+    --color-pastel-lavender-subtle: #F3E8FF;
+    --color-pastel-lavender-mid: #EDE9FE;
+    --color-pastel-lavender-border: #DDD6FE;
+
+    --color-pastel-pink: #FDF2F8;
+    --color-pastel-pink-subtle: #FCE7F3;
+    --color-pastel-pink-border: #FBCFE8;
 
     --brand-violet: #8B5CF6;
     --brand-violet-soft: #A78BFA;
-    --brand-violet-muted: #C4B5FD;
-    --brand-violet-dark: #6D28D9;
-    --brand-violet-subtle: rgba(139, 92, 246, 0.15);
+    --brand-violet-deep: #6D28D9;
 
     --brand-pink: #EC4899;
     --brand-pink-soft: #F472B6;
-    --brand-pink-muted: #FDA4AF;
-    --brand-pink-dark: #BE185D;
-    --brand-pink-subtle: rgba(236, 72, 153, 0.15);
+    --brand-pink-deep: #BE185D;
 
     --brand-gradient: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
     --brand-gradient-hover: linear-gradient(135deg, #7C3AED 0%, #DB2777 100%);
-    --brand-gradient-soft: linear-gradient(135deg, rgba(139, 92, 246, 0.22) 0%, rgba(236, 72, 153, 0.22) 100%);
+    --brand-gradient-soft: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(236, 72, 153, 0.12) 100%);
+    --bg-canvas-gradient: linear-gradient(145deg, #FAF5FF 0%, #F5EEFD 45%, #FDF2F8 100%);
 
-    --border-glass: rgba(167, 139, 250, 0.18);
-    --border-glass-light: rgba(255, 255, 255, 0.1);
-    --border-glass-focus: rgba(167, 139, 250, 0.45);
+    --border-glass: rgba(167, 139, 250, 0.28);
+    --border-glass-light: rgba(167, 139, 250, 0.18);
+    --border-glass-focus: #8B5CF6;
 
-    --text-primary: #F5F3FF;
-    --text-secondary: #C4B5FD;
-    --text-muted: #948BA8;
-    --text-dim: #6B6282;
+    /* High-Contrast Typography */
+    --text-primary: #2E1065;
+    --text-secondary: #4C1D95;
+    --text-muted: #6B5B95;
+    --text-dim: #9382B2;
 
     --radius-pill: 9999px;
     --radius-card: 20px;
     --radius-card-sm: 14px;
     --radius-card-lg: 26px;
 
-    --glow-violet: 0 4px 20px rgba(139, 92, 246, 0.35);
-    --glow-pink: 0 4px 20px rgba(236, 72, 153, 0.35);
-    --glow-brand: 0 4px 22px rgba(139, 92, 246, 0.28), 0 2px 10px rgba(236, 72, 153, 0.2);
+    --glow-violet: 0 4px 20px rgba(139, 92, 246, 0.25);
+    --glow-pink: 0 4px 20px rgba(236, 72, 153, 0.25);
+    --glow-brand: 0 6px 22px rgba(139, 92, 246, 0.3), 0 2px 8px rgba(236, 72, 153, 0.2);
 }
 
 /* ========================================================
@@ -55,7 +56,8 @@
 
 html, body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--color-obsidian-950) !important;
+    background-color: #FAF5FF !important;
+    background-image: var(--bg-canvas-gradient) !important;
     color: var(--text-primary) !important;
     margin: 0;
     padding: 0;
@@ -71,7 +73,7 @@ a, .btn-link {
 
 /* Focus styles */
 :focus-visible {
-    outline: 2px solid var(--brand-violet-soft);
+    outline: 2px solid var(--brand-violet);
     outline-offset: 2px;
 }
 
@@ -82,11 +84,11 @@ a, .btn-link {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--color-obsidian-950);
+    background: #FAF5FF;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--color-obsidian-700);
+    background: var(--color-pastel-lavender-border);
     border-radius: var(--radius-pill);
 }
 
@@ -102,12 +104,12 @@ a, .btn-link {
     width: 100%;
     margin: 0;
     padding: 0;
-    background: var(--color-obsidian-950);
+    background: var(--bg-canvas-gradient);
 }
 
 .petale-layout {
     min-height: 100vh;
-    background: var(--color-obsidian-950) !important;
+    background: var(--bg-canvas-gradient) !important;
     color: var(--text-primary) !important;
     position: relative;
 }
@@ -124,10 +126,10 @@ a, .btn-link {
 .petale-main {
     min-height: 100vh;
     margin-left: 250px;
-    background: var(--color-obsidian-950) !important;
+    background: var(--bg-canvas-gradient) !important;
     background-image: 
-        radial-gradient(circle at 10% 8%, rgba(139, 92, 246, 0.08) 0%, transparent 45%),
-        radial-gradient(circle at 90% 55%, rgba(236, 72, 153, 0.06) 0%, transparent 50%) !important;
+        radial-gradient(circle at 12% 10%, rgba(139, 92, 246, 0.09) 0%, transparent 45%),
+        radial-gradient(circle at 88% 55%, rgba(236, 72, 153, 0.07) 0%, transparent 50%) !important;
     background-attachment: fixed !important;
 }
 
@@ -138,7 +140,7 @@ a, .btn-link {
 }
 
 /* ========================================================
-   STREAMING SIDEBAR (DARK ACRYLIC WITH SOFT ACCENTS)
+   DREAMY PASTEL SIDEBAR (SOFT VIOLET & SOFT PINK)
    ======================================================== */
 .myflix-sidebar,
 .petale-sidebar {
@@ -150,9 +152,9 @@ a, .btn-link {
     left: 0;
     bottom: 0;
     padding: 24px 16px 20px 16px !important;
-    background: var(--color-obsidian-900) !important;
+    background: #F3E8FF !important;
     border-right: 1px solid var(--border-glass) !important;
-    box-shadow: 6px 0 28px rgba(0, 0, 0, 0.45) !important;
+    box-shadow: 4px 0 24px rgba(139, 92, 246, 0.08) !important;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -182,7 +184,7 @@ a, .btn-link {
     height: 38px;
     border-radius: 12px;
     background: rgba(139, 92, 246, 0.15);
-    border: 1px solid rgba(167, 139, 250, 0.35);
+    border: 1px solid rgba(167, 139, 250, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -202,13 +204,13 @@ a, .btn-link {
 }
 
 .myflix-text-pink {
-    color: var(--brand-pink-soft);
-    text-shadow: 0 0 16px rgba(244, 114, 182, 0.4);
+    color: var(--brand-pink);
+    text-shadow: 0 0 12px rgba(236, 72, 153, 0.25);
 }
 
 .myflix-text-violet {
-    color: var(--brand-violet-soft);
-    text-shadow: 0 0 16px rgba(167, 139, 250, 0.4);
+    color: var(--brand-violet);
+    text-shadow: 0 0 12px rgba(139, 92, 246, 0.25);
 }
 
 /* Nav Item styling */
@@ -238,7 +240,7 @@ a.myflix-nav-item,
     color: var(--text-secondary) !important;
     text-decoration: none !important;
     font-size: 14.5px;
-    font-weight: 500;
+    font-weight: 600;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -260,7 +262,7 @@ a.myflix-nav-item.active,
     background: var(--brand-gradient) !important;
     color: #FFFFFF !important;
     font-weight: 700;
-    box-shadow: 0 4px 18px rgba(236, 72, 153, 0.35);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
 }
 
 a.myflix-nav-item.active svg,
@@ -271,8 +273,8 @@ a.myflix-nav-item.active svg,
 
 /* Badges */
 .myflix-badge {
-    font-size: 11.5px;
-    font-weight: 700;
+    font-size: 11px;
+    font-weight: 800;
     padding: 2px 8px;
     border-radius: var(--radius-pill);
     min-width: 20px;
@@ -280,15 +282,15 @@ a.myflix-nav-item.active svg,
 }
 
 .badge-violet {
-    background: rgba(139, 92, 246, 0.25) !important;
-    color: var(--brand-violet-soft) !important;
-    border: 1px solid rgba(167, 139, 250, 0.4);
+    background: rgba(139, 92, 246, 0.2) !important;
+    color: var(--brand-violet-deep) !important;
+    border: 1px solid rgba(167, 139, 250, 0.45);
 }
 
 .badge-pink {
-    background: rgba(236, 72, 153, 0.25) !important;
-    color: var(--brand-pink-soft) !important;
-    border: 1px solid rgba(244, 114, 182, 0.4);
+    background: rgba(236, 72, 153, 0.2) !important;
+    color: var(--brand-pink-deep) !important;
+    border: 1px solid rgba(244, 114, 182, 0.45);
 }
 
 .myflix-divider {
@@ -309,18 +311,18 @@ a.myflix-category-link,
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px 12px;
-    color: var(--text-muted) !important;
+    padding: 9px 12px;
+    color: var(--text-secondary) !important;
     text-decoration: none !important;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     border-radius: 12px;
     transition: all 0.18s ease;
 }
 
 a.myflix-category-link:hover,
 .myflix-category-link:hover {
-    background: rgba(139, 92, 246, 0.1) !important;
+    background: rgba(139, 92, 246, 0.12) !important;
     color: var(--text-primary) !important;
     transform: translateX(3px);
 }
@@ -330,7 +332,7 @@ a.myflix-category-link.active,
     background: var(--brand-gradient) !important;
     color: #FFFFFF !important;
     font-weight: 700;
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
 }
 
 .myflix-badge-icon {
@@ -346,24 +348,18 @@ a.myflix-category-link.active,
 }
 
 .icon-pink {
-    background: rgba(236, 72, 153, 0.18);
-    color: var(--brand-pink-soft);
-    border: 1px solid rgba(244, 114, 182, 0.35);
+    background: rgba(236, 72, 153, 0.12);
+    color: var(--brand-pink);
+    border: 1.5px solid var(--brand-pink);
 }
 
 .icon-violet {
-    background: rgba(139, 92, 246, 0.18);
-    color: var(--brand-violet-soft);
-    border: 1px solid rgba(167, 139, 250, 0.35);
+    background: rgba(139, 92, 246, 0.12);
+    color: var(--brand-violet);
+    border: 1.5px solid var(--brand-violet);
 }
 
-.icon-accent {
-    background: rgba(236, 72, 153, 0.25);
-    color: #FFFFFF;
-    border: 1px solid var(--brand-pink-soft);
-}
-
-/* Sidebar Bottom (User Status) */
+/* Sidebar Bottom */
 .myflix-bottom-nav {
     margin-top: 24px;
     padding-top: 16px;
@@ -373,17 +369,20 @@ a.myflix-category-link.active,
     gap: 8px;
 }
 
-.myflix-user-pill {
+.myflix-user-pill,
+.nav-user-box {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 10px;
-    background: rgba(139, 92, 246, 0.08);
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.85);
     border: 1px solid var(--border-glass);
     border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
 }
 
-.myflix-user-avatar {
+.myflix-user-avatar,
+.nav-user-avatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -395,17 +394,19 @@ a.myflix-category-link.active,
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.35);
 }
 
-.myflix-user-info {
+.myflix-user-info,
+.nav-user-details {
     flex: 1;
     min-width: 0;
     display: flex;
     flex-direction: column;
 }
 
-.myflix-user-name {
+.myflix-user-name,
+.nav-user-name {
     font-size: 13px;
     font-weight: 700;
     color: var(--text-primary);
@@ -414,9 +415,11 @@ a.myflix-category-link.active,
     white-space: nowrap;
 }
 
-.myflix-user-role {
+.myflix-user-role,
+.nav-user-role {
     font-size: 11px;
-    color: var(--text-muted);
+    font-weight: 600;
+    color: var(--brand-pink);
 }
 
 .myflix-admin-tag {
@@ -425,15 +428,16 @@ a.myflix-category-link.active,
     text-transform: uppercase;
     padding: 2px 6px;
     border-radius: var(--radius-pill);
-    background: rgba(236, 72, 153, 0.25);
-    color: var(--brand-pink-soft);
+    background: rgba(236, 72, 153, 0.2);
+    color: var(--brand-pink-deep);
     border: 1px solid rgba(244, 114, 182, 0.4);
 }
 
-.myflix-signout-btn {
+.myflix-signout-btn,
+.logout-btn {
     background: transparent;
     border: none;
-    color: var(--text-dim);
+    color: var(--brand-violet-deep);
     padding: 6px;
     border-radius: 8px;
     cursor: pointer;
@@ -443,12 +447,14 @@ a.myflix-category-link.active,
     transition: all 0.15s ease;
 }
 
-.myflix-signout-btn:hover {
-    color: var(--brand-pink-soft);
+.myflix-signout-btn:hover,
+.logout-btn:hover {
+    color: var(--brand-pink);
     background: rgba(236, 72, 153, 0.15);
 }
 
-.myflix-signin-nav-btn {
+.myflix-signin-nav-btn,
+.login-nav-link {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -463,7 +469,8 @@ a.myflix-category-link.active,
     transition: all 0.2s ease;
 }
 
-.myflix-signin-nav-btn:hover {
+.myflix-signin-nav-btn:hover,
+.login-nav-link:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(236, 72, 153, 0.45);
 }
@@ -492,23 +499,21 @@ a.myflix-category-link.active,
     display: flex;
     align-items: center;
     gap: 12px;
-    background: rgba(21, 16, 38, 0.8) !important;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid var(--border-glass) !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid var(--border-glass) !important;
     border-radius: var(--radius-pill) !important;
     padding: 11px 20px !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.08);
     transition: all 0.2s ease;
 }
 
 .myflix-search-bar:focus-within {
-    border-color: var(--brand-violet-soft) !important;
-    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.25), 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+    border-color: var(--brand-violet) !important;
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.25), 0 6px 20px rgba(139, 92, 246, 0.12) !important;
 }
 
 .myflix-search-bar svg {
-    color: var(--brand-violet-soft) !important;
+    color: var(--brand-violet) !important;
     flex-shrink: 0;
 }
 
@@ -555,8 +560,8 @@ a.myflix-category-link.active,
 }
 
 .myflix-notif-btn {
-    background: rgba(21, 16, 38, 0.8) !important;
-    border: 1px solid var(--border-glass) !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid var(--border-glass) !important;
     color: var(--text-secondary) !important;
     position: relative;
     cursor: pointer;
@@ -566,14 +571,15 @@ a.myflix-category-link.active,
     width: 42px;
     height: 42px;
     border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
     transition: all 0.2s ease;
 }
 
 .myflix-notif-btn:hover {
-    background: rgba(139, 92, 246, 0.2) !important;
-    color: #FFFFFF !important;
+    background: #F3E8FF !important;
+    color: var(--brand-violet-deep) !important;
     transform: scale(1.06);
-    border-color: var(--brand-violet-soft) !important;
+    border-color: var(--brand-violet) !important;
 }
 
 .myflix-notif-dot {
@@ -584,7 +590,7 @@ a.myflix-category-link.active,
     height: 8px;
     background: var(--brand-pink);
     border-radius: 50%;
-    border: 1.5px solid var(--color-obsidian-950);
+    border: 1.5px solid #FFFFFF;
     box-shadow: 0 0 8px var(--brand-pink);
 }
 
@@ -596,16 +602,17 @@ a.myflix-category-link.active,
     color: var(--text-primary);
     font-size: 13.5px;
     font-weight: 700;
-    padding: 5px 12px 5px 5px;
-    background: rgba(21, 16, 38, 0.8);
-    border: 1px solid var(--border-glass);
+    padding: 5px 14px 5px 5px;
+    background: #FFFFFF;
+    border: 1.5px solid var(--border-glass);
     border-radius: var(--radius-pill);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
     transition: all 0.2s ease;
 }
 
 .myflix-user-profile:hover {
-    border-color: var(--brand-violet-soft);
-    background: rgba(139, 92, 246, 0.12);
+    border-color: var(--brand-violet);
+    background: #F3E8FF;
 }
 
 .myflix-avatar,
@@ -620,21 +627,20 @@ a.myflix-category-link.active,
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 10px rgba(139, 92, 246, 0.4);
-    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 10px rgba(139, 92, 246, 0.35);
     flex-shrink: 0;
 }
 
 .header-admin-badge {
-    background: rgba(236, 72, 153, 0.25);
-    color: var(--brand-pink-soft);
+    background: rgba(236, 72, 153, 0.18);
+    color: var(--brand-pink-deep);
     font-size: 10px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     padding: 2px 8px;
     border-radius: var(--radius-pill);
-    border: 1px solid rgba(244, 114, 182, 0.4);
+    border: 1px solid rgba(244, 114, 182, 0.45);
 }
 
 .myflix-signin-pill {
@@ -658,7 +664,7 @@ a.myflix-category-link.active,
 }
 
 /* ========================================================
-   CATEGORY FILTER PILLS (STREAMING STYLE)
+   CATEGORY FILTER PILLS (PASTEL STYLE)
    ======================================================== */
 .myflix-filter-bar {
     display: flex;
@@ -680,22 +686,23 @@ a.myflix-category-link.active,
     align-items: center;
     gap: 7px;
     padding: 8px 18px;
-    background: rgba(21, 16, 38, 0.75);
-    border: 1px solid var(--border-glass);
+    background: #FFFFFF;
+    border: 1.5px solid var(--border-glass);
     border-radius: var(--radius-pill);
     color: var(--text-secondary);
     font-size: 13.5px;
     font-weight: 600;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.06);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
 }
 
 .myflix-filter-pill:hover,
 .filter-chip:hover {
-    background: rgba(139, 92, 246, 0.15);
-    color: #FFFFFF;
-    border-color: var(--brand-violet-soft);
+    background: #F3E8FF;
+    color: var(--text-primary);
+    border-color: var(--brand-violet);
     transform: translateY(-2px);
 }
 
@@ -705,11 +712,11 @@ a.myflix-category-link.active,
     color: #FFFFFF !important;
     border-color: transparent !important;
     font-weight: 700;
-    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
 }
 
 /* ========================================================
-   HERO BANNER & CAROUSEL (CINEMATIC)
+   HERO BANNER & CAROUSEL (DREAMY LIGHT PASTEL)
    ======================================================== */
 .myflix-hero-banner {
     position: relative;
@@ -720,9 +727,9 @@ a.myflix-category-link.active,
     align-items: center;
     padding: 44px 52px !important;
     margin-bottom: 38px !important;
-    background: var(--color-obsidian-850) !important;
-    border: 1px solid var(--border-glass) !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+    background: linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%) !important;
+    border: 1.5px solid var(--border-glass) !important;
+    box-shadow: 0 20px 50px rgba(139, 92, 246, 0.12) !important;
 }
 
 .myflix-hero-backdrop {
@@ -744,15 +751,15 @@ a.myflix-category-link.active,
     height: 100%;
     object-fit: cover;
     object-position: center 25%;
-    filter: brightness(0.9);
+    filter: brightness(0.95);
 }
 
 .myflix-hero-overlay {
     position: absolute;
     inset: 0;
     background: 
-        linear-gradient(90deg, #151026 0%, #151026 35%, rgba(21, 16, 38, 0.85) 65%, rgba(21, 16, 38, 0.2) 100%),
-        linear-gradient(180deg, rgba(21, 16, 38, 0) 60%, #151026 100%);
+        linear-gradient(90deg, #EDE9FE 0%, #EDE9FE 36%, rgba(237, 233, 254, 0.88) 65%, rgba(237, 233, 254, 0.2) 100%),
+        linear-gradient(180deg, rgba(237, 233, 254, 0) 60%, #EDE9FE 100%);
 }
 
 .myflix-hero-content {
@@ -765,20 +772,21 @@ a.myflix-category-link.active,
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(139, 92, 246, 0.25);
-    color: var(--brand-violet-soft);
-    border: 1px solid rgba(167, 139, 250, 0.4);
+    background: #FFFFFF;
+    color: var(--brand-violet-deep);
+    border: 1.5px solid rgba(167, 139, 250, 0.45);
     padding: 5px 14px;
     border-radius: var(--radius-pill);
     font-size: 12px;
     font-weight: 700;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
     margin-bottom: 14px;
 }
 
 .myflix-hero-title {
     font-size: clamp(30px, 3.2vw, 42px) !important;
     font-weight: 800 !important;
-    color: #FFFFFF !important;
+    color: var(--text-primary) !important;
     margin: 0 0 12px !important;
     line-height: 1.15 !important;
     letter-spacing: -0.5px;
@@ -814,13 +822,13 @@ a.myflix-category-link.active,
     font-weight: 700;
     border: none;
     cursor: pointer;
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .myflix-btn-primary:hover {
     transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 26px rgba(236, 72, 153, 0.5);
+    box-shadow: 0 8px 26px rgba(236, 72, 153, 0.45);
 }
 
 .myflix-btn-secondary {
@@ -830,19 +838,20 @@ a.myflix-category-link.active,
     gap: 9px;
     padding: 12px 24px;
     border-radius: var(--radius-pill);
-    background: rgba(255, 255, 255, 0.08) !important;
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--border-glass) !important;
-    color: #FFFFFF !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid var(--border-glass) !important;
+    color: var(--text-secondary) !important;
     font-size: 14.5px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
     transition: all 0.2s ease;
 }
 
 .myflix-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.16) !important;
-    border-color: var(--brand-pink-soft) !important;
+    background: #F3E8FF !important;
+    border-color: var(--brand-violet) !important;
+    color: var(--text-primary) !important;
     transform: translateY(-2px);
 }
 
@@ -861,19 +870,20 @@ a.myflix-category-link.active,
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: rgba(21, 16, 38, 0.7);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-glass);
-    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1.5px solid var(--border-glass);
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.12);
     transition: all 0.2s ease;
 }
 
 .hero-nav-arrow:hover {
     background: var(--brand-gradient);
+    color: #FFFFFF;
     border-color: transparent;
     transform: scale(1.1);
 }
@@ -888,7 +898,7 @@ a.myflix-category-link.active,
     width: 8px;
     height: 8px;
     border-radius: var(--radius-pill);
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(139, 92, 246, 0.3);
     cursor: pointer;
     transition: all 0.25s ease;
     border: none;
@@ -898,11 +908,11 @@ a.myflix-category-link.active,
 .hero-dot.active {
     width: 24px;
     background: var(--brand-gradient);
-    box-shadow: 0 0 10px rgba(236, 72, 153, 0.6);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
 }
 
 /* ========================================================
-   SECTIONS & GRIDS
+   SECTIONS & GRIDS (AIRY PASTEL POSTERS)
    ======================================================== */
 .myflix-section-block {
     margin-bottom: 40px !important;
@@ -918,7 +928,7 @@ a.myflix-category-link.active,
 .myflix-section-header h2 {
     font-size: 22px !important;
     font-weight: 800 !important;
-    color: #FFFFFF !important;
+    color: var(--text-primary) !important;
     margin: 0 !important;
     letter-spacing: -0.3px;
     display: inline-flex;
@@ -929,7 +939,7 @@ a.myflix-category-link.active,
 .myflix-see-all {
     font-size: 13.5px;
     font-weight: 700;
-    color: var(--brand-pink-soft) !important;
+    color: var(--brand-pink) !important;
     text-decoration: none !important;
     transition: all 0.2s ease;
     display: inline-flex;
@@ -938,7 +948,7 @@ a.myflix-category-link.active,
 }
 
 .myflix-see-all:hover {
-    color: #FFFFFF !important;
+    color: var(--brand-pink-deep) !important;
     transform: translateX(4px);
 }
 
@@ -950,28 +960,28 @@ a.myflix-category-link.active,
 }
 
 .myflix-poster-card {
-    background: var(--color-obsidian-850);
-    border: 1px solid var(--border-glass);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1.5px solid var(--border-glass);
     border-radius: var(--radius-card);
     overflow: hidden;
     position: relative;
     transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
     display: flex;
     flex-direction: column;
 }
 
 .myflix-poster-card:hover {
     transform: translateY(-8px) scale(1.02);
-    border-color: var(--brand-violet-soft);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(139, 92, 246, 0.25);
+    border-color: var(--brand-violet);
+    box-shadow: 0 18px 40px rgba(139, 92, 246, 0.16), 0 0 20px rgba(236, 72, 153, 0.12);
 }
 
 .myflix-card-poster-wrapper {
     position: relative;
     aspect-ratio: 2 / 3;
     overflow: hidden;
-    background: #000;
+    background: #EDE9FE;
 }
 
 .myflix-card-poster {
@@ -996,30 +1006,31 @@ a.myflix-category-link.active,
 }
 
 .badge-quality {
-    background: rgba(11, 8, 19, 0.75);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(6px);
-    color: var(--brand-violet-soft);
-    border: 1px solid rgba(167, 139, 250, 0.4);
+    color: var(--brand-violet-deep);
+    border: 1px solid rgba(167, 139, 250, 0.45);
     font-size: 10px;
     font-weight: 800;
     padding: 2px 7px;
     border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.1);
 }
 
 .badge-rating {
-    background: rgba(236, 72, 153, 0.85);
+    background: var(--brand-pink);
     color: #FFFFFF;
     font-size: 10.5px;
     font-weight: 800;
     padding: 2px 8px;
     border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(236, 72, 153, 0.4);
+    box-shadow: 0 2px 8px rgba(236, 72, 153, 0.35);
 }
 
 .myflix-card-hover-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(11, 8, 19, 0) 30%, rgba(11, 8, 19, 0.95) 100%);
+    background: linear-gradient(180deg, rgba(250, 245, 255, 0) 30%, rgba(243, 232, 255, 0.95) 100%);
     opacity: 0;
     display: flex;
     align-items: center;
@@ -1041,7 +1052,7 @@ a.myflix-category-link.active,
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
     transform: scale(0.85);
     transition: transform 0.2s ease;
 }
@@ -1064,20 +1075,22 @@ a.myflix-category-link.active,
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: rgba(21, 16, 38, 0.8);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(8px);
     border: 1px solid var(--border-glass);
-    color: #FFFFFF;
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.12);
     transition: all 0.18s ease;
 }
 
 .myflix-action-btn:hover {
     background: var(--brand-pink);
-    border-color: var(--brand-pink-soft);
+    color: #FFFFFF;
+    border-color: var(--brand-pink);
     transform: scale(1.1);
 }
 
@@ -1092,7 +1105,7 @@ a.myflix-category-link.active,
 .myflix-card-title {
     font-size: 14.5px;
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1108,20 +1121,20 @@ a.myflix-category-link.active,
 }
 
 .myflix-card-category {
-    color: var(--brand-violet-soft);
+    color: var(--brand-violet-deep);
     font-weight: 600;
 }
 
 /* ========================================================
-   CINEMATIC VIDEO MODAL
+   CINEMATIC VIDEO MODAL (PASTEL ACCENTS)
    ======================================================== */
 .video-modal-backdrop {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: rgba(11, 8, 19, 0.88);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(46, 16, 101, 0.5);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1132,11 +1145,11 @@ a.myflix-category-link.active,
 .video-modal-container {
     width: 100%;
     max-width: 960px;
-    background: var(--color-obsidian-850);
-    border: 1px solid var(--border-glass);
+    background: #FAF5FF;
+    border: 1.5px solid var(--border-glass);
     border-radius: var(--radius-card-lg);
     overflow: hidden;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 50px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 25px 60px rgba(139, 92, 246, 0.25);
     display: flex;
     flex-direction: column;
 }
@@ -1146,14 +1159,14 @@ a.myflix-category-link.active,
     align-items: center;
     justify-content: space-between;
     padding: 18px 24px;
-    background: var(--color-obsidian-900);
+    background: #F3E8FF;
     border-bottom: 1px solid var(--border-glass);
 }
 
 .video-modal-title {
     font-size: 18px;
     font-weight: 800;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
 }
 
@@ -1161,18 +1174,20 @@ a.myflix-category-link.active,
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.85);
     border: 1px solid var(--border-glass);
-    color: #FFFFFF;
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
     transition: all 0.2s ease;
 }
 
 .video-modal-close:hover {
     background: var(--brand-pink);
+    color: #FFFFFF;
     transform: rotate(90deg);
 }
 
@@ -1190,19 +1205,20 @@ a.myflix-category-link.active,
 .video-ep-pill {
     padding: 8px 16px;
     border-radius: var(--radius-pill);
-    background: rgba(21, 16, 38, 0.8);
-    border: 1px solid var(--border-glass);
+    background: #FFFFFF;
+    border: 1.5px solid var(--border-glass);
     color: var(--text-secondary);
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.06);
     transition: all 0.18s ease;
 }
 
 .video-ep-pill:hover {
-    background: rgba(139, 92, 246, 0.2);
-    border-color: var(--brand-violet-soft);
-    color: #FFFFFF;
+    background: #F3E8FF;
+    border-color: var(--brand-violet);
+    color: var(--text-primary);
 }
 
 .video-ep-pill.active {
@@ -1210,7 +1226,7 @@ a.myflix-category-link.active,
     border-color: transparent;
     color: #FFFFFF;
     font-weight: 700;
-    box-shadow: 0 4px 14px rgba(236, 72, 153, 0.4);
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
 }
 
 @keyframes modalFade {
@@ -1219,7 +1235,7 @@ a.myflix-category-link.active,
 }
 
 /* ========================================================
-   TOAST NOTIFICATIONS (SOFT VIOLET & SOFT PINK)
+   TOAST NOTIFICATIONS (DREAMY PASTEL)
    ======================================================== */
 .myflix-toast,
 .cat-toast,
@@ -1232,16 +1248,16 @@ a.myflix-category-link.active,
     align-items: center;
     gap: 12px;
     padding: 13px 22px;
-    background: rgba(21, 16, 38, 0.94);
+    background: #FFFFFF;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
-    color: #FFFFFF;
-    border: 1px solid var(--border-glass);
-    border-left: 4px solid var(--brand-pink);
+    color: var(--text-primary);
+    border: 1.5px solid var(--border-glass);
+    border-left: 5px solid var(--brand-pink);
     border-radius: 14px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 24px rgba(236, 72, 153, 0.25);
+    box-shadow: 0 16px 40px rgba(139, 92, 246, 0.16);
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     animation: toastSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1282,11 +1298,11 @@ a.myflix-category-link.active,
 
     .myflix-hero-img-wrapper {
         width: 100%;
-        opacity: 0.3;
+        opacity: 0.25;
     }
 
     .myflix-hero-overlay {
-        background: rgba(21, 16, 38, 0.9);
+        background: rgba(237, 233, 254, 0.92);
     }
 
     .myflix-poster-grid {

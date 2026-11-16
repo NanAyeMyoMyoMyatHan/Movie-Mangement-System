@@ -194,7 +194,7 @@
 <style>
     .login-wrapper {
         min-height: 100vh;
-        background: #0B0813;
+        background: linear-gradient(145deg, #FAF5FF 0%, #F5EEFD 45%, #FDF2F8 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -210,7 +210,7 @@
         left: -120px;
         width: 520px;
         height: 520px;
-        background: radial-gradient(circle, rgba(139, 92, 246, 0.28) 0%, rgba(11, 8, 19, 0) 70%);
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.16) 0%, rgba(250, 245, 255, 0) 70%);
         pointer-events: none;
     }
 
@@ -220,25 +220,25 @@
         right: -120px;
         width: 560px;
         height: 560px;
-        background: radial-gradient(circle, rgba(236, 72, 153, 0.22) 0%, rgba(11, 8, 19, 0) 70%);
+        background: radial-gradient(circle, rgba(236, 72, 153, 0.14) 0%, rgba(253, 242, 248, 0) 70%);
         pointer-events: none;
     }
 
     .login-card {
         width: 100%;
         max-width: 440px;
-        background: rgba(21, 16, 38, 0.88);
+        background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(167, 139, 250, 0.2);
+        border: 1.5px solid rgba(167, 139, 250, 0.35);
         border-radius: 26px;
         padding: 38px 34px;
         box-shadow: 
-            0 24px 60px rgba(0, 0, 0, 0.65),
-            0 0 40px rgba(139, 92, 246, 0.12);
+            0 24px 60px rgba(139, 92, 246, 0.15),
+            0 0 30px rgba(236, 72, 153, 0.08);
         position: relative;
         z-index: 2;
-        color: #F5F3FF;
+        color: #2E1065;
     }
 
     .login-brand {
@@ -259,11 +259,11 @@
         height: 40px;
         border-radius: 12px;
         background: rgba(139, 92, 246, 0.15);
-        border: 1px solid rgba(167, 139, 250, 0.35);
+        border: 1px solid rgba(167, 139, 250, 0.4);
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+        box-shadow: 0 4px 14px rgba(139, 92, 246, 0.25);
     }
 
     .login-logo-text {
@@ -273,18 +273,18 @@
     }
 
     .logo-pink {
-        color: #F472B6;
-        text-shadow: 0 0 16px rgba(244, 114, 182, 0.4);
+        color: #EC4899;
+        text-shadow: 0 0 12px rgba(236, 72, 153, 0.25);
     }
 
     .logo-violet {
-        color: #A78BFA;
-        text-shadow: 0 0 16px rgba(167, 139, 250, 0.4);
+        color: #8B5CF6;
+        text-shadow: 0 0 12px rgba(139, 92, 246, 0.25);
     }
 
     .login-tagline {
         font-size: 13px;
-        color: #A39BB8;
+        color: #6B5B95;
         margin: 0;
     }
 
@@ -293,8 +293,8 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 6px;
-        background: rgba(11, 8, 19, 0.6);
-        border: 1px solid rgba(167, 139, 250, 0.15);
+        background: #F3E8FF;
+        border: 1px solid rgba(167, 139, 250, 0.3);
         padding: 5px;
         border-radius: 14px;
         margin-bottom: 20px;
@@ -303,7 +303,7 @@
     .login-tab-btn {
         background: transparent;
         border: none;
-        color: #A39BB8;
+        color: #4C1D95;
         padding: 9px 14px;
         border-radius: 10px;
         font-size: 13.5px;
@@ -315,7 +315,7 @@
     .login-tab-btn.active {
         background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
         color: #FFFFFF;
-        box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
+        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
     }
 
     /* Demo Quick Fill Box */
@@ -323,8 +323,8 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        background: rgba(139, 92, 246, 0.08);
-        border: 1px dashed rgba(167, 139, 250, 0.28);
+        background: #F3E8FF;
+        border: 1px dashed rgba(167, 139, 250, 0.4);
         padding: 8px 12px;
         border-radius: 12px;
         margin-bottom: 20px;
@@ -332,8 +332,8 @@
     }
 
     .login-demo-label {
-        color: #C4B5FD;
-        font-weight: 600;
+        color: #4C1D95;
+        font-weight: 700;
     }
 
     .login-demo-pill {
@@ -350,24 +350,24 @@
     }
 
     .admin-pill {
-        background: rgba(236, 72, 153, 0.18);
-        color: #F472B6;
-        border: 1px solid rgba(244, 114, 182, 0.4);
+        background: rgba(236, 72, 153, 0.15);
+        color: #BE185D;
+        border: 1px solid rgba(244, 114, 182, 0.45);
     }
 
     .admin-pill:hover {
-        background: rgba(236, 72, 153, 0.3);
+        background: rgba(236, 72, 153, 0.25);
         transform: translateY(-1px);
     }
 
     .user-pill {
-        background: rgba(139, 92, 246, 0.18);
-        color: #C4B5FD;
-        border: 1px solid rgba(167, 139, 250, 0.4);
+        background: rgba(139, 92, 246, 0.15);
+        color: #6D28D9;
+        border: 1px solid rgba(167, 139, 250, 0.45);
     }
 
     .user-pill:hover {
-        background: rgba(139, 92, 246, 0.3);
+        background: rgba(139, 92, 246, 0.25);
         transform: translateY(-1px);
     }
 
@@ -384,15 +384,15 @@
     }
 
     .login-alert.error {
-        background: rgba(239, 68, 68, 0.15);
+        background: rgba(239, 68, 68, 0.12);
         border: 1px solid rgba(239, 68, 68, 0.35);
-        color: #FCA5A5;
+        color: #DC2626;
     }
 
     .login-alert.success {
-        background: rgba(139, 92, 246, 0.2);
+        background: rgba(139, 92, 246, 0.15);
         border: 1px solid rgba(167, 139, 250, 0.45);
-        color: #DDD6FE;
+        color: #6D28D9;
     }
 
     /* Form Styles */
@@ -411,7 +411,7 @@
     .form-label {
         font-size: 12.5px;
         font-weight: 600;
-        color: #C4B5FD;
+        color: #4C1D95;
     }
 
     .input-wrap {
@@ -423,15 +423,15 @@
     .input-icon {
         position: absolute;
         left: 14px;
-        color: #7C7496;
+        color: #8B5CF6;
         pointer-events: none;
     }
 
     .form-input {
         width: 100%;
-        background: rgba(11, 8, 19, 0.55);
-        border: 1px solid rgba(167, 139, 250, 0.22);
-        color: #F5F3FF;
+        background: #FFFFFF;
+        border: 1.5px solid rgba(167, 139, 250, 0.35);
+        color: #2E1065;
         border-radius: 12px;
         padding: 12px 42px 12px 42px;
         font-size: 14px;
@@ -441,11 +441,11 @@
     }
 
     .form-input::placeholder {
-        color: #6B6282;
+        color: #9382B2;
     }
 
     .form-input:focus {
-        border-color: #A78BFA;
+        border-color: #8B5CF6;
         box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.25);
     }
 
@@ -454,7 +454,7 @@
         right: 12px;
         background: transparent;
         border: none;
-        color: #7C7496;
+        color: #7E6B9B;
         cursor: pointer;
         padding: 4px;
         display: flex;
@@ -464,7 +464,7 @@
     }
 
     .btn-toggle-eye:hover {
-        color: #F472B6;
+        color: #EC4899;
     }
 
     .form-actions-row {
@@ -472,7 +472,7 @@
         align-items: center;
         justify-content: space-between;
         font-size: 12.5px;
-        color: #A39BB8;
+        color: #6B5B95;
     }
 
     .remember-label {
@@ -530,7 +530,7 @@
     .login-footer {
         margin-top: 26px;
         padding-top: 20px;
-        border-top: 1px solid rgba(167, 139, 250, 0.12);
+        border-top: 1px solid rgba(167, 139, 250, 0.25);
         text-align: center;
     }
 
@@ -538,7 +538,7 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        color: #A39BB8;
+        color: #6B5B95;
         text-decoration: none;
         font-size: 13px;
         font-weight: 600;
@@ -546,7 +546,7 @@
     }
 
     .login-guest-link:hover {
-        color: #F472B6;
+        color: #EC4899;
     }
 </style>
 

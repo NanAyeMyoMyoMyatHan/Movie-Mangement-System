@@ -1,5 +1,5 @@
 /* ========================================================
-   LUMINA STREAMING DASHBOARD (SOFT VIOLET & SOFT PINK THEME)
+   DREAMY LIGHT PASTEL DASHBOARD (SOFT VIOLET & SOFT PINK)
    ======================================================== */
 
 /* Floating Toast Notification */
@@ -11,15 +11,16 @@
     display: inline-flex;
     align-items: center;
     gap: 12px;
-    background: rgba(26, 18, 44, 0.95);
+    background: #FFFFFF;
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(244, 114, 182, 0.5);
+    border: 1.5px solid rgba(167, 139, 250, 0.35);
+    border-left: 5px solid #EC4899;
     border-radius: 9999px;
     padding: 10px 22px;
-    color: #F9FAFB;
+    color: #2E1065;
     font-size: 13.5px;
     font-weight: 700;
-    box-shadow: 0 14px 36px rgba(139, 92, 246, 0.35), 0 4px 12px rgba(236, 72, 153, 0.25);
+    box-shadow: 0 14px 36px rgba(139, 92, 246, 0.18), 0 4px 12px rgba(236, 72, 153, 0.12);
     animation: toastSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -68,24 +69,23 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    background: rgba(26, 20, 42, 0.85);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(167, 139, 250, 0.25);
+    background: #FFFFFF;
+    border: 1.5px solid rgba(167, 139, 250, 0.32);
     border-radius: 9999px;
     padding: 10px 20px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.08);
     transition: all 0.25s ease;
 }
 
 .myflix-search-bar.focused,
 .myflix-search-bar:focus-within {
-    border-color: #F472B6;
-    box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.2), 0 6px 24px rgba(139, 92, 246, 0.25);
-    background: rgba(30, 22, 50, 0.95);
+    border-color: #8B5CF6;
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.25), 0 6px 20px rgba(139, 92, 246, 0.12);
+    background: #FFFFFF;
 }
 
 .myflix-search-bar svg {
-    color: #A78BFA;
+    color: #8B5CF6;
     flex-shrink: 0;
 }
 
@@ -96,17 +96,17 @@
     background: transparent;
     font: inherit;
     font-size: 13.5px;
-    color: #F9FAFB;
+    color: #2E1065;
 }
 
 .myflix-search-bar input::placeholder {
-    color: #8E87A8;
+    color: #9382B2;
 }
 
 .myflix-search-clear {
-    background: rgba(167, 139, 250, 0.2);
+    background: rgba(139, 92, 246, 0.12);
     border: none;
-    color: #C4B5FD;
+    color: #6D28D9;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -130,9 +130,9 @@
 }
 
 .myflix-notif-btn {
-    background: rgba(26, 20, 42, 0.8) !important;
-    border: 1px solid rgba(167, 139, 250, 0.2) !important;
-    color: #C4B5FD !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid rgba(167, 139, 250, 0.32) !important;
+    color: #4C1D95 !important;
     position: relative;
     cursor: pointer;
     display: flex;
@@ -141,12 +141,14 @@
     width: 42px;
     height: 42px;
     border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
     transition: all 0.2s ease;
 }
 
 .myflix-notif-btn:hover {
-    border-color: #F472B6 !important;
-    color: #F472B6 !important;
+    border-color: #8B5CF6 !important;
+    color: #2E1065 !important;
+    background: #F3E8FF !important;
     transform: scale(1.05);
 }
 
@@ -158,7 +160,7 @@
     height: 8px;
     background: #EC4899;
     border-radius: 50%;
-    border: 2px solid #110D1D;
+    border: 1.5px solid #FFFFFF;
     box-shadow: 0 0 8px rgba(236, 72, 153, 0.8);
 }
 
@@ -166,13 +168,14 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    background: rgba(26, 20, 42, 0.85);
-    border: 1px solid rgba(167, 139, 250, 0.22);
+    background: #FFFFFF;
+    border: 1.5px solid rgba(167, 139, 250, 0.32);
     border-radius: 9999px;
     padding: 4px 14px 4px 5px;
-    color: #F9FAFB;
+    color: #2E1065;
     font-size: 13.5px;
     font-weight: 700;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
 }
 
 .myflix-avatar-text {
@@ -186,7 +189,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.35);
 }
 
 .header-admin-badge {
@@ -241,20 +244,21 @@
     gap: 6px;
     padding: 8px 18px;
     border-radius: 9999px;
-    background: rgba(26, 20, 42, 0.7);
-    border: 1px solid rgba(167, 139, 250, 0.2);
-    color: #C4B5FD;
+    background: #FFFFFF;
+    border: 1.5px solid rgba(167, 139, 250, 0.28);
+    color: #4C1D95;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.06);
     transition: all 0.2s ease;
 }
 
 .myflix-filter-pill:hover {
-    background: rgba(167, 139, 250, 0.16);
-    color: #FFFFFF;
-    border-color: rgba(167, 139, 250, 0.4);
+    background: #F3E8FF;
+    color: #2E1065;
+    border-color: #8B5CF6;
     transform: translateY(-1px);
 }
 
@@ -263,11 +267,11 @@
     color: #FFFFFF;
     border-color: transparent;
     font-weight: 700;
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
 }
 
 /* ========================================================
-   HERO BANNER
+   HERO BANNER (DREAMY LIGHT PASTEL)
    ======================================================== */
 .myflix-hero-banner {
     position: relative;
@@ -278,9 +282,9 @@
     align-items: center;
     padding: 44px 52px !important;
     margin-bottom: 38px !important;
-    background: #140E24 !important;
-    border: 1px solid rgba(167, 139, 250, 0.22);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(139, 92, 246, 0.15);
+    background: linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%) !important;
+    border: 1.5px solid rgba(167, 139, 250, 0.32);
+    box-shadow: 0 20px 50px rgba(139, 92, 246, 0.12);
 }
 
 .myflix-hero-backdrop {
@@ -302,14 +306,14 @@
     height: 100%;
     object-fit: cover;
     object-position: center 20%;
-    filter: brightness(0.85);
+    filter: brightness(0.95);
 }
 
 .myflix-hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, #140E24 0%, #140E24 35%, rgba(20, 14, 36, 0.88) 65%, rgba(20, 14, 36, 0.2) 100%),
-                linear-gradient(180deg, rgba(20, 14, 36, 0) 60%, #140E24 100%);
+    background: linear-gradient(90deg, #EDE9FE 0%, #EDE9FE 35%, rgba(237, 233, 254, 0.88) 65%, rgba(237, 233, 254, 0.2) 100%),
+                linear-gradient(180deg, rgba(237, 233, 254, 0) 60%, #EDE9FE 100%);
 }
 
 .myflix-hero-nav {
@@ -319,10 +323,10 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: rgba(20, 14, 36, 0.7);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(167, 139, 250, 0.3);
-    color: #F9FAFB;
+    border: 1.5px solid rgba(167, 139, 250, 0.35);
+    color: #2E1065;
     font-size: 26px;
     display: flex;
     align-items: center;
@@ -331,6 +335,7 @@
     z-index: 10;
     transition: all 0.2s ease;
     line-height: 1;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.12);
 }
 
 .myflix-hero-nav.prev {
@@ -346,7 +351,7 @@
     border-color: transparent;
     color: #FFFFFF;
     transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 6px 18px rgba(139, 92, 246, 0.4);
 }
 
 .myflix-hero-content {
@@ -359,13 +364,14 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(139, 92, 246, 0.18);
-    border: 1px solid rgba(167, 139, 250, 0.35);
-    color: #DDD6FE;
+    background: #FFFFFF;
+    border: 1.5px solid rgba(167, 139, 250, 0.45);
+    color: #6D28D9;
     padding: 5px 14px;
     border-radius: 9999px;
     font-size: 12px;
     font-weight: 700;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
     margin-bottom: 14px;
 }
 
@@ -373,25 +379,25 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #F472B6;
-    box-shadow: 0 0 8px #F472B6;
+    background: #EC4899;
+    box-shadow: 0 0 8px #EC4899;
 }
 
 .hero-badge-tag {
     font-size: 10px;
     font-weight: 800;
-    background: rgba(244, 114, 182, 0.25);
-    color: #FBCFE8;
+    background: rgba(236, 72, 153, 0.15);
+    color: #BE185D;
     padding: 1px 7px;
     border-radius: 999px;
-    border: 1px solid rgba(244, 114, 182, 0.4);
+    border: 1px solid rgba(244, 114, 182, 0.45);
 }
 
 .myflix-hero-title {
     font-family: 'Playfair Display', Georgia, serif !important;
     font-size: clamp(34px, 3.8vw, 48px) !important;
     font-weight: 800 !important;
-    color: #FFFFFF !important;
+    color: #2E1065 !important;
     margin: 0 0 10px !important;
     line-height: 1.05 !important;
     letter-spacing: -0.5px;
@@ -403,7 +409,7 @@
     font-family: 'Caveat', cursive, sans-serif !important;
     font-size: 34px !important;
     font-weight: 700 !important;
-    background: linear-gradient(135deg, #A78BFA 0%, #F472B6 100%);
+    background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     line-height: 0.95 !important;
@@ -413,7 +419,7 @@
 .myflix-hero-desc {
     font-size: 13.5px !important;
     line-height: 1.6 !important;
-    color: #C4B5FD !important;
+    color: #4C1D95 !important;
     margin: 0 0 26px !important;
     max-width: 420px;
 }
@@ -440,31 +446,32 @@
 .myflix-btn-primary {
     background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%) !important;
     color: #FFFFFF !important;
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
 }
 
 .myflix-btn-primary:hover {
     transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 10px 28px rgba(236, 72, 153, 0.5);
+    box-shadow: 0 10px 28px rgba(236, 72, 153, 0.45);
 }
 
 .myflix-btn-secondary {
-    background: rgba(26, 20, 44, 0.7) !important;
-    border: 1.5px solid rgba(167, 139, 250, 0.3) !important;
-    color: #C4B5FD !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid rgba(167, 139, 250, 0.35) !important;
+    color: #4C1D95 !important;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
 }
 
 .myflix-btn-secondary:hover {
-    background: rgba(167, 139, 250, 0.15) !important;
-    border-color: #F472B6 !important;
-    color: #F472B6 !important;
+    background: #F3E8FF !important;
+    border-color: #8B5CF6 !important;
+    color: #2E1065 !important;
     transform: translateY(-2px);
 }
 
 .myflix-btn-secondary.active {
-    background: rgba(244, 114, 182, 0.2) !important;
-    border-color: #F472B6 !important;
-    color: #FBCFE8 !important;
+    background: rgba(236, 72, 153, 0.15) !important;
+    border-color: #EC4899 !important;
+    color: #BE185D !important;
 }
 
 .myflix-carousel-dots {
@@ -478,20 +485,20 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: rgba(167, 139, 250, 0.35);
+    background: rgba(139, 92, 246, 0.3);
     cursor: pointer;
     transition: all 0.25s ease;
 }
 
 .myflix-carousel-dots .dot:hover {
-    background: #A78BFA;
+    background: #8B5CF6;
 }
 
 .myflix-carousel-dots .dot.active {
     width: 26px;
     border-radius: 9999px;
     background: linear-gradient(135deg, #8B5CF6, #EC4899);
-    box-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
 }
 
 /* ========================================================
@@ -512,7 +519,7 @@
     font-family: 'Playfair Display', Georgia, serif !important;
     font-size: 22px !important;
     font-weight: 700 !important;
-    color: #FFFFFF !important;
+    color: #2E1065 !important;
     margin: 0 !important;
     letter-spacing: -0.3px;
     display: inline-flex;
@@ -527,16 +534,16 @@
 .myflix-see-all {
     font-size: 13px;
     font-weight: 700;
-    color: #A78BFA !important;
+    color: #EC4899 !important;
     text-decoration: none !important;
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(167, 139, 250, 0.1);
+    background: rgba(236, 72, 153, 0.1);
     padding: 6px 14px;
     border-radius: 999px;
-    border: 1px solid rgba(167, 139, 250, 0.2);
+    border: 1px solid rgba(236, 72, 153, 0.25);
 }
 
 .myflix-see-all:hover {
@@ -560,23 +567,23 @@
     cursor: pointer;
     border-radius: 18px !important;
     overflow: hidden;
-    background: #171228 !important;
-    border: 1px solid rgba(167, 139, 250, 0.18);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1.5px solid rgba(167, 139, 250, 0.28);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .myflix-continue-card:hover {
     transform: translateY(-6px) scale(1.02);
-    border-color: #F472B6;
-    box-shadow: 0 16px 36px rgba(139, 92, 246, 0.35);
+    border-color: #8B5CF6;
+    box-shadow: 0 16px 36px rgba(139, 92, 246, 0.16);
 }
 
 .myflix-continue-thumb {
     aspect-ratio: 16 / 9;
     position: relative;
     overflow: hidden;
-    background: #0B0813;
+    background: #EDE9FE;
 }
 
 .myflix-continue-thumb img {
@@ -591,12 +598,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(11, 8, 19, 0.4);
+    background: rgba(46, 16, 101, 0.25);
     transition: background 0.2s ease;
 }
 
 .myflix-continue-card:hover .myflix-thumb-overlay {
-    background: rgba(11, 8, 19, 0.2);
+    background: rgba(46, 16, 101, 0.1);
 }
 
 .myflix-play-icon-btn {
@@ -610,7 +617,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
     transition: transform 0.2s ease;
 }
 
@@ -624,7 +631,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(167, 139, 250, 0.25);
 }
 
 .myflix-continue-progress-fill {
@@ -634,13 +641,13 @@
 
 .myflix-continue-info {
     padding: 12px 14px 14px !important;
-    background: #171228 !important;
+    background: #FFFFFF !important;
 }
 
 .myflix-continue-info h3 {
     font-size: 13.5px !important;
     font-weight: 700 !important;
-    color: #FFFFFF !important;
+    color: #2E1065 !important;
     margin: 0 0 3px !important;
     white-space: nowrap;
     overflow: hidden;
@@ -649,7 +656,7 @@
 
 .myflix-continue-info p {
     font-size: 11.5px !important;
-    color: #A78BFA !important;
+    color: #6B5B95 !important;
     margin: 0 !important;
 }
 
@@ -665,17 +672,17 @@
     aspect-ratio: 2 / 3;
     border-radius: 18px !important;
     overflow: hidden;
-    background: #171228 !important;
-    border: 1px solid rgba(167, 139, 250, 0.18);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1.5px solid rgba(167, 139, 250, 0.28);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
     cursor: pointer;
     transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .myflix-poster-card:hover {
     transform: translateY(-8px) scale(1.03);
-    border-color: #F472B6;
-    box-shadow: 0 18px 40px rgba(139, 92, 246, 0.35), 0 0 20px rgba(236, 72, 153, 0.2);
+    border-color: #8B5CF6;
+    box-shadow: 0 18px 40px rgba(139, 92, 246, 0.16), 0 0 20px rgba(236, 72, 153, 0.12);
 }
 
 .myflix-poster-img {
@@ -705,11 +712,12 @@
     font-weight: 800;
     padding: 2px 7px;
     border-radius: 6px;
-    background: rgba(139, 92, 246, 0.35);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(8px);
-    color: #DDD6FE;
-    border: 1px solid rgba(167, 139, 250, 0.5);
+    color: #6D28D9;
+    border: 1px solid rgba(167, 139, 250, 0.45);
     letter-spacing: 0.5px;
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.1);
 }
 
 .badge-rating {
@@ -717,10 +725,9 @@
     font-weight: 800;
     padding: 2px 7px;
     border-radius: 6px;
-    background: rgba(236, 72, 153, 0.35);
-    backdrop-filter: blur(8px);
-    color: #FCE7F3;
-    border: 1px solid rgba(244, 114, 182, 0.5);
+    background: #EC4899;
+    color: #FFFFFF;
+    box-shadow: 0 2px 8px rgba(236, 72, 153, 0.35);
 }
 
 /* Card Actions (Heart & Watch Later) */
@@ -739,14 +746,15 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: rgba(20, 14, 36, 0.75) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(167, 139, 250, 0.3) !important;
-    color: #C4B5FD !important;
+    border: 1px solid rgba(167, 139, 250, 0.35) !important;
+    color: #4C1D95 !important;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.12);
     transition: all 0.2s ease;
 }
 
@@ -765,15 +773,15 @@
 }
 
 .myflix-card-later.active {
-    background: rgba(139, 92, 246, 0.35) !important;
+    background: #8B5CF6 !important;
     border-color: #8B5CF6 !important;
-    color: #A78BFA !important;
+    color: #FFFFFF !important;
 }
 
 .myflix-card-heart.active {
-    background: rgba(236, 72, 153, 0.35) !important;
+    background: #EC4899 !important;
     border-color: #EC4899 !important;
-    color: #F472B6 !important;
+    color: #FFFFFF !important;
 }
 
 /* Poster Bottom Gradient Content */
@@ -783,14 +791,14 @@
     left: 0;
     right: 0;
     padding: 32px 14px 14px;
-    background: linear-gradient(180deg, rgba(23, 18, 40, 0) 0%, rgba(23, 18, 40, 0.88) 55%, #171228 100%);
+    background: linear-gradient(180deg, rgba(250, 245, 255, 0) 0%, rgba(243, 232, 255, 0.92) 55%, #F3E8FF 100%);
     z-index: 2;
 }
 
 .myflix-poster-content h3 {
     font-size: 13.5px !important;
     font-weight: 700 !important;
-    color: #FFFFFF !important;
+    color: #2E1065 !important;
     margin: 0 0 3px !important;
     line-height: 1.25 !important;
     white-space: nowrap;
@@ -800,20 +808,21 @@
 
 .myflix-poster-content p {
     font-size: 11.5px !important;
-    color: #C4B5FD !important;
+    color: #4C1D95 !important;
     margin: 0 !important;
 }
 
 /* Search Highlights */
 .search-highlight {
-    color: #F472B6 !important;
+    color: #EC4899 !important;
+    font-weight: 800;
 }
 
 .search-count-badge {
     font-size: 12px;
     font-weight: 700;
-    background: rgba(139, 92, 246, 0.2);
-    color: #DDD6FE;
+    background: rgba(139, 92, 246, 0.15);
+    color: #6D28D9;
     padding: 2px 10px;
     border-radius: 999px;
     border: 1px solid rgba(167, 139, 250, 0.35);
@@ -826,7 +835,7 @@
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
-    color: #C4B5FD;
+    color: #4C1D95;
     gap: 12px;
 }
 
@@ -834,7 +843,7 @@
     width: 32px;
     height: 32px;
     border: 3px solid rgba(139, 92, 246, 0.2);
-    border-top-color: #F472B6;
+    border-top-color: #EC4899;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
@@ -846,14 +855,14 @@
 .myflix-no-data {
     padding: 50px 20px;
     text-align: center;
-    color: #8E87A8;
-    background: rgba(26, 20, 42, 0.4);
-    border: 1px dashed rgba(167, 139, 250, 0.2);
+    color: #6B5B95;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1.5px dashed rgba(167, 139, 250, 0.35);
     border-radius: 20px;
 }
 
 .myflix-no-data svg {
-    color: #A78BFA;
+    color: #8B5CF6;
     margin-bottom: 12px;
 }
 
@@ -888,6 +897,6 @@
     }
     .myflix-hero-img-wrapper {
         width: 100%;
-        opacity: 0.3;
+        opacity: 0.25;
     }
 }

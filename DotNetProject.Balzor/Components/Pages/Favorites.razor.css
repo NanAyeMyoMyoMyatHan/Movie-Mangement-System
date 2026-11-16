@@ -8,7 +8,7 @@
     align-items: center;
     gap: 10px;
     padding: 12px 20px;
-    background: #151026;
+    background: rgba(255, 255, 255, 0.95); border: 1.5px solid rgba(167, 139, 250, 0.28); box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
     color: #F5F3FF;
     border: 1px solid #EC4899;
     border-radius: 9999px;
@@ -134,7 +134,7 @@
     align-items: flex-end;
     justify-content: space-between;
     gap: 24px;
-    background: linear-gradient(135deg, #151026 0%, #1F1838 100%);
+    background: linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%); border: 1.5px solid rgba(167, 139, 250, 0.35); box-shadow: 0 16px 40px rgba(139, 92, 246, 0.12);
     border-radius: 20px;
     padding: 32px 36px;
     color: #F5F3FF;
@@ -168,7 +168,7 @@
 
 .fav-subtitle {
     margin: 0;
-    color: rgba(244, 239, 234, 0.8);
+    color: #4C1D95;
     font-size: 14px;
     max-width: 540px;
     line-height: 1.5;
@@ -181,7 +181,7 @@
 }
 
 .fav-stat-card {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(167, 139, 250, 0.35);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 14px;
     padding: 12px 20px;
@@ -314,7 +314,7 @@
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-    background: #151026;
+    background: rgba(255, 255, 255, 0.95); border: 1.5px solid rgba(167, 139, 250, 0.28); box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
     cursor: pointer;
     overflow: hidden;
 }
@@ -387,7 +387,7 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    background: rgba(15, 36, 32, 0.85);
+    background: rgba(255, 255, 255, 0.9);
     color: #F5F3FF;
     backdrop-filter: blur(4px);
     font-size: 10.5px;
@@ -644,7 +644,7 @@
 .fav-guest-card {
     text-align: center;
     max-width: 500px;
-    background: #151026;
+    background: rgba(255, 255, 255, 0.95); border: 1.5px solid rgba(167, 139, 250, 0.28); box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
     border: 1px solid rgba(244, 239, 234, 0.12);
     border-radius: 24px;
     padding: 48px 36px;
