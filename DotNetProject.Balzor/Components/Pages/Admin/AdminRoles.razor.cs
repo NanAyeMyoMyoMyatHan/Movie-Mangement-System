@@ -11,7 +11,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
     public partial class AdminRoles
     {
         [Inject]
-        public RolePermissionService RolePermissionService { get; set; } = default!;
+        public HttpClientService ApiClient { get; set; } = default!;
 
         [Inject]
         public AuthService AuthService { get; set; } = default!;
@@ -55,11 +55,11 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
 
             try
             {
-                var rolesRes = await RolePermissionService.GetRolesAsync();
-                RolesList = rolesRes.Data ?? new();
+                var rolesRes = await ApiClient.GetRolesAsync();
+                RolesList = rolesRes?.Data ?? new();
 
-                var permsRes = await RolePermissionService.GetAllPermissionsAsync();
-                AllPermissions = permsRes.Data ?? new();
+                var permsRes = await ApiClient.GetAllPermissionsAsync();
+                AllPermissions = permsRes?.Data ?? new();
             }
             catch (Exception ex)
             {
@@ -147,9 +147,9 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
             try
             {
                 CurrentRoleRequest.PermissionIds = SelectedPermissionIds.ToList();
-                var result = await RolePermissionService.SaveRoleAsync(CurrentRoleRequest);
+                var result = await ApiClient.SaveRoleAsync(CurrentRoleRequest);
 
-                if (result.IsSuccess)
+                if (result != null && result.IsSuccess)
                 {
                     SuccessMessage = result.Message;
                     ShowEditModal = false;
@@ -158,7 +158,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
                 }
                 else
                 {
-                    ErrorMessage = result.Message;
+                    ErrorMessage = result?.Message ?? "Failed to save role.";
                 }
             }
             catch (Exception ex)
@@ -184,8 +184,8 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
 
             try
             {
-                var result = await RolePermissionService.DeleteRoleAsync(role.RoleId);
-                if (result.IsSuccess)
+                var result = await ApiClient.DeleteRoleAsync(role.RoleId);
+                if (result != null && result.IsSuccess)
                 {
                     SuccessMessage = result.Message;
                     await LoadDataAsync();
@@ -193,7 +193,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
                 }
                 else
                 {
-                    ErrorMessage = result.Message;
+                    ErrorMessage = result?.Message ?? "Failed to delete role.";
                 }
             }
             catch (Exception ex)

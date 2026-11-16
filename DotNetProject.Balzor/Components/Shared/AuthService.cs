@@ -102,14 +102,16 @@ namespace DotNetProject.Balzor.Components.Shared
             try
             {
                 using var scope = _serviceProvider.CreateScope();
-                var rbac = scope.ServiceProvider.GetService<RolePermissionService>();
-                if (rbac != null)
+                var http = scope.ServiceProvider.GetService<HttpClientService>();
+                if (http != null)
                 {
-                    var roleNamesRes = await rbac.GetUserRoleNamesAsync(CurrentUser.Id);
-                    var perms = await rbac.GetUserPermissionSetAsync(CurrentUser.Id);
+                    var roleNamesRes = await http.GetUserRoleNamesAsync(CurrentUser.Id);
+                    var permsRes = await http.GetUserPermissionsAsync(CurrentUser.Id);
 
-                    _currentUser.Roles = roleNamesRes.Data ?? new List<string>();
-                    _currentUser.Permissions = perms;
+                    _currentUser.Roles = roleNamesRes?.Data ?? new List<string>();
+                    var permsList = permsRes?.Data ?? new List<string>();
+                    _currentUser.Permissions = new HashSet<string>(permsList, StringComparer.OrdinalIgnoreCase);
+
                     if (_currentUser.Roles.Any())
                     {
                         _currentUser.Role = _currentUser.Roles.First();

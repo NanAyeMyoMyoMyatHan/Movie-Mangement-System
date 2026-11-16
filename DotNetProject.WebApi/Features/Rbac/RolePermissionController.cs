@@ -93,5 +93,12 @@ namespace DotNetProject.WebApi.Features.Rbac
             var result = await _rolePermissionService.GetUserAssignmentsAsync(cancellationToken);
             return ToActionResult(result);
         }
+
+        [HttpPost("user/{userId:int}/toggle-status")]
+        public async Task<IActionResult> ToggleUserStatus(int userId, CancellationToken cancellationToken)
+        {
+            var result = await _rolePermissionService.ToggleUserStatusAsync(userId, cancellationToken);
+            return ToActionResult(result);
+        }
     }
 }

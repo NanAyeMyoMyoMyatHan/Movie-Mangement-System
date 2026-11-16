@@ -351,7 +351,6 @@ namespace DotNetProject.WebApi.Features.Rbac
             {
                 var users = await _db.Users
                     .AsNoTracking()
-                    .Where(u => !u.IsDeleted)
                     .Include(u => u.UserRoles)
                         .ThenInclude(ur => ur.Role)
                     .OrderByDescending(u => u.Id)
@@ -361,7 +360,11 @@ namespace DotNetProject.WebApi.Features.Rbac
                 {
                     UserId = u.Id,
                     UserName = u.UserName,
+                    DisplayName = u.DisplayName,
                     Email = u.Email,
+                    Role = u.Role,
+                    IsDeleted = u.IsDeleted,
+                    CreatedAt = u.CreatedAt,
                     AssignedRoleIds = u.UserRoles.Select(ur => ur.RoleId).ToList(),
                     AssignedRoleNames = u.UserRoles.Where(ur => ur.Role != null).Select(ur => ur.Role.RoleName).ToList()
                 }).ToList();
@@ -371,6 +374,30 @@ namespace DotNetProject.WebApi.Features.Rbac
             catch (Exception ex)
             {
                 return Result<List<UserRoleAssignmentDto>>.SystemError($"Error fetching user assignments: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<bool>> ToggleUserStatusAsync(int userId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+                if (user == null)
+                    return Result<bool>.NotFoundError("User not found.");
+
+                user.IsDeleted = !user.IsDeleted;
+                user.DeletedAt = user.IsDeleted ? DateTime.UtcNow : null;
+                await _db.SaveChangesAsync(cancellationToken);
+
+                var message = user.IsDeleted
+                    ? $"Deactivated user '{user.DisplayName ?? user.UserName}' successfully."
+                    : $"Restored user '{user.DisplayName ?? user.UserName}' successfully.";
+
+                return Result<bool>.Success(user.IsDeleted, message);
+            }
+            catch (Exception ex)
+            {
+                return Result<bool>.SystemError($"Error toggling user status: {ex.Message}");
             }
         }
     }

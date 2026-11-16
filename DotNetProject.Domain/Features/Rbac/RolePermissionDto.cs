@@ -44,8 +44,13 @@ namespace DotNetProject.Domain.Features.Rbac
     public class UserRoleAssignmentDto
     {
         public int UserId { get; set; }
+        public int Id { get => UserId; set => UserId = value; }
         public string UserName { get; set; } = string.Empty;
+        public string? DisplayName { get; set; }
         public string Email { get; set; } = string.Empty;
+        public string? Role { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public List<int> AssignedRoleIds { get; set; } = new();
         public List<string> AssignedRoleNames { get; set; } = new();
     }

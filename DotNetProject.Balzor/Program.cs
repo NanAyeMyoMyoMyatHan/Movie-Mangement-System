@@ -27,8 +27,6 @@ builder.Services.AddScoped<WatchLaterService>();
 builder.Services.AddScoped<FavoriteService>();
 builder.Services.AddScoped<WatchHistoryService>();
 builder.Services.AddScoped<TmdbService>();
-builder.Services.AddScoped<RolePermissionService>();
-builder.Services.AddScoped<IRolePermissionService>(sp => sp.GetRequiredService<RolePermissionService>());
 
 // Clean startup: delete any leftover session file on server boot so fresh runs always start clean as Guest!
 try

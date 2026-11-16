@@ -2,10 +2,10 @@
 @layout AdminLayout
 @using DotNetProject.Balzor.Components.Layout
 @using DotNetProject.Balzor.Components.Shared
-@using DotNetProject.Database.AppDbModels
 @using DotNetProject.Domain.Features.Rbac
+@using DotNetProject.Domain.Features.Users
 @inject AuthService AuthService
-@inject RolePermissionService RolePermissionService
+@inject HttpClientService ApiClient
 @rendermode InteractiveServer
 
 <PageTitle>Users &amp; Roles — NangWorld Admin</PageTitle>
@@ -776,7 +776,7 @@
 </style>
 
 @code {
-    private List<User> UsersList = new();
+    private List<UserRoleAssignmentDto> UsersList = new();
     private List<RoleDto> AvailableRoles = new();
     private bool IsLoading = true;
     private string SearchQuery = "";
@@ -787,7 +787,7 @@
 
     // Role assignment modal
     private bool ShowRoleModal = false;
-    private User? SelectedUserForRoles;
+    private UserRoleAssignmentDto? SelectedUserForRoles;
     private HashSet<int> SelectedRoleIdsForUser = new();
     private bool IsSavingRoles = false;
 
@@ -810,12 +810,15 @@
         IsLoading = true;
         try
         {
-            var usersTask = AuthService.GetAllUsersFromDbAsync();
-            var rolesTask = RolePermissionService.GetRolesListAsync();
+            var usersTask = ApiClient.GetUserAssignmentsAsync();
+            var rolesTask = ApiClient.GetRolesAsync();
             await Task.WhenAll(usersTask, rolesTask);
 
-            UsersList = await usersTask;
-            AvailableRoles = await rolesTask;
+            var usersRes = await usersTask;
+            var rolesRes = await rolesTask;
+
+            UsersList = usersRes?.Data ?? new();
+            AvailableRoles = rolesRes?.Data ?? new();
         }
         catch (Exception ex)
         {
@@ -827,15 +830,11 @@
         }
     }
 
-    private List<string> GetUserRoleNames(User user)
+    private List<string> GetUserRoleNames(UserRoleAssignmentDto user)
     {
-        if (user.UserRoles != null && user.UserRoles.Any())
+        if (user.AssignedRoleNames != null && user.AssignedRoleNames.Any())
         {
-            return user.UserRoles
-                .Where(ur => ur.Role != null)
-                .Select(ur => ur.Role.RoleName)
-                .Distinct()
-                .ToList();
+            return user.AssignedRoleNames.Distinct().ToList();
         }
 
         if (!string.IsNullOrWhiteSpace(user.Role))
@@ -846,7 +845,7 @@
         return new List<string> { "User" };
     }
 
-    private bool IsStaffOrAdmin(User user)
+    private bool IsStaffOrAdmin(UserRoleAssignmentDto user)
     {
         var roles = GetUserRoleNames(user);
         return roles.Any(r => !r.Equals("User", StringComparison.OrdinalIgnoreCase));
@@ -861,7 +860,7 @@
         _ => "badge-custom"
     };
 
-    private List<User> FilteredUsers
+    private List<UserRoleAssignmentDto> FilteredUsers
     {
         get
         {
@@ -885,16 +884,16 @@
         }
     }
 
-    private void OpenRoleModal(User user)
+    private void OpenRoleModal(UserRoleAssignmentDto user)
     {
         SelectedUserForRoles = user;
         SelectedRoleIdsForUser.Clear();
 
-        if (user.UserRoles != null && user.UserRoles.Any())
+        if (user.AssignedRoleIds != null && user.AssignedRoleIds.Any())
         {
-            foreach (var ur in user.UserRoles)
+            foreach (var rId in user.AssignedRoleIds)
             {
-                SelectedRoleIdsForUser.Add(ur.RoleId);
+                SelectedRoleIdsForUser.Add(rId);
             }
         }
         else
@@ -954,14 +953,19 @@
         IsSavingRoles = true;
         try
         {
-            var res = await RolePermissionService.AssignUserRolesAsync(SelectedUserForRoles.Id, SelectedRoleIdsForUser.ToList());
-            if (res.IsSuccess)
+            var res = await ApiClient.AssignUserRolesAsync(new AssignUserRolesRequest
+            {
+                UserId = SelectedUserForRoles.UserId,
+                RoleIds = SelectedRoleIdsForUser.ToList()
+            });
+
+            if (res != null && res.IsSuccess)
             {
                 SuccessMessage = $"Updated role assignments for '{SelectedUserForRoles.DisplayName ?? SelectedUserForRoles.UserName}'.";
                 CloseRoleModal();
 
                 // If updated active user, refresh their permissions cache in AuthService
-                if (AuthService.CurrentUser.Id == SelectedUserForRoles.Id)
+                if (AuthService.CurrentUser.Id == SelectedUserForRoles.UserId)
                 {
                     await AuthService.RefreshPermissionsAsync();
                 }
@@ -970,7 +974,7 @@
             }
             else
             {
-                ErrorMessage = res.Message;
+                ErrorMessage = res?.Message ?? "Failed to assign roles.";
             }
         }
         catch (Exception ex)
@@ -983,22 +987,22 @@
         }
     }
 
-    private async Task ToggleUserDelete(User user)
+    private async Task ToggleUserDelete(UserRoleAssignmentDto user)
     {
         ErrorMessage = null;
         SuccessMessage = null;
 
-        var ok = await AuthService.ToggleUserDeletedInDbAsync(user.Id);
-        if (ok)
+        var res = await ApiClient.ToggleUserStatusAsync(user.UserId);
+        if (res != null && res.IsSuccess)
         {
-            user.IsDeleted = !user.IsDeleted;
+            user.IsDeleted = res.Data;
             SuccessMessage = user.IsDeleted
                 ? $"Deactivated user {user.DisplayName ?? user.UserName}."
                 : $"Restored user {user.DisplayName ?? user.UserName}.";
         }
         else
         {
-            ErrorMessage = "Failed to toggle user status in database.";
+            ErrorMessage = res?.Message ?? "Failed to toggle user status in database.";
         }
     }
 

@@ -16,5 +16,6 @@ namespace DotNetProject.Domain.Features.Rbac
         Task<Result<List<string>>> GetUserPermissionsAsync(int userId, CancellationToken cancellationToken = default);
         Task<Result<bool>> AssignUserRolesAsync(AssignUserRolesRequest req, CancellationToken cancellationToken = default);
         Task<Result<List<UserRoleAssignmentDto>>> GetUserAssignmentsAsync(CancellationToken cancellationToken = default);
+        Task<Result<bool>> ToggleUserStatusAsync(int userId, CancellationToken cancellationToken = default);
     }
 }

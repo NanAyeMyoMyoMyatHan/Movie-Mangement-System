@@ -152,6 +152,9 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public Task<Result<List<UserRoleAssignmentDto>>?> GetUserAssignmentsAsync() =>
             ExecuteAsync<Result<List<UserRoleAssignmentDto>>>("api/rbac/user-assignments", EnumHttpMethod.Get);
+
+        public Task<Result<bool>?> ToggleUserStatusAsync(int userId) =>
+            PostAsync<Result<bool>>($"api/rbac/user/{userId}/toggle-status", new { });
     }
 
     public enum EnumHttpMethod { None, Get, Post, Put, Patch, Delete }
