@@ -1,5 +1,6 @@
 using DotNetProject.Database.AppDbModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,16 +51,38 @@ namespace DotNetProject.Balzor.Components.Shared
 
     public class RbacService
     {
-        private readonly IDbContextFactory<AppDbContext> _dbFactory;
+        private readonly IServiceProvider _serviceProvider;
 
-        public RbacService(IDbContextFactory<AppDbContext> dbFactory)
+        public RbacService(IServiceProvider serviceProvider)
         {
-            _dbFactory = dbFactory;
+            _serviceProvider = serviceProvider;
+        }
+
+        private sealed class DbScope : IDisposable, IAsyncDisposable
+        {
+            private readonly IServiceScope _scope;
+            public AppDbContext Db { get; }
+
+            public DbScope(IServiceProvider sp)
+            {
+                _scope = sp.CreateScope();
+                Db = _scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            }
+
+            public void Dispose() => _scope.Dispose();
+
+            public ValueTask DisposeAsync()
+            {
+                if (_scope is IAsyncDisposable ad) return ad.DisposeAsync();
+                _scope.Dispose();
+                return ValueTask.CompletedTask;
+            }
         }
 
         public async Task<List<RoleDto>> GetRolesAsync()
         {
-            using var db = await _dbFactory.CreateDbContextAsync();
+            using var dbScope = new DbScope(_serviceProvider);
+            var db = dbScope.Db;
             var roles = await db.Roles
                 .AsNoTracking()
                 .Include(r => r.RolePermissions)
@@ -85,7 +108,8 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task<List<PermissionDto>> GetAllPermissionsAsync()
         {
-            using var db = await _dbFactory.CreateDbContextAsync();
+            using var dbScope = new DbScope(_serviceProvider);
+            var db = dbScope.Db;
             var perms = await db.Permissions
                 .AsNoTracking()
                 .OrderBy(p => p.Module)
@@ -107,7 +131,8 @@ namespace DotNetProject.Balzor.Components.Shared
             if (string.IsNullOrWhiteSpace(req.RoleName))
                 return Common.Result<RoleDto>.Error("Role name is required.");
 
-            using var db = await _dbFactory.CreateDbContextAsync();
+            using var dbScope = new DbScope(_serviceProvider);
+            var db = dbScope.Db;
 
             var cleanName = req.RoleName.Trim();
             Role? role;
@@ -199,7 +224,8 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task<Common.Result<bool>> DeleteRoleAsync(int roleId)
         {
-            using var db = await _dbFactory.CreateDbContextAsync();
+            using var dbScope = new DbScope(_serviceProvider);
+            var db = dbScope.Db;
             var role = await db.Roles
                 .Include(r => r.UserRoles)
                 .FirstOrDefaultAsync(r => r.RoleId == roleId);
@@ -221,7 +247,8 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task<List<int>> GetUserRoleIdsAsync(int userId)
         {
-            using var db = await _dbFactory.CreateDbContextAsync();
+            using var dbScope = new DbScope(_serviceProvider);
+            var db = dbScope.Db;
             return await db.UserRoles
                 .AsNoTracking()
                 .Where(ur => ur.UserId == userId)
@@ -231,7 +258,8 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task<List<string>> GetUserRoleNamesAsync(int userId)
         {
-            using var db = await _dbFactory.CreateDbContextAsync();
+            using var dbScope = new DbScope(_serviceProvider);
+            var db = dbScope.Db;
             return await db.UserRoles
                 .AsNoTracking()
                 .Where(ur => ur.UserId == userId)
@@ -241,7 +269,8 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task<HashSet<string>> GetUserPermissionsAsync(int userId)
         {
-            using var db = await _dbFactory.CreateDbContextAsync();
+            using var dbScope = new DbScope(_serviceProvider);
+            var db = dbScope.Db;
             var roleIds = await db.UserRoles
                 .AsNoTracking()
                 .Where(ur => ur.UserId == userId && ur.Role.IsActive)
@@ -274,7 +303,8 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task<Common.Result<bool>> AssignUserRolesAsync(int userId, List<int> roleIds)
         {
-            using var db = await _dbFactory.CreateDbContextAsync();
+            using var dbScope = new DbScope(_serviceProvider);
+            var db = dbScope.Db;
             var user = await db.Users
                 .Include(u => u.UserRoles)
                 .FirstOrDefaultAsync(u => u.Id == userId);

@@ -9,15 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Server=localhost;Database=MyFlixDb;User Id=sa;Password=sasa@123;TrustServerCertificate=True;";
-
 // Database context for direct database user authentication and data access
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
-
-builder.Services.AddDbContextFactory<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? "Server=localhost;Database=MyFlixDb;User Id=sa;Password=sasa@123;TrustServerCertificate=True;"));
 
 builder.Services.AddHttpClient("Api", client =>
 {
