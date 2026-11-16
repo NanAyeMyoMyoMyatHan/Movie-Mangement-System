@@ -101,7 +101,7 @@
             </NavLink>
         </div>
 
-        @if (AuthService.IsAuthenticated() && (AuthService.IsAdmin() || AuthService.HasAnyPermission("Dashboard.View", "Content.View", "Episode.View", "User.View", "Role.View")))
+        @if (AuthService.CanAccessAdmin())
         {
             <div class="myflix-divider"></div>
             <div class="myflix-category-links">

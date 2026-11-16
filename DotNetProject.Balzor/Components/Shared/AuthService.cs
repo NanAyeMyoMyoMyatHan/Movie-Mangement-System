@@ -78,6 +78,23 @@ namespace DotNetProject.Balzor.Components.Shared
             CurrentUser.IsAdmin || CurrentUser.Permissions.Contains("*") || codes.Any(c => CurrentUser.Permissions.Contains(c));
         public bool HasRole(string roleName) => CurrentUser.HasRole(roleName);
 
+        public bool CanAccessAdmin()
+        {
+            if (!IsAuthenticated()) return false;
+            if (IsAdmin()) return true;
+            if (CurrentUser.Permissions.Contains("*")) return true;
+            if (CurrentUser.Roles.Any(r => r.Equals("Admin", StringComparison.OrdinalIgnoreCase) || 
+                                           r.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase))) return true;
+            return HasAnyPermission(
+                "Dashboard.View",
+                "Content.View", "Content.Create", "Content.Edit", "Content.Delete",
+                "Episode.View", "Episode.Create", "Episode.Edit", "Episode.Delete",
+                "Movie.View", "Movie.Create", "Movie.Edit", "Movie.Delete",
+                "User.View", "User.Manage",
+                "Role.View", "Role.Manage"
+            );
+        }
+
         public async Task RefreshPermissionsAsync()
         {
             if (!CurrentUser.IsAuthenticated || CurrentUser.Id <= 0) return;
@@ -98,12 +115,14 @@ namespace DotNetProject.Balzor.Components.Shared
                         _currentUser.Role = roleNames.First();
                     }
 
-                    await RefreshPermissionsAsync();
                     SaveSession();
                     OnAuthStateChanged?.Invoke();
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AuthService] RefreshPermissionsAsync Error: {ex.Message}");
+            }
         }
 
         public string GetCurrentUserKey()
@@ -343,7 +362,6 @@ namespace DotNetProject.Balzor.Components.Shared
                         LoggedInAt = DateTime.UtcNow
                     };
 
-                    await RefreshPermissionsAsync();
                     await RefreshPermissionsAsync();
                     SaveSession();
                     OnAuthStateChanged?.Invoke();

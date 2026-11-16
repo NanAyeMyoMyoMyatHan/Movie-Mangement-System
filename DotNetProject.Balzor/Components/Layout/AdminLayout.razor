@@ -186,9 +186,7 @@ else
 </div>
 
 @code {
-    private bool CanAccessAdminPanel =>
-        AuthService.IsAuthenticated() &&
-        (AuthService.IsAdmin() || AuthService.HasAnyPermission("Dashboard.View", "Content.View", "Episode.View", "User.View", "Role.View"));
+    private bool CanAccessAdminPanel => AuthService.CanAccessAdmin();
 
     protected override void OnInitialized()
     {

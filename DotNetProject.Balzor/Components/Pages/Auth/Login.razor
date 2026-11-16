@@ -572,10 +572,14 @@
 
     protected override void OnInitialized()
     {
-        // If already admin and returnUrl is admin, go to admin
-        if (AuthService.IsAdmin())
+        // If already logged in with admin privileges via Dynamic RBAC, directly go to admin
+        if (AuthService.CanAccessAdmin())
         {
             Nav.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? "/admin" : ReturnUrl);
+        }
+        else if (AuthService.IsAuthenticated())
+        {
+            Nav.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl);
         }
     }
 
@@ -611,18 +615,21 @@
             var res = await AuthService.LoginAsync(LoginUsername, LoginPassword);
             if (res != null && res.IsSuccess)
             {
-                if (AuthService.IsAdmin())
+                // Dynamic RBAC Evaluation: Check if user has admin/management capabilities
+                bool canAccessAdmin = AuthService.CanAccessAdmin();
+
+                if (canAccessAdmin)
                 {
-                    SuccessMessage = "Admin authentication successful! Redirecting to Admin Dashboard...";
+                    SuccessMessage = $"Admin access verified! Welcome, {AuthService.CurrentUser.DisplayName}. Redirecting to Admin Dashboard...";
                     StateHasChanged();
-                    await Task.Delay(400);
+                    await Task.Delay(300);
                     Nav.NavigateTo("/admin", forceLoad: true);
                 }
                 else
                 {
                     SuccessMessage = $"Welcome back, {AuthService.CurrentUser.DisplayName}! Redirecting...";
                     StateHasChanged();
-                    await Task.Delay(400);
+                    await Task.Delay(300);
                     var target = (!string.IsNullOrWhiteSpace(ReturnUrl) && !ReturnUrl.Contains("admin", StringComparison.OrdinalIgnoreCase))
                         ? ReturnUrl
                         : "/";
