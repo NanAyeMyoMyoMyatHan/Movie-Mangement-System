@@ -1,4 +1,4 @@
-/* Toast Notification */
+﻿/* Toast Notification */
 .cat-toast {
     position: fixed;
     bottom: 24px;
@@ -8,9 +8,9 @@
     align-items: center;
     gap: 10px;
     padding: 12px 20px;
-    background: #0F2420;
-    color: #F4EFEA;
-    border: 1px solid #DE7149;
+    background: #151026;
+    color: #F5F3FF;
+    border: 1px solid #EC4899;
     border-radius: 9999px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     font-size: 13.5px;
@@ -51,7 +51,7 @@
     align-items: center;
     gap: 10px;
     background: #FFFFFF;
-    border: 1px solid rgba(24, 59, 54, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.2);
     border-radius: 9999px;
     padding: 9px 18px;
     width: 100%;
@@ -80,7 +80,7 @@
 .myflix-notif-btn {
     position: relative;
     background: #FFFFFF;
-    border: 1px solid rgba(24, 59, 54, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.2);
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -98,7 +98,7 @@
     right: 9px;
     width: 8px;
     height: 8px;
-    background: #DE7149;
+    background: #EC4899;
     border-radius: 50%;
     border: 2px solid #FFFFFF;
 }
@@ -108,7 +108,7 @@
     align-items: center;
     gap: 10px;
     background: #FFFFFF;
-    border: 1px solid rgba(24, 59, 54, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.2);
     border-radius: 9999px;
     padding: 4px 12px 4px 4px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
@@ -134,10 +134,10 @@
     align-items: flex-end;
     justify-content: space-between;
     gap: 24px;
-    background: linear-gradient(135deg, #0F2420 0%, #16362F 100%);
+    background: linear-gradient(135deg, #151026 0%, #1F1838 100%);
     border-radius: 20px;
     padding: 32px 36px;
-    color: #F4EFEA;
+    color: #F5F3FF;
     margin-bottom: 24px;
     box-shadow: 0 10px 30px rgba(15, 36, 32, 0.15);
 }
@@ -146,8 +146,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(222, 113, 73, 0.2);
-    border: 1px solid rgba(222, 113, 73, 0.4);
+    background: rgba(236, 72, 153, 0.2);
+    border: 1px solid rgba(236, 72, 153, 0.4);
     color: #f79672;
     padding: 5px 12px;
     border-radius: 9999px;
@@ -227,7 +227,7 @@
     gap: 8px;
     padding: 8px 18px;
     background: #FFFFFF;
-    border: 1px solid rgba(24, 59, 54, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.2);
     border-radius: 9999px;
     color: #183B36;
     font-size: 13px;
@@ -237,19 +237,19 @@
 }
 
 .cat-pill:hover {
-    border-color: #DE7149;
-    color: #DE7149;
+    border-color: #EC4899;
+    color: #EC4899;
 }
 
 .cat-pill.active {
-    background: #DE7149;
+    background: #EC4899;
     color: #FFFFFF;
-    border-color: #DE7149;
-    box-shadow: 0 4px 12px rgba(222, 113, 73, 0.3);
+    border-color: #EC4899;
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
 }
 
 .cat-mini-badge {
-    background: rgba(24, 59, 54, 0.08);
+    background: rgba(167, 139, 250, 0.15);
     color: #183B36;
     font-size: 10px;
     font-weight: 800;
@@ -318,7 +318,7 @@
 }
 
 .cat-poster-card {
-    background: #0F2420;
+    background: #151026;
     border-radius: 14px;
     overflow: hidden;
     display: flex;
@@ -337,7 +337,7 @@
     position: relative;
     aspect-ratio: 2 / 3;
     overflow: hidden;
-    background: #0F2420;
+    background: #151026;
 }
 
 .cat-poster-img {
@@ -370,13 +370,13 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: #DE7149;
+    background: #EC4899;
     border: none;
     color: #FFFFFF;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 16px rgba(222, 113, 73, 0.45);
+    box-shadow: 0 6px 16px rgba(236, 72, 153, 0.45);
     cursor: pointer;
     transform: scale(0.9);
     transition: transform 0.2s ease;
@@ -404,7 +404,7 @@
     background: rgba(15, 36, 32, 0.65);
     backdrop-filter: blur(6px);
     border: 1px solid rgba(244, 239, 234, 0.25);
-    color: #F4EFEA;
+    color: #F5F3FF;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -437,8 +437,8 @@
     border-radius: 50%;
     background: rgba(15, 36, 32, 0.65);
     backdrop-filter: blur(6px);
-    border: 1px solid rgba(222, 113, 73, 0.4);
-    color: #DE7149;
+    border: 1px solid rgba(236, 72, 153, 0.4);
+    color: #EC4899;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -452,10 +452,10 @@
 }
 
 .cat-card-heart.active {
-    background: #DE7149;
-    border-color: #DE7149;
+    background: #EC4899;
+    border-color: #EC4899;
     color: #FFFFFF;
-    box-shadow: 0 0 10px rgba(222, 113, 73, 0.4);
+    box-shadow: 0 0 10px rgba(236, 72, 153, 0.4);
 }
 
 .cat-card-heart.active svg {
@@ -469,7 +469,7 @@
     top: 9px;
     left: 9px;
     background: rgba(15, 36, 32, 0.85);
-    color: #F4EFEA;
+    color: #F5F3FF;
     backdrop-filter: blur(4px);
     font-size: 11px;
     font-weight: 800;
@@ -498,7 +498,7 @@
 /* Poster Card Bottom Info */
 .cat-poster-info {
     padding: 10px 12px 14px;
-    background: #0F2420;
+    background: #151026;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -529,7 +529,7 @@
 .cat-poster-title {
     font-size: 13.5px;
     font-weight: 700;
-    color: #F4EFEA;
+    color: #F5F3FF;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -538,7 +538,7 @@
 }
 
 .cat-poster-card:hover .cat-poster-title {
-    color: #DE7149;
+    color: #EC4899;
 }
 
 /* Loading & Empty States */
@@ -552,7 +552,7 @@
     width: 44px;
     height: 44px;
     border: 3.5px solid rgba(24, 59, 54, 0.15);
-    border-top-color: #DE7149;
+    border-top-color: #EC4899;
     border-radius: 50%;
     animation: catSpin 0.8s linear infinite;
     margin: 0 auto 16px;
@@ -565,7 +565,7 @@
 .cat-empty-state {
     padding: 60px 24px;
     background: #FFFFFF;
-    border: 1px solid rgba(24, 59, 54, 0.08);
+    border: 1px solid rgba(167, 139, 250, 0.15);
     border-radius: 20px;
     text-align: center;
     max-width: 500px;
@@ -576,8 +576,8 @@
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    background: rgba(222, 113, 73, 0.1);
-    color: #DE7149;
+    background: rgba(236, 72, 153, 0.1);
+    color: #EC4899;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -587,7 +587,7 @@
 .cat-btn-primary {
     display: inline-flex;
     align-items: center;
-    background: #DE7149;
+    background: #EC4899;
     color: #FFFFFF;
     border: none;
     border-radius: 9999px;
@@ -595,7 +595,7 @@
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(222, 113, 73, 0.3);
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
 }
 
 @media (max-width: 768px) {

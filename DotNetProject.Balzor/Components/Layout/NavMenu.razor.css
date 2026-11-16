@@ -1,5 +1,5 @@
 /* ========================================================
-   REELORA SIDEBAR NAVIGATION (WARM ALMOND SAND THEME)
+   LUMINA STREAMING SIDEBAR (SOFT VIOLET & SOFT PINK THEME)
    ======================================================== */
 .myflix-sidebar,
 .petale-sidebar {
@@ -11,8 +11,9 @@
     left: 0;
     bottom: 0;
     padding: 24px 16px 20px 16px !important;
-    background: #EFE6DC !important;
-    border-right: 1px solid rgba(44, 62, 53, 0.08) !important;
+    background: #110D1D !important;
+    border-right: 1px solid rgba(167, 139, 250, 0.14) !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4) !important;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -34,30 +35,49 @@
     gap: 12px;
     margin-bottom: 26px;
     padding-left: 6px;
+    text-decoration: none;
 }
 
-.myflix-logo-icon {
-    flex-shrink: 0;
-    color: #DE7149 !important;
-    fill: #DE7149 !important;
+.myflix-logo-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(167, 139, 250, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.25);
 }
 
 .myflix-logo-text {
     font-size: 22px;
     font-weight: 800;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+}
+
+.myflix-text-pink {
+    color: #F472B6;
+    text-shadow: 0 0 16px rgba(244, 114, 182, 0.4);
+}
+
+.myflix-text-violet {
+    color: #A78BFA;
+    text-shadow: 0 0 16px rgba(167, 139, 250, 0.4);
+}
+
+/* Section Title */
+.myflix-nav-section-title {
+    font-size: 11px;
+    font-weight: 800;
     text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #7C7496;
+    padding: 0 12px 6px;
+    margin-top: 4px;
 }
 
-.myflix-text-white {
-    color: #183B36;
-}
-
-.myflix-text-green {
-    color: #DE7149;
-}
-
-/* Top Navigation */
+/* Navigation */
 .myflix-nav {
     display: flex;
     flex-direction: column;
@@ -70,12 +90,12 @@ a.myflix-nav-item,
     align-items: center;
     justify-content: space-between;
     padding: 10px 14px;
-    border-radius: 12px;
-    color: #4A554E !important;
+    border-radius: 14px;
+    color: #C4B5FD !important;
     text-decoration: none !important;
     font-size: 14.5px;
     font-weight: 500;
-    transition: all 0.18s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .myflix-nav-left {
@@ -86,17 +106,18 @@ a.myflix-nav-item,
 
 a.myflix-nav-item:hover,
 .myflix-nav-item:hover {
-    background: rgba(222, 113, 73, 0.08);
-    color: #183B36 !important;
+    background: rgba(167, 139, 250, 0.12);
+    color: #FFFFFF !important;
+    transform: translateX(3px);
 }
 
-/* Active Nav Item (Warm Terracotta Pill) */
+/* Active Nav Item (Soft Violet to Soft Pink Radiant Pill) */
 a.myflix-nav-item.active,
 .myflix-nav-item.active {
-    background: #DE7149 !important;
+    background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%) !important;
     color: #FFFFFF !important;
     font-weight: 700;
-    box-shadow: 0 4px 12px rgba(222, 113, 73, 0.25);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4), 0 2px 8px rgba(236, 72, 153, 0.25);
 }
 
 a.myflix-nav-item.active svg,
@@ -107,21 +128,31 @@ a.myflix-nav-item.active svg,
 
 /* Badges */
 .myflix-badge {
-    background: #E2D7CB !important;
-    color: #DE7149 !important;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 2px 9px;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 8px;
     border-radius: 9999px;
     min-width: 20px;
     text-align: center;
 }
 
+.badge-violet {
+    background: rgba(139, 92, 246, 0.25) !important;
+    color: #DDD6FE !important;
+    border: 1px solid rgba(167, 139, 250, 0.45);
+}
+
+.badge-pink {
+    background: rgba(236, 72, 153, 0.25) !important;
+    color: #FBCFE8 !important;
+    border: 1px solid rgba(244, 114, 182, 0.45);
+}
+
 /* Divider */
 .myflix-divider {
     height: 1px;
-    background: rgba(44, 62, 53, 0.08);
-    margin: 18px 8px;
+    background: rgba(167, 139, 250, 0.12);
+    margin: 16px 8px;
 }
 
 /* Special Category Links */
@@ -136,26 +167,28 @@ a.myflix-category-link,
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px 12px;
-    color: #4A554E !important;
+    padding: 9px 12px;
+    color: #C4B5FD !important;
     text-decoration: none !important;
     font-size: 14px;
     font-weight: 500;
-    border-radius: 10px;
-    transition: all 0.15s ease;
+    border-radius: 12px;
+    transition: all 0.2s ease;
 }
 
 a.myflix-category-link:hover,
 .myflix-category-link:hover {
-    background: rgba(222, 113, 73, 0.08);
-    color: #183B36 !important;
+    background: rgba(167, 139, 250, 0.12);
+    color: #FFFFFF !important;
+    transform: translateX(3px);
 }
 
 a.myflix-category-link.active,
 .myflix-category-link.active {
-    background: #DE7149 !important;
+    background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%) !important;
     color: #FFFFFF !important;
     font-weight: 700;
+    box-shadow: 0 6px 18px rgba(139, 92, 246, 0.35);
 }
 
 a.myflix-category-link.active svg,
@@ -169,52 +202,52 @@ a.myflix-category-link.active svg,
     justify-content: center;
     width: 22px;
     height: 18px;
-    border: 1.5px solid #8A958F;
-    border-radius: 5px;
+    border-radius: 6px;
     font-size: 10px;
     font-weight: 800;
-    color: #8A958F;
     line-height: 1;
+}
+
+.icon-pink {
+    border: 1.5px solid #F472B6;
+    color: #F472B6;
+    background: rgba(244, 114, 182, 0.12);
+}
+
+.icon-violet {
+    border: 1.5px solid #A78BFA;
+    color: #A78BFA;
+    background: rgba(167, 139, 250, 0.12);
+}
+
+/* Admin Nav Pill in Sidebar */
+.admin-nav-pill {
+    background: rgba(139, 92, 246, 0.14) !important;
+    border: 1px solid rgba(167, 139, 250, 0.32) !important;
+    color: #DDD6FE !important;
+    font-weight: 700 !important;
+}
+
+.nav-admin-chip {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
+    color: #FFFFFF;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* Bottom Nav */
 .myflix-bottom-nav {
     margin-top: 24px;
     padding-top: 14px;
-    border-top: 1px solid rgba(44, 62, 53, 0.08);
+    border-top: 1px solid rgba(167, 139, 250, 0.12);
     display: flex;
     flex-direction: column;
     gap: 6px;
-}
-
-/* Admin Highlight Pill */
-.admin-highlight {
-    background: rgba(222, 113, 73, 0.08) !important;
-    color: #DE7149 !important;
-    font-weight: 700 !important;
-    position: relative;
-}
-
-.admin-highlight svg {
-    stroke: #DE7149 !important;
-}
-
-.admin-highlight.active {
-    background: #DE7149 !important;
-    color: #FFFFFF !important;
-}
-
-.admin-highlight.active svg {
-    stroke: #FFFFFF !important;
-}
-
-.nav-admin-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #10B981;
-    margin-left: auto;
-    box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
 }
 
 /* User Box in Sidebar */
@@ -222,25 +255,26 @@ a.myflix-category-link.active svg,
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 10px;
-    margin-top: 6px;
-    background: rgba(24, 59, 54, 0.04);
-    border: 1px solid rgba(24, 59, 54, 0.08);
-    border-radius: 12px;
+    padding: 10px 12px;
+    background: rgba(26, 20, 44, 0.7);
+    border: 1px solid rgba(167, 139, 250, 0.22);
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .nav-user-avatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: #183B36;
-    color: #F4EFEA;
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
+    color: #FFFFFF;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
 }
 
 .nav-user-details {
@@ -252,7 +286,7 @@ a.myflix-category-link.active svg,
 .nav-user-name {
     font-size: 13px;
     font-weight: 700;
-    color: #183B36;
+    color: #F9FAFB;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -261,7 +295,7 @@ a.myflix-category-link.active svg,
 .nav-user-role {
     font-size: 11px;
     font-weight: 600;
-    color: #DE7149;
+    color: #F472B6;
 }
 
 .logout-btn {
@@ -270,32 +304,29 @@ a.myflix-category-link.active svg,
     cursor: pointer;
     width: 100%;
     text-align: left;
-    color: #8A5A4A !important;
+    color: #A78BFA !important;
 }
 
 .logout-btn:hover {
-    background: rgba(222, 113, 73, 0.12) !important;
-    color: #DE7149 !important;
+    background: rgba(236, 72, 153, 0.15) !important;
+    color: #F472B6 !important;
 }
 
 .login-nav-link {
-    background: rgba(222, 113, 73, 0.1) !important;
-    color: #DE7149 !important;
+    background: linear-gradient(135deg, #8B5CF6, #EC4899) !important;
+    color: #FFFFFF !important;
     font-weight: 700 !important;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
 }
 
 .login-nav-link:hover {
-    background: #DE7149 !important;
-    color: #FFFFFF !important;
-}
-
-.login-nav-link:hover svg {
-    stroke: #FFFFFF !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.45);
 }
 
 /* Responsive */
 @media (max-width: 900px) {
     .myflix-sidebar {
-        display: none;
+        display: none !important;
     }
 }

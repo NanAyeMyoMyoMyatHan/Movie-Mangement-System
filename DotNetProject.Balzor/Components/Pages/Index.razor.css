@@ -1,6 +1,50 @@
 /* ========================================================
-   REELORA MAIN DASHBOARD (WARM ALMOND SAND & TERRACOTTA THEME)
+   LUMINA STREAMING DASHBOARD (SOFT VIOLET & SOFT PINK THEME)
    ======================================================== */
+
+/* Floating Toast Notification */
+.myflix-toast {
+    position: fixed;
+    top: 24px;
+    right: 32px;
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(26, 18, 44, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(244, 114, 182, 0.5);
+    border-radius: 9999px;
+    padding: 10px 22px;
+    color: #F9FAFB;
+    font-size: 13.5px;
+    font-weight: 700;
+    box-shadow: 0 14px 36px rgba(139, 92, 246, 0.35), 0 4px 12px rgba(236, 72, 153, 0.25);
+    animation: toastSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.myflix-toast-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    flex-shrink: 0;
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
 
 /* Top Header */
 .myflix-header {
@@ -8,136 +52,235 @@
     justify-content: space-between;
     align-items: center;
     gap: 20px;
-    margin-bottom: 24px;
+    margin-bottom: 22px;
 }
 
 .myflix-search-group {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    flex: 1;
+    max-width: 520px;
 }
 
 .myflix-search-bar {
-    width: 400px;
+    width: 100%;
     display: flex;
     align-items: center;
     gap: 12px;
-    background: #FFFFFF;
-    border: 1px solid rgba(44, 62, 53, 0.1);
+    background: rgba(26, 20, 42, 0.85);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(167, 139, 250, 0.25);
     border-radius: 9999px;
-    padding: 10px 18px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 10px 20px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+    transition: all 0.25s ease;
 }
 
-    .myflix-search-bar svg {
-        color: #8A958F;
-        flex-shrink: 0;
-    }
+.myflix-search-bar.focused,
+.myflix-search-bar:focus-within {
+    border-color: #F472B6;
+    box-shadow: 0 0 0 3px rgba(244, 114, 182, 0.2), 0 6px 24px rgba(139, 92, 246, 0.25);
+    background: rgba(30, 22, 50, 0.95);
+}
 
-    .myflix-search-bar input {
-        border: 0;
-        outline: 0;
-        width: 100%;
-        background: transparent;
-        font: inherit;
-        font-size: 13.5px;
-        color: #183B36;
-    }
+.myflix-search-bar svg {
+    color: #A78BFA;
+    flex-shrink: 0;
+}
 
-        .myflix-search-bar input::placeholder {
-            color: #9AA39E;
-        }
+.myflix-search-bar input {
+    border: 0;
+    outline: 0;
+    width: 100%;
+    background: transparent;
+    font: inherit;
+    font-size: 13.5px;
+    color: #F9FAFB;
+}
 
-.myflix-search-btn {
-    display: inline-flex;
+.myflix-search-bar input::placeholder {
+    color: #8E87A8;
+}
+
+.myflix-search-clear {
+    background: rgba(167, 139, 250, 0.2);
+    border: none;
+    color: #C4B5FD;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 22px;
-    border-radius: 9999px;
-    background: #183B36;
-    color: #F4EFEA;
-    font-size: 13.5px;
-    font-weight: 700;
-    border: 0;
+    font-size: 11px;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(24, 59, 54, 0.15);
     transition: all 0.15s ease;
-    white-space: nowrap;
 }
 
-    .myflix-search-btn:hover {
-        background: #DE7149;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(222, 113, 73, 0.3);
-    }
+.myflix-search-clear:hover {
+    background: #EC4899;
+    color: #FFFFFF;
+}
 
 .myflix-header-right {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 16px;
 }
 
 .myflix-notif-btn {
-    background: transparent;
-    border: 0;
-    color: #183B36;
+    background: rgba(26, 20, 42, 0.8) !important;
+    border: 1px solid rgba(167, 139, 250, 0.2) !important;
+    color: #C4B5FD !important;
     position: relative;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6px;
-    transition: transform 0.15s ease, opacity 0.15s ease;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
 }
 
-    .myflix-notif-btn:hover {
-        opacity: 0.8;
-        transform: scale(1.05);
-    }
+.myflix-notif-btn:hover {
+    border-color: #F472B6 !important;
+    color: #F472B6 !important;
+    transform: scale(1.05);
+}
 
 .myflix-notif-dot {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 7px;
-    height: 7px;
-    background: #DE7149;
+    top: 9px;
+    right: 9px;
+    width: 8px;
+    height: 8px;
+    background: #EC4899;
     border-radius: 50%;
-    border: 1.5px solid #F4EFEA;
+    border: 2px solid #110D1D;
+    box-shadow: 0 0 8px rgba(236, 72, 153, 0.8);
 }
 
 .myflix-user-profile {
     display: flex;
     align-items: center;
-    gap: 9px;
-    cursor: pointer;
-    color: #183B36;
+    gap: 10px;
+    background: rgba(26, 20, 42, 0.85);
+    border: 1px solid rgba(167, 139, 250, 0.22);
+    border-radius: 9999px;
+    padding: 4px 14px 4px 5px;
+    color: #F9FAFB;
     font-size: 13.5px;
     font-weight: 700;
 }
 
-.myflix-avatar {
-    width: 34px;
-    height: 34px;
+.myflix-avatar-text {
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #DE7149;
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+}
+
+.header-admin-badge {
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+.myflix-signin-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 20px;
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
+    color: #FFFFFF !important;
+    font-size: 13.5px;
+    font-weight: 700;
+    border-radius: 999px;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+}
+
+.myflix-signin-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(236, 72, 153, 0.45);
+}
+
+/* Category Filter Bar */
+.myflix-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+}
+
+.myflix-filter-bar::-webkit-scrollbar {
+    display: none;
+}
+
+.myflix-filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    background: rgba(26, 20, 42, 0.7);
+    border: 1px solid rgba(167, 139, 250, 0.2);
+    color: #C4B5FD;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.myflix-filter-pill:hover {
+    background: rgba(167, 139, 250, 0.16);
+    color: #FFFFFF;
+    border-color: rgba(167, 139, 250, 0.4);
+    transform: translateY(-1px);
+}
+
+.myflix-filter-pill.active {
+    background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+    color: #FFFFFF;
+    border-color: transparent;
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
 }
 
 /* ========================================================
-   HERO FEATURED BANNER
+   HERO BANNER
    ======================================================== */
 .myflix-hero-banner {
     position: relative;
-    border-radius: 24px;
+    border-radius: 28px !important;
     overflow: hidden;
-    min-height: 300px;
+    min-height: 380px;
     display: flex;
     align-items: center;
-    padding: 38px 44px;
-    margin-bottom: 34px;
-    background: #E6DACB;
-    box-shadow: 0 14px 32px rgba(44, 62, 53, 0.12);
+    padding: 44px 52px !important;
+    margin-bottom: 38px !important;
+    background: #140E24 !important;
+    border: 1px solid rgba(167, 139, 250, 0.22);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(139, 92, 246, 0.15);
 }
 
 .myflix-hero-backdrop {
@@ -151,7 +294,7 @@
     right: 0;
     top: 0;
     bottom: 0;
-    width: 58%;
+    width: 60%;
 }
 
 .myflix-hero-bg-img {
@@ -159,65 +302,125 @@
     height: 100%;
     object-fit: cover;
     object-position: center 20%;
+    filter: brightness(0.85);
 }
 
 .myflix-hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, #E6DACB 0%, #E6DACB 34%, rgba(230, 218, 203, 0.88) 60%, rgba(230, 218, 203, 0.15) 100%), linear-gradient(180deg, rgba(230, 218, 203, 0) 65%, #E6DACB 100%);
+    background: linear-gradient(90deg, #140E24 0%, #140E24 35%, rgba(20, 14, 36, 0.88) 65%, rgba(20, 14, 36, 0.2) 100%),
+                linear-gradient(180deg, rgba(20, 14, 36, 0) 60%, #140E24 100%);
+}
+
+.myflix-hero-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(20, 14, 36, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    color: #F9FAFB;
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.myflix-hero-nav.prev {
+    left: 16px;
+}
+
+.myflix-hero-nav.next {
+    right: 16px;
+}
+
+.myflix-hero-nav:hover {
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
+    border-color: transparent;
+    color: #FFFFFF;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.5);
 }
 
 .myflix-hero-content {
     position: relative;
     z-index: 2;
-    max-width: 440px;
+    max-width: 480px;
 }
 
 .myflix-hero-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(24, 59, 54, 0.12);
-    color: #183B36;
-    padding: 5px 12px;
+    gap: 8px;
+    background: rgba(139, 92, 246, 0.18);
+    border: 1px solid rgba(167, 139, 250, 0.35);
+    color: #DDD6FE;
+    padding: 5px 14px;
     border-radius: 9999px;
     font-size: 12px;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+}
+
+.hero-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #F472B6;
+    box-shadow: 0 0 8px #F472B6;
+}
+
+.hero-badge-tag {
+    font-size: 10px;
+    font-weight: 800;
+    background: rgba(244, 114, 182, 0.25);
+    color: #FBCFE8;
+    padding: 1px 7px;
+    border-radius: 999px;
+    border: 1px solid rgba(244, 114, 182, 0.4);
 }
 
 .myflix-hero-title {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: clamp(32px, 3.4vw, 44px);
-    font-weight: 800;
-    color: #183B36;
-    margin: 0 0 8px;
-    line-height: 1.05;
+    font-family: 'Playfair Display', Georgia, serif !important;
+    font-size: clamp(34px, 3.8vw, 48px) !important;
+    font-weight: 800 !important;
+    color: #FFFFFF !important;
+    margin: 0 0 10px !important;
+    line-height: 1.05 !important;
     letter-spacing: -0.5px;
     display: flex;
     flex-direction: column;
 }
 
 .myflix-hero-script {
-    font-family: 'Caveat', cursive, sans-serif;
-    font-size: 32px;
-    font-weight: 700;
-    color: #DE7149;
-    line-height: 0.95;
+    font-family: 'Caveat', cursive, sans-serif !important;
+    font-size: 34px !important;
+    font-weight: 700 !important;
+    background: linear-gradient(135deg, #A78BFA 0%, #F472B6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 0.95 !important;
     margin-top: 4px;
 }
 
 .myflix-hero-desc {
-    font-size: 13px;
-    line-height: 1.6;
-    color: #5C6B64;
-    margin: 0 0 22px;
-    max-width: 390px;
+    font-size: 13.5px !important;
+    line-height: 1.6 !important;
+    color: #C4B5FD !important;
+    margin: 0 0 26px !important;
+    max-width: 420px;
 }
 
 .myflix-hero-actions {
     display: flex;
-    gap: 12px;
+    gap: 14px;
     align-items: center;
 }
 
@@ -225,137 +428,162 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 24px;
-    border-radius: 9999px;
-    font-size: 13.5px;
+    padding: 11px 26px !important;
+    border-radius: 9999px !important;
+    font-size: 14px;
     font-weight: 700;
-    border: 0;
+    border: 0 !important;
     cursor: pointer;
-    transition: transform 0.15s ease, opacity 0.15s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-    .myflix-btn:hover {
-        transform: translateY(-2px);
-        opacity: 0.95;
-    }
-
 .myflix-btn-primary {
-    background: #DE7149;
-    color: #FFFFFF;
-    box-shadow: 0 4px 14px rgba(222, 113, 73, 0.35);
+    background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45);
+}
+
+.myflix-btn-primary:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 10px 28px rgba(236, 72, 153, 0.5);
 }
 
 .myflix-btn-secondary {
-    background: rgba(24, 59, 54, 0.08);
-    border: 1.5px solid rgba(24, 59, 54, 0.25);
-    color: #183B36;
+    background: rgba(26, 20, 44, 0.7) !important;
+    border: 1.5px solid rgba(167, 139, 250, 0.3) !important;
+    color: #C4B5FD !important;
+}
+
+.myflix-btn-secondary:hover {
+    background: rgba(167, 139, 250, 0.15) !important;
+    border-color: #F472B6 !important;
+    color: #F472B6 !important;
+    transform: translateY(-2px);
+}
+
+.myflix-btn-secondary.active {
+    background: rgba(244, 114, 182, 0.2) !important;
+    border-color: #F472B6 !important;
+    color: #FBCFE8 !important;
 }
 
 .myflix-carousel-dots {
     display: flex;
-    gap: 6px;
-    margin-top: 24px;
+    gap: 8px;
+    margin-top: 26px;
     align-items: center;
 }
 
-    .myflix-carousel-dots .dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #C8B9A6;
-        transition: all 0.2s ease;
-    }
+.myflix-carousel-dots .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(167, 139, 250, 0.35);
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
 
-        .myflix-carousel-dots .dot.active {
-            width: 22px;
-            border-radius: 9999px;
-            background: #DE7149;
-        }
+.myflix-carousel-dots .dot:hover {
+    background: #A78BFA;
+}
+
+.myflix-carousel-dots .dot.active {
+    width: 26px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
+    box-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
+}
 
 /* ========================================================
-   SECTIONS & HEADERS
+   SECTIONS & GRIDS
    ======================================================== */
 .myflix-section-block {
-    margin-bottom: 32px;
+    margin-bottom: 38px !important;
 }
 
 .myflix-section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
 
-    .myflix-section-header h2 {
-        font-family: 'Playfair Display', Georgia, serif;
-        font-size: 20px;
-        font-weight: 700;
-        color: #183B36;
-        margin: 0;
-        letter-spacing: -0.3px;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
+.myflix-section-header h2 {
+    font-family: 'Playfair Display', Georgia, serif !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    color: #FFFFFF !important;
+    margin: 0 !important;
+    letter-spacing: -0.3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-flag {
+    font-size: 20px;
+}
 
 .myflix-see-all {
     font-size: 13px;
     font-weight: 700;
-    color: #8A958F;
-    text-decoration: none;
-    transition: all 0.15s ease;
+    color: #A78BFA !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    background: rgba(167, 139, 250, 0.1);
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(167, 139, 250, 0.2);
 }
 
-    .myflix-see-all svg { transition: transform 0.15s ease; }
+.myflix-see-all:hover {
+    background: linear-gradient(135deg, #8B5CF6, #EC4899) !important;
+    color: #FFFFFF !important;
+    border-color: transparent;
+    transform: translateX(2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+}
 
-    .myflix-see-all:hover {
-        color: #DE7149;
-    }
-
-        .myflix-see-all:hover svg {
-            transform: translateX(3px);
-        }
-
-/* ========================================================
-   CONTINUE WATCHING GRID (5 columns)
-   ======================================================== */
+/* Continue Watching Grid */
 .myflix-continue-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
+    gap: 18px;
 }
 
 .myflix-continue-card {
     display: flex;
     flex-direction: column;
     cursor: pointer;
-    border-radius: 14px;
+    border-radius: 18px !important;
     overflow: hidden;
-    background: #0F2420;
-    box-shadow: 0 6px 18px rgba(15, 36, 32, 0.15);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: #171228 !important;
+    border: 1px solid rgba(167, 139, 250, 0.18);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-    .myflix-continue-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(15, 36, 32, 0.25);
-    }
+.myflix-continue-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    border-color: #F472B6;
+    box-shadow: 0 16px 36px rgba(139, 92, 246, 0.35);
+}
 
 .myflix-continue-thumb {
     aspect-ratio: 16 / 9;
     position: relative;
     overflow: hidden;
-    background: #0F2420;
+    background: #0B0813;
 }
 
-    .myflix-continue-thumb img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+.myflix-continue-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 .myflix-thumb-overlay {
     position: absolute;
@@ -363,8 +591,31 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(15, 36, 32, 0.25);
+    background: rgba(11, 8, 19, 0.4);
     transition: background 0.2s ease;
+}
+
+.myflix-continue-card:hover .myflix-thumb-overlay {
+    background: rgba(11, 8, 19, 0.2);
+}
+
+.myflix-play-icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8B5CF6, #EC4899) !important;
+    border: none;
+    color: #FFFFFF !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.5);
+    transition: transform 0.2s ease;
+}
+
+.myflix-play-icon-btn:hover {
+    transform: scale(1.15);
 }
 
 .myflix-continue-progress {
@@ -372,726 +623,271 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 3.5px;
-    background: rgba(0, 0, 0, 0.45);
-    z-index: 3;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .myflix-continue-progress-fill {
     height: 100%;
-    background: #DE7149;
-    border-radius: 0 2px 2px 0;
+    background: linear-gradient(90deg, #8B5CF6, #EC4899);
 }
-
-.myflix-continue-card:hover .myflix-thumb-overlay {
-    background: rgba(15, 36, 32, 0.45);
-}
-
-.myflix-play-icon-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: rgba(15, 36, 32, 0.7);
-    backdrop-filter: blur(6px);
-    border: 1.5px solid rgba(244, 239, 234, 0.8);
-    color: #F4EFEA;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.15s ease;
-}
-
-    .myflix-play-icon-btn:hover {
-        transform: scale(1.12);
-    }
 
 .myflix-continue-info {
-    padding: 10px 12px 12px;
-    background: #0F2420;
+    padding: 12px 14px 14px !important;
+    background: #171228 !important;
 }
 
-    .myflix-continue-info h3 {
-        font-size: 13.5px;
-        font-weight: 700;
-        color: #F4EFEA;
-        margin: 0 0 2px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .myflix-continue-info p {
-        font-size: 11.5px;
-        color: #8FA9AA;
-        margin: 0;
-    }
-
-/* ========================================================
-   POSTER GRIDS (6 columns)
-   ======================================================== */
-.myflix-poster-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 16px;
-}
-
-.myflix-poster-card {
-    position: relative;
-    aspect-ratio: 2 / 3;
-    border-radius: 14px;
-    overflow: hidden;
-    background: #0F2420;
-    box-shadow: 0 8px 24px rgba(15, 36, 32, 0.16);
-    cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-    .myflix-poster-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 14px 32px rgba(15, 36, 32, 0.28);
-    }
-
-.myflix-poster-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.myflix-card-actions {
-    position: absolute;
-    top: 9px;
-    right: 9px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    z-index: 3;
-}
-
-.myflix-card-later {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: rgba(15, 36, 32, 0.65);
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(244, 239, 234, 0.25);
-    color: #F4EFEA;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
-}
-
-    .myflix-card-later:hover {
-        transform: scale(1.12);
-        background: rgba(15, 36, 32, 0.9);
-        color: #10B981;
-        border-color: #10B981;
-    }
-
-    .myflix-card-later.active {
-        background: #10B981;
-        color: #FFFFFF;
-        border-color: #10B981;
-        box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
-    }
-
-    .myflix-card-later.active svg {
-        fill: #FFFFFF !important;
-        stroke: #FFFFFF !important;
-    }
-
-.myflix-card-heart {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: rgba(15, 36, 32, 0.65);
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(222, 113, 73, 0.4);
-    color: #DE7149;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.15s ease, background 0.2s ease;
-}
-
-    .myflix-card-heart:hover {
-        transform: scale(1.12);
-        background: rgba(15, 36, 32, 0.9);
-        color: #DE7149;
-    }
-
-    .myflix-card-heart.active {
-        background: #DE7149;
-        color: #FFFFFF;
-        border-color: #DE7149;
-        box-shadow: 0 0 10px rgba(222, 113, 73, 0.4);
-    }
-
-    .myflix-card-heart.active svg {
-        fill: #FFFFFF !important;
-        stroke: #FFFFFF !important;
-    }
-
-.myflix-poster-content {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 28px 12px 12px;
-    background: linear-gradient(180deg, rgba(15, 36, 32, 0) 0%, rgba(15, 36, 32, 0.85) 55%, #0F2420 100%);
-    z-index: 2;
-}
-
-    .myflix-poster-content h3 {
-        font-size: 13px;
-        font-weight: 700;
-        color: #F4EFEA;
-        margin: 0 0 2px;
-        line-height: 1.2;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-    }
-
-    .myflix-poster-content p {
-        font-size: 11px;
-        color: #8FA9AA;
-        margin: 0;
-    }
-
-/* ========================================================
-   RESPONSIVE
-   ======================================================== */
-@media (max-width: 1200px) {
-    .myflix-continue-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .myflix-poster-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-@media (max-width: 800px) {
-    .myflix-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .myflix-search-bar {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .myflix-header-right {
-        justify-content: space-between;
-    }
-
-    .myflix-hero-img-wrapper {
-        width: 100%;
-        opacity: 0.25;
-    }
-
-    .myflix-continue-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .myflix-poster-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-/* ========================================================
-   DRAMA DETAIL & EPISODES STREAMING VIEW (IMAGE 2 DESIGN)
-   ======================================================== */
-.drama-detail-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: rgba(5, 12, 10, 0.94);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    overflow-y: auto;
-    display: flex;
-    justify-content: center;
-    padding: 0;
-    animation: dramaFadeIn 0.22s ease-out;
-}
-
-.drama-detail-container {
-    width: 100%;
-    max-width: 1100px;
-    min-height: 100vh;
-    background: #0B1412;
-    color: #F4EFEA;
-    display: flex;
-    flex-direction: column;
-    padding: 24px 32px 60px;
-    box-shadow: 0 0 80px rgba(0, 0, 0, 0.85);
-    position: relative;
-}
-
-/* Nav bar */
-.drama-nav-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-}
-
-.drama-back-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #F4EFEA;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.drama-back-btn:hover {
-    background: rgba(255, 255, 255, 0.22);
-    transform: scale(1.08);
-}
-
-.drama-nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.drama-nav-icon-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #F4EFEA;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.drama-nav-icon-btn:hover {
-    background: #DE7149;
-    color: #FFF;
-}
-
-/* Video Player */
-.drama-player-container {
-    margin-bottom: 32px;
-    background: #000;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.drama-player-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 20px;
-    background: #11201D;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.drama-player-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #FFF;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.drama-player-badge {
-    background: #DE7149;
-    color: #FFF;
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 9999px;
-    font-weight: 700;
-}
-
-.drama-player-video {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    max-height: 520px;
-    display: block;
-    background: #000;
-}
-
-/* Hero Section */
-.drama-hero-section {
-    display: flex;
-    gap: 32px;
-    margin-bottom: 36px;
-    align-items: flex-start;
-}
-
-.drama-poster-wrap {
-    width: 220px;
-    flex-shrink: 0;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: #142421;
-    aspect-ratio: 3 / 4;
-}
-
-.drama-poster-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.drama-info-col {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.drama-title {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 34px;
-    font-weight: 800;
-    color: #FFFFFF;
-    margin: 0;
-    line-height: 1.15;
-}
-
-.drama-meta-row {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    font-size: 13.5px;
-    color: #C1C9C5;
-}
-
-.drama-meta-dot {
-    opacity: 0.5;
-}
-
-.badge-hd {
-    background: #F59E0B;
-    color: #000000;
-    font-size: 10.5px;
-    font-weight: 800;
-    padding: 1px 6px;
-    border-radius: 4px;
-    line-height: 1.3;
-}
-
-.badge-pill {
-    background: rgba(255, 255, 255, 0.12);
-    color: #E5E7EB;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 1px 7px;
-    border-radius: 4px;
-    line-height: 1.3;
-}
-
-.drama-synopsis {
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: #9AA7A2;
-    margin: 4px 0 6px;
-    max-width: 740px;
-}
-
-.drama-action-buttons {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 4px 0 10px;
-}
-
-.drama-btn-play {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #3B82F6;
-    color: #FFFFFF;
-    border: 0;
-    border-radius: 10px;
-    padding: 10px 24px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
-    transition: all 0.2s ease;
-}
-
-.drama-btn-play:hover {
-    background: #2563EB;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45);
-}
-
-.drama-btn-secondary {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    color: #F4EFEA;
-    border-radius: 10px;
-    padding: 10px 18px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.drama-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.16);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.drama-credits {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 12.5px;
-    color: #8C9993;
-    margin-top: 4px;
-}
-
-.drama-credits-row {
-    display: flex;
-    gap: 12px;
-}
-
-.drama-credits-label {
-    width: 65px;
-    color: #6E7D76;
-    font-weight: 500;
-    flex-shrink: 0;
-}
-
-.drama-credits-value {
-    color: #B5BFBA;
-}
-
-/* Episodes Section Header */
-.drama-episodes-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 10px;
-}
-
-.drama-episodes-heading {
-    font-size: 20px;
-    font-weight: 700;
-    color: #FFFFFF;
-    margin: 0;
-}
-
-.drama-episodes-count {
-    font-size: 13px;
-    color: #8C9993;
-    font-weight: 500;
-}
-
-/* Episode List Rows */
-.drama-episode-list {
-    display: flex;
-    flex-direction: column;
-}
-
-.drama-ep-row {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 15px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background 0.18s ease;
-}
-
-.drama-ep-row:hover {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.drama-ep-row.active {
-    background: rgba(59, 130, 246, 0.14);
-    border-left: 3px solid #3B82F6;
-}
-
-.drama-ep-thumb-box {
-    position: relative;
-    width: 140px;
-    height: 78px;
-    flex-shrink: 0;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #182824;
-}
-
-.drama-ep-thumb-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.drama-ep-play-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.35);
-    transition: background 0.15s ease;
-}
-
-.drama-ep-row:hover .drama-ep-play-overlay {
-    background: rgba(0, 0, 0, 0.15);
-}
-
-.drama-ep-play-disc {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #FFFFFF;
-    transition: transform 0.15s ease, background 0.15s ease;
-}
-
-.drama-ep-row:hover .drama-ep-play-disc {
-    transform: scale(1.1);
-    background: #3B82F6;
-}
-
-.drama-ep-info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.drama-ep-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: #FFFFFF;
-    margin: 0;
+.myflix-continue-info h3 {
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    color: #FFFFFF !important;
+    margin: 0 0 3px !important;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.drama-ep-desc {
-    font-size: 12.5px;
-    color: #8C9993;
-    line-height: 1.45;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+.myflix-continue-info p {
+    font-size: 11.5px !important;
+    color: #A78BFA !important;
+    margin: 0 !important;
+}
+
+/* Poster Grid */
+.myflix-poster-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 18px;
+}
+
+.myflix-poster-card {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    border-radius: 18px !important;
     overflow: hidden;
+    background: #171228 !important;
+    border: 1px solid rgba(167, 139, 250, 0.18);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.drama-ep-right {
+.myflix-poster-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    border-color: #F472B6;
+    box-shadow: 0 18px 40px rgba(139, 92, 246, 0.35), 0 0 20px rgba(236, 72, 153, 0.2);
+}
+
+.myflix-poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+
+.myflix-poster-card:hover .myflix-poster-img {
+    transform: scale(1.06);
+}
+
+/* Top Quality Badges on Poster */
+.myflix-card-badge-top {
+    position: absolute;
+    top: 10px;
+    left: 10px;
     display: flex;
     align-items: center;
-    gap: 16px;
-    flex-shrink: 0;
+    gap: 6px;
+    z-index: 3;
 }
 
-.drama-ep-duration {
-    font-size: 13px;
-    color: #8C9993;
-    font-weight: 500;
+.badge-cat {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(139, 92, 246, 0.35);
+    backdrop-filter: blur(8px);
+    color: #DDD6FE;
+    border: 1px solid rgba(167, 139, 250, 0.5);
+    letter-spacing: 0.5px;
 }
 
-.drama-ep-circle-play {
-    width: 34px;
-    height: 34px;
+.badge-rating {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(236, 72, 153, 0.35);
+    backdrop-filter: blur(8px);
+    color: #FCE7F3;
+    border: 1px solid rgba(244, 114, 182, 0.5);
+}
+
+/* Card Actions (Heart & Watch Later) */
+.myflix-card-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 3;
+}
+
+.myflix-card-later,
+.myflix-card-heart {
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    border: 1.5px solid rgba(255, 255, 255, 0.3);
-    background: transparent;
-    color: #FFF;
+    background: rgba(20, 14, 36, 0.75) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(167, 139, 250, 0.3) !important;
+    color: #C4B5FD !important;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
 }
 
-.drama-ep-row:hover .drama-ep-circle-play {
-    border-color: #FFF;
-    background: rgba(255, 255, 255, 0.15);
-    transform: scale(1.08);
+.myflix-card-later:hover {
+    background: #8B5CF6 !important;
+    color: #FFFFFF !important;
+    transform: scale(1.15);
+    border-color: transparent !important;
 }
 
-.drama-ep-dots {
-    color: #6E7D76;
-    background: transparent;
-    border: 0;
-    cursor: pointer;
-    padding: 4px;
+.myflix-card-heart:hover {
+    background: #EC4899 !important;
+    color: #FFFFFF !important;
+    transform: scale(1.15);
+    border-color: transparent !important;
+}
+
+.myflix-card-later.active {
+    background: rgba(139, 92, 246, 0.35) !important;
+    border-color: #8B5CF6 !important;
+    color: #A78BFA !important;
+}
+
+.myflix-card-heart.active {
+    background: rgba(236, 72, 153, 0.35) !important;
+    border-color: #EC4899 !important;
+    color: #F472B6 !important;
+}
+
+/* Poster Bottom Gradient Content */
+.myflix-poster-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 32px 14px 14px;
+    background: linear-gradient(180deg, rgba(23, 18, 40, 0) 0%, rgba(23, 18, 40, 0.88) 55%, #171228 100%);
+    z-index: 2;
+}
+
+.myflix-poster-content h3 {
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    color: #FFFFFF !important;
+    margin: 0 0 3px !important;
+    line-height: 1.25 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.myflix-poster-content p {
+    font-size: 11.5px !important;
+    color: #C4B5FD !important;
+    margin: 0 !important;
+}
+
+/* Search Highlights */
+.search-highlight {
+    color: #F472B6 !important;
+}
+
+.search-count-badge {
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(139, 92, 246, 0.2);
+    color: #DDD6FE;
+    padding: 2px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(167, 139, 250, 0.35);
+}
+
+/* Loading Spinner */
+.myflix-loading {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 40px 20px;
+    color: #C4B5FD;
+    gap: 12px;
 }
 
-.drama-ep-dots:hover {
-    color: #FFF;
+.spinner-violet {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(139, 92, 246, 0.2);
+    border-top-color: #F472B6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
 }
 
-@keyframes dramaFadeIn {
-    from { opacity: 0; transform: scale(0.98); }
-    to { opacity: 1; transform: scale(1); }
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.myflix-no-data {
+    padding: 50px 20px;
+    text-align: center;
+    color: #8E87A8;
+    background: rgba(26, 20, 42, 0.4);
+    border: 1px dashed rgba(167, 139, 250, 0.2);
+    border-radius: 20px;
+}
+
+.myflix-no-data svg {
+    color: #A78BFA;
+    margin-bottom: 12px;
+}
+
+/* Responsive */
+@media (max-width: 1300px) {
+    .myflix-continue-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .myflix-poster-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .myflix-continue-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .myflix-poster-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
 
 @media (max-width: 768px) {
-    .drama-detail-container {
-        padding: 16px 16px 40px;
+    .myflix-continue-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
-    .drama-hero-section {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+    .myflix-poster-grid {
+        grid-template-columns: repeat(3, 1fr);
     }
-    .drama-poster-wrap {
-        width: 180px;
+    .myflix-hero-banner {
+        padding: 30px 24px !important;
     }
-    .drama-meta-row {
-        justify-content: center;
-    }
-    .drama-action-buttons {
-        justify-content: center;
-    }
-    .drama-credits-row {
-        justify-content: center;
-    }
-    .drama-ep-desc {
-        display: none;
+    .myflix-hero-img-wrapper {
+        width: 100%;
+        opacity: 0.3;
     }
 }
-

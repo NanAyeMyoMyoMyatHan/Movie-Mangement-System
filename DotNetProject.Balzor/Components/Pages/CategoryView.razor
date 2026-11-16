@@ -8,7 +8,7 @@
 @if (!string.IsNullOrEmpty(ToastMessage))
 {
     <div class="cat-toast">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="#DE7149" stroke="#DE7149" stroke-width="2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#EC4899" stroke="#EC4899" stroke-width="2">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
         </svg>
         <span>@ToastMessage</span>
@@ -187,8 +187,8 @@ else
                                 title="@(FavoriteIds.Contains(item.Id) ? "Remove from Favorites" : "Add to Favorites")"
                                 @onclick="() => ToggleFavorite(item)">
                             <svg width="13" height="13" viewBox="0 0 24 24"
-                                 fill="@(FavoriteIds.Contains(item.Id) ? "#DE7149" : "none")"
-                                 stroke="@(FavoriteIds.Contains(item.Id) ? "#DE7149" : "currentColor")"
+                                 fill="@(FavoriteIds.Contains(item.Id) ? "#EC4899" : "none")"
+                                 stroke="@(FavoriteIds.Contains(item.Id) ? "#EC4899" : "currentColor")"
                                  stroke-width="2.2">
                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                             </svg>

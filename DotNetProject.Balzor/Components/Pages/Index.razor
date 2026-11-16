@@ -1,19 +1,38 @@
 @page "/"
+@rendermode InteractiveServer
 
+<!-- Toast Notification Feedback -->
+@if (ShowToast && !string.IsNullOrEmpty(ToastMessage))
+{
+    <div class="myflix-toast">
+        <div class="myflix-toast-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12" />
+            </svg>
+        </div>
+        <span>@ToastMessage</span>
+    </div>
+}
 
 <!-- Top App Header -->
 <header class="myflix-header">
     <div class="myflix-search-group">
-        <div class="myflix-search-bar">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7ea29a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="myflix-search-bar @(HasSearch ? "focused" : "")">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input type="text" placeholder="Search for movies, series, genres...">
+            <input type="text"
+                   placeholder="Search Asian dramas, movies, anime, cast..."
+                   @bind="SearchQuery"
+                   @bind:event="oninput" />
+            @if (HasSearch)
+            {
+                <button type="button" class="myflix-search-clear" @onclick="ClearSearch" title="Clear search">
+                    ✕
+                </button>
+            }
         </div>
-        <button type="button" class="myflix-search-btn">
-            Search
-        </button>
     </div>
 
     <div class="myflix-header-right">
@@ -43,79 +62,173 @@
         else
         {
             <a href="/login" class="myflix-signin-pill">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                    <polyline points="10 17 15 12 10 7" />
+                    <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
                 <span>Sign In</span>
             </a>
         }
     </div>
 </header>
 
-<!-- Featured Hero Banner -->
-<section class="myflix-hero-banner">
-    <div class="myflix-hero-backdrop">
-        <div class="myflix-hero-img-wrapper">
-            <img src="https://upload.wikimedia.org/wikipedia/en/9/9e/KinnPorsche_series_poster.jpg" alt="KinnPorsche Featured" class="myflix-hero-bg-img" />
-        </div>
-        <div class="myflix-hero-overlay"></div>
-    </div>
+<!-- Quick Category Filter Pills -->
+<div class="myflix-filter-bar">
+    <button type="button" class="myflix-filter-pill @(SelectedFilter == "All" ? "active" : "")" @onclick='() => SelectFilter("All")'>
+        <span>✨ All Titles</span>
+    </button>
+    <button type="button" class="myflix-filter-pill @(SelectedFilter == "Trending" ? "active" : "")" @onclick='() => SelectFilter("Trending")'>
+        <span>🔥 Trending</span>
+    </button>
+    <button type="button" class="myflix-filter-pill @(SelectedFilter == "Korean Drama" ? "active" : "")" @onclick='() => SelectFilter("Korean Drama")'>
+        <span>🇰🇷 Korean Drama</span>
+    </button>
+    <button type="button" class="myflix-filter-pill @(SelectedFilter == "Thai BL" ? "active" : "")" @onclick='() => SelectFilter("Thai BL")'>
+        <span>🇹🇭 Thai BL Series</span>
+    </button>
+    <button type="button" class="myflix-filter-pill @(SelectedFilter == "Movies" ? "active" : "")" @onclick='() => SelectFilter("Movies")'>
+        <span>🎬 Movies &amp; Anime</span>
+    </button>
+</div>
 
-    <div class="myflix-hero-content">
-        <div class="myflix-hero-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981" stroke="#10b981">
-                <path d="M12 2c0 4-4 6-4 10a5 5 0 0 0 10 0c0-4-6-6-6-10z" />
-            </svg>
-            <span>Trending Now</span>
-        </div>
-
-        <h1 class="myflix-hero-title">
-            KinnPorsche
-            <span class="myflix-hero-script">The Series</span>
-        </h1>
-
-        <p class="myflix-hero-desc">
-            The second son of a mafia family, Kinn, is assigned a bodyguard, Porsche. Their relationship starts with distrust and slowly develops into something more.
-        </p>
-
-        <div class="myflix-hero-actions">
-            <button class="myflix-btn myflix-btn-primary" @onclick="PlayKinnPorsche">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+<!-- Live Search Results Section (Shown when searching) -->
+@if (HasSearch)
+{
+    <section class="myflix-section-block myflix-search-results">
+        <div class="myflix-section-header">
+            <h2>
+                <span>Search Results for</span>
+                <span class="search-highlight">"@SearchQuery"</span>
+                <span class="search-count-badge">@SearchResults.Count matches</span>
+            </h2>
+            <button type="button" class="myflix-see-all" @onclick="ClearSearch">
+                <span>Clear</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
-                <span>Play Now</span>
             </button>
+        </div>
 
-            <button class="myflix-btn myflix-btn-secondary @(WatchLaterThaiIds.Contains(7) ? "active" : "")" @onclick="ToggleHeroWatchLater" title="Toggle Watch Later">
-                @if (WatchLaterThaiIds.Contains(7))
+        @if (!SearchResults.Any())
+        {
+            <div class="myflix-no-data">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <p>No titles matched your search query. Try keywords like <em>Kingdom</em>, <em>KinnPorsche</em>, or <em>Your Name</em>.</p>
+            </div>
+        }
+        else
+        {
+            <div class="myflix-poster-grid">
+                @foreach (var item in SearchResults)
                 {
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span>In My List ✓</span>
+                    <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => NavigateToDrama(item.Id)">
+                        <img src="@item.PosterUrl" alt="@item.Title" class="myflix-poster-img" />
+                        <div class="myflix-card-badge-top">
+                            <span class="badge-cat">@item.Category</span>
+                            <span class="badge-rating">★ @item.Rating</span>
+                        </div>
+                        <div class="myflix-poster-content">
+                            <h3>@item.Title</h3>
+                            <p>@item.Year • @item.Category</p>
+                        </div>
+                    </article>
                 }
-                else
-                {
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
+            </div>
+        }
+    </section>
+}
+
+<!-- Featured Hero Banner Carousel (Shown when not searching) -->
+@if (!HasSearch && (SelectedFilter == "All" || SelectedFilter == "Trending"))
+{
+    var slide = CurrentHeroSlide;
+    <section class="myflix-hero-banner">
+        <div class="myflix-hero-backdrop">
+            <div class="myflix-hero-img-wrapper">
+                <img src="@slide.PosterUrl" alt="@slide.Title Featured" class="myflix-hero-bg-img" />
+            </div>
+            <div class="myflix-hero-overlay"></div>
+        </div>
+
+        <!-- Carousel Navigation Chevrons -->
+        <button type="button" class="myflix-hero-nav prev" @onclick="PrevSlide" title="Previous title">
+            ‹
+        </button>
+        <button type="button" class="myflix-hero-nav next" @onclick="NextSlide" title="Next title">
+            ›
+        </button>
+
+        <div class="myflix-hero-content">
+            <div class="myflix-hero-badge">
+                <span class="hero-badge-dot"></span>
+                <span>@slide.Badge</span>
+                <span class="hero-badge-tag">@slide.Category</span>
+            </div>
+
+            <h1 class="myflix-hero-title">
+                @slide.Title
+                <span class="myflix-hero-script">@slide.Script</span>
+            </h1>
+
+            <p class="myflix-hero-desc">
+                @slide.Description
+            </p>
+
+            <div class="myflix-hero-actions">
+                <button class="myflix-btn myflix-btn-primary" @onclick="PlayCurrentHeroSlide">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
                     </svg>
-                    <span>My List +</span>
+                    <span>Play Now</span>
+                </button>
+
+                <button class="myflix-btn myflix-btn-secondary @(IsCurrentHeroInWatchLater() ? "active" : "")"
+                        @onclick="ToggleCurrentHeroWatchLater"
+                        title="Toggle Watch Later">
+                    @if (IsCurrentHeroInWatchLater())
+                    {
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>In My List ✓</span>
+                    }
+                    else
+                    {
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>My List +</span>
+                    }
+                </button>
+            </div>
+
+            <!-- Carousel Slide Indicator Pills -->
+            <div class="myflix-carousel-dots">
+                @for (int i = 0; i < HeroSlides.Count; i++)
+                {
+                    int index = i;
+                    <span class="dot @(index == CurrentSlideIndex ? "active" : "")" @onclick="() => GoToSlide(index)"></span>
                 }
-            </button>
+            </div>
         </div>
+    </section>
+}
 
-        <!-- Carousel Dots -->
-        <div class="myflix-carousel-dots">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-        </div>
-    </div>
-</section>
-
-<!-- Continue Watching Section (Dynamic Last Watched) -->
-@if (ContinueWatchingItems != null && ContinueWatchingItems.Any())
+<!-- Continue Watching Section -->
+@if (!HasSearch && ContinueWatchingItems != null && ContinueWatchingItems.Any() && (SelectedFilter == "All" || SelectedFilter == "Trending"))
 {
     <section class="myflix-section-block">
         <div class="myflix-section-header">
-            <h2>Continue Watching</h2>
+            <h2>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span>Continue Watching</span>
+            </h2>
             <a href="/watch-later" class="myflix-see-all">
                 <span>See All</span>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -153,181 +266,217 @@
 }
 
 <!-- Thai BL Series Section -->
-<section class="myflix-section-block">
-    <div class="myflix-section-header">
-        <h2>Thai BL Series</h2>
-        <a href="/category/bl-series" class="myflix-see-all">
-            <span>See All</span>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-        </a>
-    </div>
+@if (!HasSearch && (SelectedFilter == "All" || SelectedFilter == "Thai BL" || SelectedFilter == "Trending"))
+{
+    <section class="myflix-section-block">
+        <div class="myflix-section-header">
+            <h2>
+                <span class="section-flag">🇹🇭</span>
+                <span>Thai BL Series</span>
+            </h2>
+            <a href="/category/bl-series" class="myflix-see-all">
+                <span>Explore All</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </a>
+        </div>
 
-    @if (IsLoading)
-    {
-        <div class="myflix-loading">
-            <p>Loading...</p>
-        </div>
-    }
-    else if (Thais != null && Thais.Any())
-    {
-        <div class="myflix-poster-grid">
-            @foreach (var thai in Thais)
-            {
-                <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => NavigateToDrama(thai.Id)">
-                    <img src="@thai.PosterUrl" alt="@thai.Title" class="myflix-poster-img" />
-                    <div class="myflix-card-actions" @onclick:stopPropagation="true">
-                        <button type="button"
-                                class="myflix-card-later @(WatchLaterThaiIds.Contains(thai.Id) ? "active" : "")"
-                                title="@(WatchLaterThaiIds.Contains(thai.Id) ? "Remove from Watch Later" : "Add to Watch Later")"
-                                @onclick="() => ToggleWatchLaterThai(thai)">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="@(WatchLaterThaiIds.Contains(thai.Id) ? "#10B981" : "none")" stroke="@(WatchLaterThaiIds.Contains(thai.Id) ? "#10B981" : "currentColor")" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
-                        </button>
-                        <button type="button"
-                                class="myflix-card-heart @(FavoriteThaiIds.Contains(thai.Id) ? "active" : "")"
-                                title="@(FavoriteThaiIds.Contains(thai.Id) ? "Remove from Favorites" : "Add to Favorites")"
-                                @onclick="() => ToggleFavoriteThai(thai)">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="@(FavoriteThaiIds.Contains(thai.Id) ? "#DE7149" : "none")" stroke="@(FavoriteThaiIds.Contains(thai.Id) ? "#DE7149" : "currentColor")" stroke-width="2.2">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="myflix-poster-content">
-                        <h3>@thai.Title</h3>
-                    </div>
-                </article>
-            }
-        </div>
-    }
-    else
-    {
-        <div class="myflix-no-data">
-            <p>No Thai series available at the moment.</p>
-        </div>
-    }
-</section>
-
-<!-- Korean Dramas Section -->
-<section class="myflix-section-block">
-    <div class="myflix-section-header">
-        <h2>Korean Dramas</h2>
-        <a href="/category/korean-drama" class="myflix-see-all">
-            <span>See All</span>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-        </a>
-    </div>
-
-    @if (IsLoading)
-    {
-        <div class="myflix-loading">
-            <p>Loading...</p>
-        </div>
-    }
-    else if (Dramas != null && Dramas.Any())
-    {
-        <div class="myflix-poster-grid">
-            @foreach (var drama in Dramas)
-            {
-                <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => PlayDramaAsync(drama.ContentId, drama.Title, drama.Description, drama.PosterUrl)">
-                    <img src="@drama.PosterUrl" alt="@drama.Title" class="myflix-poster-img" />
-                    <div class="myflix-card-actions" @onclick:stopPropagation="true">
-                        <button type="button"
-                                class="myflix-card-later @(WatchLaterDramaIds.Contains(drama.ContentId) ? "active" : "")"
-                                title="@(WatchLaterDramaIds.Contains(drama.ContentId) ? "Remove from Watch Later" : "Add to Watch Later")"
-                                @onclick="() => ToggleWatchLaterDrama(drama)">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="@(WatchLaterDramaIds.Contains(drama.ContentId) ? "#10B981" : "none")" stroke="@(WatchLaterDramaIds.Contains(drama.ContentId) ? "#10B981" : "currentColor")" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
-                        </button>
-                        <button type="button"
-                                class="myflix-card-heart @(FavoriteDramaIds.Contains(drama.ContentId) ? "active" : "")"
-                                title="@(FavoriteDramaIds.Contains(drama.ContentId) ? "Remove from Favorites" : "Add to Favorites")"
-                                @onclick="() => ToggleFavoriteDrama(drama)">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="@(FavoriteDramaIds.Contains(drama.ContentId) ? "#DE7149" : "none")" stroke="@(FavoriteDramaIds.Contains(drama.ContentId) ? "#DE7149" : "currentColor")" stroke-width="2.2">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="myflix-poster-content">
-                        <h3>@drama.Title</h3>
-                    </div>
-                </article>
-            }
-        </div>
-    }
-    else
-    {
-        <div class="myflix-no-data">
-            <p>No Korean dramas available at the moment.</p>
-        </div>
-    }
-</section>
-
-<!-- Movie Section -->
-<section class="myflix-section-block">
-    <div class="myflix-section-header">
-        <h2>Movies</h2>
-        <a href="/category/movies" class="myflix-see-all">
-            <span>See All</span>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-        </a>
-    </div>
-
-    <div class="myflix-poster-grid">
         @if (IsLoading)
         {
             <div class="myflix-loading">
-                <p>Loading...</p>
+                <div class="spinner-violet"></div>
+                <p>Loading curated Thai series...</p>
             </div>
         }
-        else if (Movies != null && Movies.Any())
+        else if (Thais != null && Thais.Any())
         {
-            @foreach (var movie in Movies)
-            {
-                <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => NavigateToDrama(movie.Id)">
-                    <img src="@movie.PosterUrl" alt="@movie.Title" class="myflix-poster-img" />
-                    <div class="myflix-card-actions" @onclick:stopPropagation="true">
-                        <button type="button"
-                                class="myflix-card-later @(WatchLaterMovieIds.Contains(movie.Id) ? "active" : "")"
-                                title="@(WatchLaterMovieIds.Contains(movie.Id) ? "Remove from Watch Later" : "Add to Watch Later")"
-                                @onclick="() => ToggleWatchLaterMovie(movie)">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="@(WatchLaterMovieIds.Contains(movie.Id) ? "#10B981" : "none")" stroke="@(WatchLaterMovieIds.Contains(movie.Id) ? "#10B981" : "currentColor")" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
-                        </button>
-                        <button type="button"
-                                class="myflix-card-heart @(FavoriteMovieIds.Contains(movie.Id) ? "active" : "")"
-                                title="@(FavoriteMovieIds.Contains(movie.Id) ? "Remove from Favorites" : "Add to Favorites")"
-                                @onclick="() => ToggleFavoriteMovie(movie)">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="@(FavoriteMovieIds.Contains(movie.Id) ? "#DE7149" : "none")" stroke="@(FavoriteMovieIds.Contains(movie.Id) ? "#DE7149" : "currentColor")" stroke-width="2.2">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="myflix-poster-content">
-                        <h3>@movie.Title</h3>
-                    </div>
-                </article>
-            }
+            <div class="myflix-poster-grid">
+                @foreach (var thai in Thais)
+                {
+                    <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => NavigateToDrama(thai.Id)">
+                        <img src="@thai.PosterUrl" alt="@thai.Title" class="myflix-poster-img" loading="lazy" />
+                        <div class="myflix-card-badge-top">
+                            <span class="badge-cat">BL</span>
+                            <span class="badge-rating">★ 9.2</span>
+                        </div>
+                        <div class="myflix-card-actions" @onclick:stopPropagation="true">
+                            <button type="button"
+                                    class="myflix-card-later @(WatchLaterThaiIds.Contains(thai.Id) ? "active" : "")"
+                                    title="@(WatchLaterThaiIds.Contains(thai.Id) ? "Remove from Watch Later" : "Add to Watch Later")"
+                                    @onclick="() => ToggleWatchLaterThai(thai)">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="@(WatchLaterThaiIds.Contains(thai.Id) ? "#A78BFA" : "none")" stroke="@(WatchLaterThaiIds.Contains(thai.Id) ? "#A78BFA" : "currentColor")" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </button>
+                            <button type="button"
+                                    class="myflix-card-heart @(FavoriteThaiIds.Contains(thai.Id) ? "active" : "")"
+                                    title="@(FavoriteThaiIds.Contains(thai.Id) ? "Remove from Favorites" : "Add to Favorites")"
+                                    @onclick="() => ToggleFavoriteThai(thai)">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="@(FavoriteThaiIds.Contains(thai.Id) ? "#F472B6" : "none")" stroke="@(FavoriteThaiIds.Contains(thai.Id) ? "#F472B6" : "currentColor")" stroke-width="2.2">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="myflix-poster-content">
+                            <h3>@thai.Title</h3>
+                            <p>@(thai.ReleaseYear?.ToString() ?? "2024") • Thai Romance</p>
+                        </div>
+                    </article>
+                }
+            </div>
         }
         else
         {
             <div class="myflix-no-data">
-                <p>No movies available at the moment.</p>
+                <p>No Thai series available at the moment.</p>
             </div>
         }
-    </div>
-</section>
+    </section>
+}
+
+<!-- Korean Dramas Section -->
+@if (!HasSearch && (SelectedFilter == "All" || SelectedFilter == "Korean Drama" || SelectedFilter == "Trending"))
+{
+    <section class="myflix-section-block">
+        <div class="myflix-section-header">
+            <h2>
+                <span class="section-flag">🇰🇷</span>
+                <span>Korean Dramas</span>
+            </h2>
+            <a href="/category/korean-drama" class="myflix-see-all">
+                <span>Explore All</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </a>
+        </div>
+
+        @if (IsLoading)
+        {
+            <div class="myflix-loading">
+                <div class="spinner-violet"></div>
+                <p>Loading Korean dramas...</p>
+            </div>
+        }
+        else if (Dramas != null && Dramas.Any())
+        {
+            <div class="myflix-poster-grid">
+                @foreach (var drama in Dramas)
+                {
+                    <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => PlayDramaAsync(drama.ContentId, drama.Title, drama.Description, drama.PosterUrl)">
+                        <img src="@drama.PosterUrl" alt="@drama.Title" class="myflix-poster-img" loading="lazy" />
+                        <div class="myflix-card-badge-top">
+                            <span class="badge-cat">HD</span>
+                            <span class="badge-rating">★ 9.4</span>
+                        </div>
+                        <div class="myflix-card-actions" @onclick:stopPropagation="true">
+                            <button type="button"
+                                    class="myflix-card-later @(WatchLaterDramaIds.Contains(drama.ContentId) ? "active" : "")"
+                                    title="@(WatchLaterDramaIds.Contains(drama.ContentId) ? "Remove from Watch Later" : "Add to Watch Later")"
+                                    @onclick="() => ToggleWatchLaterDrama(drama)">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="@(WatchLaterDramaIds.Contains(drama.ContentId) ? "#A78BFA" : "none")" stroke="@(WatchLaterDramaIds.Contains(drama.ContentId) ? "#A78BFA" : "currentColor")" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </button>
+                            <button type="button"
+                                    class="myflix-card-heart @(FavoriteDramaIds.Contains(drama.ContentId) ? "active" : "")"
+                                    title="@(FavoriteDramaIds.Contains(drama.ContentId) ? "Remove from Favorites" : "Add to Favorites")"
+                                    @onclick="() => ToggleFavoriteDrama(drama)">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="@(FavoriteDramaIds.Contains(drama.ContentId) ? "#F472B6" : "none")" stroke="@(FavoriteDramaIds.Contains(drama.ContentId) ? "#F472B6" : "currentColor")" stroke-width="2.2">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="myflix-poster-content">
+                            <h3>@drama.Title</h3>
+                            <p>@(drama.ReleaseDate?.Year.ToString() ?? "2023") • Korean Drama</p>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="myflix-no-data">
+                <p>No Korean dramas available at the moment.</p>
+            </div>
+        }
+    </section>
+}
+
+<!-- Movie Section -->
+@if (!HasSearch && (SelectedFilter == "All" || SelectedFilter == "Movies" || SelectedFilter == "Trending"))
+{
+    <section class="myflix-section-block">
+        <div class="myflix-section-header">
+            <h2>
+                <span class="section-flag">🎬</span>
+                <span>Featured Movies &amp; Anime</span>
+            </h2>
+            <a href="/category/movies" class="myflix-see-all">
+                <span>Explore All</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </a>
+        </div>
+
+        <div class="myflix-poster-grid">
+            @if (IsLoading)
+            {
+                <div class="myflix-loading">
+                    <div class="spinner-violet"></div>
+                    <p>Loading feature movies...</p>
+                </div>
+            }
+            else if (Movies != null && Movies.Any())
+            {
+                @foreach (var movie in Movies)
+                {
+                    <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => NavigateToDrama(movie.Id)">
+                        <img src="@movie.PosterUrl" alt="@movie.Title" class="myflix-poster-img" loading="lazy" />
+                        <div class="myflix-card-badge-top">
+                            <span class="badge-cat">4K</span>
+                            <span class="badge-rating">★ 9.1</span>
+                        </div>
+                        <div class="myflix-card-actions" @onclick:stopPropagation="true">
+                            <button type="button"
+                                    class="myflix-card-later @(WatchLaterMovieIds.Contains(movie.Id) ? "active" : "")"
+                                    title="@(WatchLaterMovieIds.Contains(movie.Id) ? "Remove from Watch Later" : "Add to Watch Later")"
+                                    @onclick="() => ToggleWatchLaterMovie(movie)">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="@(WatchLaterMovieIds.Contains(movie.Id) ? "#A78BFA" : "none")" stroke="@(WatchLaterMovieIds.Contains(movie.Id) ? "#A78BFA" : "currentColor")" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </button>
+                            <button type="button"
+                                    class="myflix-card-heart @(FavoriteMovieIds.Contains(movie.Id) ? "active" : "")"
+                                    title="@(FavoriteMovieIds.Contains(movie.Id) ? "Remove from Favorites" : "Add to Favorites")"
+                                    @onclick="() => ToggleFavoriteMovie(movie)">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="@(FavoriteMovieIds.Contains(movie.Id) ? "#F472B6" : "none")" stroke="@(FavoriteMovieIds.Contains(movie.Id) ? "#F472B6" : "currentColor")" stroke-width="2.2">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="myflix-poster-content">
+                            <h3>@movie.Title</h3>
+                            <p>@(movie.ReleaseYear?.ToString() ?? "2023") • Movie</p>
+                        </div>
+                    </article>
+                }
+            }
+            else
+            {
+                <div class="myflix-no-data">
+                    <p>No movies available at the moment.</p>
+                </div>
+            }
+        </div>
+    </section>
+}

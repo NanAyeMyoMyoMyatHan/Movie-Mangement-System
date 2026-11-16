@@ -469,8 +469,8 @@
     .drama-spinner {
         width: 44px;
         height: 44px;
-        border: 3.5px solid rgba(24, 59, 54, 0.15);
-        border-top-color: #DE7149;
+        border: 3.5px solid rgba(167, 139, 250, 0.2);
+        border-top-color: #8B5CF6;
         border-radius: 50%;
         animation: dSpin 0.8s linear infinite;
         margin: 0 auto 16px;
@@ -561,7 +561,7 @@ else if (Drama != null)
                         }
                         @if (IsYoutubeUrl(ActiveVideoUrl))
                         {
-                            <button type="button" class="btn-toggle-stream" @onclick="TogglePlayerMode" title="Toggle between YouTube & Direct Video Stream" style="background: rgba(222, 113, 73, 0.15); border: 1px solid rgba(222, 113, 73, 0.3); color: #DE7149; border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <button type="button" class="btn-toggle-stream" @onclick="TogglePlayerMode" title="Toggle between YouTube & Direct Video Stream" style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(167, 139, 250, 0.3); color: #C4B5FD; border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                                 @(UseDirectStream ? "📺 Switch to YouTube" : "⚡ Switch to Direct Stream")
                             </button>
                         }
@@ -620,7 +620,7 @@ else if (Drama != null)
                     }
                     else
                     {
-                        <a href="/login?returnUrl=/drama/@Id" class="drama-btn-play-hero" style="background:#DE7149; text-decoration:none;">
+                        <a href="/login?returnUrl=/drama/@Id" class="drama-btn-play-hero" style="background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%); text-decoration:none;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
                             <span>Sign In to Watch</span>
                         </a>
@@ -721,7 +721,7 @@ else if (Drama != null)
                             }
                             else
                             {
-                                <button type="button" class="drama-ep-circle-play-btn" @onclick="() => PlayEpisode(currentEp)" title="Sign in to stream Episode @currentEp.EpisodeNumber" style="border-color: rgba(222, 113, 73, 0.4); color: #DE7149;">
+                                <button type="button" class="drama-ep-circle-play-btn" @onclick="() => PlayEpisode(currentEp)" title="Sign in to stream Episode @currentEp.EpisodeNumber" style="border-color: rgba(236, 72, 153, 0.4); color: #F472B6;">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>

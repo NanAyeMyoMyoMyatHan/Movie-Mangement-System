@@ -1,4 +1,4 @@
-/* Toast Notification */
+﻿/* Toast Notification */
 .wl-toast {
     position: fixed;
     bottom: 24px;
@@ -8,9 +8,9 @@
     align-items: center;
     gap: 10px;
     padding: 12px 20px;
-    background: #0F2420;
-    color: #F4EFEA;
-    border: 1px solid #DE7149;
+    background: #151026;
+    color: #F5F3FF;
+    border: 1px solid #EC4899;
     border-radius: 9999px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     font-size: 13.5px;
@@ -51,7 +51,7 @@
     align-items: center;
     gap: 10px;
     background: #FFFFFF;
-    border: 1px solid rgba(24, 59, 54, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.2);
     border-radius: 9999px;
     padding: 9px 18px;
     width: 100%;
@@ -80,7 +80,7 @@
 .myflix-notif-btn {
     position: relative;
     background: #FFFFFF;
-    border: 1px solid rgba(24, 59, 54, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.2);
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -98,7 +98,7 @@
     right: 9px;
     width: 8px;
     height: 8px;
-    background: #DE7149;
+    background: #EC4899;
     border-radius: 50%;
     border: 2px solid #FFFFFF;
 }
@@ -108,7 +108,7 @@
     align-items: center;
     gap: 10px;
     background: #FFFFFF;
-    border: 1px solid rgba(24, 59, 54, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.2);
     border-radius: 9999px;
     padding: 4px 12px 4px 4px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
@@ -134,10 +134,10 @@
     align-items: flex-end;
     justify-content: space-between;
     gap: 24px;
-    background: linear-gradient(135deg, #0F2420 0%, #16362F 100%);
+    background: linear-gradient(135deg, #151026 0%, #1F1838 100%);
     border-radius: 20px;
     padding: 32px 36px;
-    color: #F4EFEA;
+    color: #F5F3FF;
     margin-bottom: 24px;
     box-shadow: 0 10px 30px rgba(15, 36, 32, 0.15);
 }
@@ -146,8 +146,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(222, 113, 73, 0.2);
-    border: 1px solid rgba(222, 113, 73, 0.4);
+    background: rgba(236, 72, 153, 0.2);
+    border: 1px solid rgba(236, 72, 153, 0.4);
     color: #f79672;
     padding: 5px 12px;
     border-radius: 9999px;
@@ -227,7 +227,7 @@
     gap: 6px;
     padding: 8px 16px;
     background: #FFFFFF;
-    border: 1px solid rgba(24, 59, 54, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.2);
     border-radius: 9999px;
     color: #183B36;
     font-size: 13px;
@@ -237,15 +237,15 @@
 }
 
 .wl-pill:hover {
-    border-color: #DE7149;
-    color: #DE7149;
+    border-color: #EC4899;
+    color: #EC4899;
 }
 
 .wl-pill.active {
-    background: #DE7149;
+    background: #EC4899;
     color: #FFFFFF;
-    border-color: #DE7149;
-    box-shadow: 0 4px 12px rgba(222, 113, 73, 0.3);
+    border-color: #EC4899;
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
 }
 
 .wl-pill-count {
@@ -294,7 +294,7 @@
 
 .wl-card {
     background: #FFFFFF;
-    border: 1px solid rgba(24, 59, 54, 0.08);
+    border: 1px solid rgba(167, 139, 250, 0.15);
     border-radius: 16px;
     overflow: hidden;
     display: flex;
@@ -306,7 +306,7 @@
 .wl-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 28px rgba(15, 36, 32, 0.1);
-    border-color: rgba(222, 113, 73, 0.3);
+    border-color: rgba(236, 72, 153, 0.3);
 }
 
 /* Card Poster */
@@ -314,7 +314,7 @@
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-    background: #0F2420;
+    background: #151026;
     cursor: pointer;
     overflow: hidden;
 }
@@ -349,13 +349,13 @@
     width: 46px;
     height: 46px;
     border-radius: 50%;
-    background: #DE7149;
+    background: #EC4899;
     border: none;
     color: #FFFFFF;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 18px rgba(222, 113, 73, 0.5);
+    box-shadow: 0 6px 18px rgba(236, 72, 153, 0.5);
     cursor: pointer;
     transform: scale(0.9);
     transition: transform 0.2s ease;
@@ -370,7 +370,7 @@
     top: 10px;
     left: 10px;
     background: rgba(15, 36, 32, 0.85);
-    color: #F4EFEA;
+    color: #F5F3FF;
     backdrop-filter: blur(4px);
     font-size: 10.5px;
     font-weight: 700;
@@ -412,7 +412,7 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background: rgba(24, 59, 54, 0.08);
+    background: rgba(167, 139, 250, 0.15);
     color: #183B36;
     font-size: 11px;
     font-weight: 700;
@@ -421,7 +421,7 @@
 }
 
 .wl-status-pill.watching {
-    background: rgba(222, 113, 73, 0.15);
+    background: rgba(236, 72, 153, 0.15);
     color: #c7562c;
 }
 
@@ -444,7 +444,7 @@
 }
 
 .wl-card-title:hover {
-    color: #DE7149;
+    color: #EC4899;
 }
 
 .wl-card-desc {
@@ -475,7 +475,7 @@
 
 .wl-progress-fill {
     height: 100%;
-    background: #DE7149;
+    background: #EC4899;
     border-radius: 9999px;
 }
 
@@ -491,7 +491,7 @@
     align-items: center;
     gap: 10px;
     padding-top: 10px;
-    border-top: 1px solid rgba(24, 59, 54, 0.08);
+    border-top: 1px solid rgba(167, 139, 250, 0.15);
 }
 
 .wl-btn-watch {
@@ -500,7 +500,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    background: #DE7149;
+    background: #EC4899;
     color: #FFFFFF;
     border: none;
     border-radius: 9999px;
@@ -550,8 +550,8 @@
 .wl-spinner {
     width: 36px;
     height: 36px;
-    border: 3px solid rgba(222, 113, 73, 0.2);
-    border-top-color: #DE7149;
+    border: 3px solid rgba(236, 72, 153, 0.2);
+    border-top-color: #EC4899;
     border-radius: 50%;
     animation: wlSpin 0.7s linear infinite;
 }
@@ -578,8 +578,8 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background: rgba(222, 113, 73, 0.12);
-    color: #DE7149;
+    background: rgba(236, 72, 153, 0.12);
+    color: #EC4899;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -604,7 +604,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: #DE7149;
+    background: #EC4899;
     color: #FFFFFF;
     border: none;
     padding: 10px 22px;
@@ -612,7 +612,7 @@
     font-size: 13.5px;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(222, 113, 73, 0.35);
+    box-shadow: 0 4px 14px rgba(236, 72, 153, 0.35);
     transition: all 0.2s ease;
 }
 
@@ -633,32 +633,32 @@
 .watch-guest-card {
     text-align: center;
     max-width: 500px;
-    background: #0F2420;
+    background: #151026;
     border: 1px solid rgba(244, 239, 234, 0.12);
     border-radius: 24px;
     padding: 48px 36px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-    color: #F4EFEA;
+    color: #F5F3FF;
 }
 
 .watch-guest-icon {
     width: 76px;
     height: 76px;
     border-radius: 22px;
-    background: rgba(222, 113, 73, 0.12);
+    background: rgba(236, 72, 153, 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 20px;
-    border: 1px solid rgba(222, 113, 73, 0.25);
-    color: #DE7149;
+    border: 1px solid rgba(236, 72, 153, 0.25);
+    color: #EC4899;
 }
 
 .watch-guest-card h2 {
     font-size: 24px;
     font-weight: 800;
     margin-bottom: 12px;
-    color: #F4EFEA;
+    color: #F5F3FF;
 }
 
 .watch-guest-card p {
@@ -683,14 +683,14 @@
     width: 100%;
     max-width: 280px;
     padding: 13px 24px;
-    background: #DE7149;
+    background: #EC4899;
     color: #fff;
     border-radius: 12px;
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
     transition: transform 0.15s ease, background 0.15s ease;
-    box-shadow: 0 6px 18px rgba(222, 113, 73, 0.35);
+    box-shadow: 0 6px 18px rgba(236, 72, 153, 0.35);
 }
 
 .watch-guest-btn-primary:hover {
@@ -708,5 +708,5 @@
 }
 
 .watch-guest-btn-secondary:hover {
-    color: #F4EFEA;
+    color: #F5F3FF;
 }

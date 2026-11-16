@@ -10,6 +10,29 @@ using System.Threading.Tasks;
 
 namespace DotNetProject.Balzor.Components.Pages
 {
+    public class HeroSlideItem
+    {
+        public long Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Script { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string PosterUrl { get; set; } = string.Empty;
+        public string Badge { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public bool IsContent { get; set; } = true;
+    }
+
+    public class SearchResultItem
+    {
+        public long Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string? PosterUrl { get; set; }
+        public string Category { get; set; } = string.Empty;
+        public string? Year { get; set; }
+        public double Rating { get; set; } = 9.0;
+        public bool IsContent { get; set; }
+    }
+
     public partial class Index : ComponentBase, IDisposable
     {
         [Inject]
@@ -45,6 +68,71 @@ namespace DotNetProject.Balzor.Components.Pages
 
         protected bool IsLoading { get; set; } = true;
         protected string? ErrorMessage { get; set; }
+
+        // Live Search State
+        protected string SearchQuery { get; set; } = string.Empty;
+        protected bool HasSearch => !string.IsNullOrWhiteSpace(SearchQuery);
+
+        // Filter Pills State
+        protected string SelectedFilter { get; set; } = "All";
+
+        // Toast Feedback State
+        protected string? ToastMessage { get; set; }
+        protected bool ShowToast { get; set; }
+        private System.Threading.CancellationTokenSource? _toastCts;
+
+        // Hero Carousel
+        protected int CurrentSlideIndex { get; set; } = 0;
+        protected List<HeroSlideItem> HeroSlides { get; set; } = new()
+        {
+            new HeroSlideItem
+            {
+                Id = 7,
+                Title = "KinnPorsche",
+                Script = "The Series",
+                Description = "The second son of a prominent mafia family, Kinn, is assigned an exceptional bodyguard, Porsche. Their bond starts with friction and evolves into an unbreakable romance.",
+                PosterUrl = "https://upload.wikimedia.org/wikipedia/en/9/9e/KinnPorsche_series_poster.jpg",
+                Badge = "Trending #1 Worldwide",
+                Category = "Thai BL",
+                IsContent = true
+            },
+            new HeroSlideItem
+            {
+                Id = 20003,
+                Title = "Kingdom",
+                Script = "Crown Prince",
+                Description = "While strange rumors grip the Joseon kingdom, the crown prince investigates a mysterious plague that turns victims into undead creatures in this thrilling Korean period epic.",
+                PosterUrl = "/images/kingdom.jpg",
+                Badge = "Top Rated Series",
+                Category = "Korean Drama",
+                IsContent = true
+            },
+            new HeroSlideItem
+            {
+                Id = 10002,
+                Title = "Your Name",
+                Script = "Kimi no Na wa",
+                Description = "Two high school students, Mitsuha and Taki, discover a magical bond that allows them to swap bodies across time, culminating in an emotional, unforgettable journey.",
+                PosterUrl = "https://upload.wikimedia.org/wikipedia/en/0/0b/Your_Name_poster.png",
+                Badge = "4K Cinematic Masterpiece",
+                Category = "Movie",
+                IsContent = false
+            },
+            new HeroSlideItem
+            {
+                Id = 30001,
+                Title = "Parasite",
+                Script = "Academy Award Winner",
+                Description = "Greed and class disparity threaten the symbiotic relationship between the wealthy Park family and the destitute Kim clan in Bong Joon-ho's historic masterpiece.",
+                PosterUrl = "https://upload.wikimedia.org/wikipedia/en/5/53/Parasite_%282019_film%29.png",
+                Badge = "Best Picture Winner",
+                Category = "Movie",
+                IsContent = false
+            }
+        };
+
+        protected HeroSlideItem CurrentHeroSlide =>
+            HeroSlides.Count > 0 ? HeroSlides[CurrentSlideIndex % HeroSlides.Count] : HeroSlides[0];
 
         protected override async Task OnInitializedAsync()
         {
@@ -174,6 +262,185 @@ namespace DotNetProject.Balzor.Components.Pages
             IsLoading = false;
         }
 
+        // Live Search Results
+        protected List<SearchResultItem> SearchResults
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(SearchQuery)) return new();
+                var q = SearchQuery.Trim().ToLowerInvariant();
+                var list = new List<SearchResultItem>();
+
+                foreach (var d in Dramas.Where(d => d.Title != null && d.Title.ToLowerInvariant().Contains(q)))
+                {
+                    list.Add(new SearchResultItem
+                    {
+                        Id = d.ContentId,
+                        Title = d.Title,
+                        PosterUrl = d.PosterUrl,
+                        Category = "Korean Drama",
+                        Year = d.ReleaseDate?.Year.ToString() ?? "2023",
+                        Rating = 9.4,
+                        IsContent = true
+                    });
+                }
+
+                foreach (var t in Thais.Where(t => t.Title != null && t.Title.ToLowerInvariant().Contains(q)))
+                {
+                    list.Add(new SearchResultItem
+                    {
+                        Id = t.Id,
+                        Title = t.Title,
+                        PosterUrl = t.PosterUrl,
+                        Category = "Thai BL",
+                        Year = t.ReleaseYear?.ToString() ?? "2024",
+                        Rating = 9.2,
+                        IsContent = true
+                    });
+                }
+
+                foreach (var m in Movies.Where(m => m.Title != null && m.Title.ToLowerInvariant().Contains(q)))
+                {
+                    list.Add(new SearchResultItem
+                    {
+                        Id = m.Id,
+                        Title = m.Title,
+                        PosterUrl = m.PosterUrl,
+                        Category = "Movie",
+                        Year = m.ReleaseYear?.ToString() ?? "2023",
+                        Rating = 9.1,
+                        IsContent = false
+                    });
+                }
+
+                return list;
+            }
+        }
+
+        protected void ClearSearch()
+        {
+            SearchQuery = string.Empty;
+        }
+
+        protected void SelectFilter(string filter)
+        {
+            SelectedFilter = filter;
+        }
+
+        // Hero Slide Methods
+        protected void NextSlide()
+        {
+            CurrentSlideIndex = (CurrentSlideIndex + 1) % HeroSlides.Count;
+        }
+
+        protected void PrevSlide()
+        {
+            CurrentSlideIndex = (CurrentSlideIndex - 1 + HeroSlides.Count) % HeroSlides.Count;
+        }
+
+        protected void GoToSlide(int index)
+        {
+            CurrentSlideIndex = index;
+        }
+
+        public void PlayCurrentHeroSlide()
+        {
+            var slide = CurrentHeroSlide;
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo($"/login?returnUrl=/drama/{slide.Id}");
+                return;
+            }
+            if (slide.IsContent)
+            {
+                NavigateToDrama(slide.Id);
+            }
+            else
+            {
+                NavigateToDrama(slide.Id);
+            }
+        }
+
+        public async Task ToggleCurrentHeroWatchLater()
+        {
+            var slide = CurrentHeroSlide;
+            if (!AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo("/login?returnUrl=/");
+                return;
+            }
+
+            var item = new WatchLaterItem
+            {
+                Id = slide.Id,
+                IsContent = slide.IsContent,
+                Title = slide.Title,
+                PosterUrl = slide.PosterUrl,
+                Category = slide.Category,
+                Description = slide.Description,
+                TotalEpisodes = 14,
+                CurrentEpisode = 1,
+                Status = "Want to Watch",
+                AddedAt = DateTime.UtcNow
+            };
+
+            bool added = await WatchLaterService.ToggleWatchLaterAsync(item);
+            if (slide.Category.Contains("Thai", StringComparison.OrdinalIgnoreCase))
+            {
+                if (added) WatchLaterThaiIds.Add(slide.Id);
+                else WatchLaterThaiIds.Remove(slide.Id);
+            }
+            else if (slide.Category.Contains("Korean", StringComparison.OrdinalIgnoreCase))
+            {
+                if (added) WatchLaterDramaIds.Add(slide.Id);
+                else WatchLaterDramaIds.Remove(slide.Id);
+            }
+            else
+            {
+                if (added) WatchLaterMovieIds.Add(slide.Id);
+                else WatchLaterMovieIds.Remove(slide.Id);
+            }
+
+            TriggerToast(added ? $"✓ '{slide.Title}' added to your Watch Later list!" : $"Removed '{slide.Title}' from Watch Later.");
+            StateHasChanged();
+        }
+
+        protected bool IsCurrentHeroInWatchLater()
+        {
+            var slide = CurrentHeroSlide;
+            if (slide.Category.Contains("Thai", StringComparison.OrdinalIgnoreCase))
+                return WatchLaterThaiIds.Contains(slide.Id);
+            if (slide.Category.Contains("Korean", StringComparison.OrdinalIgnoreCase))
+                return WatchLaterDramaIds.Contains(slide.Id);
+            return WatchLaterMovieIds.Contains(slide.Id);
+        }
+
+        // Toast Feedback System
+        protected void TriggerToast(string message)
+        {
+            _toastCts?.Cancel();
+            _toastCts = new System.Threading.CancellationTokenSource();
+            var token = _toastCts.Token;
+
+            ToastMessage = message;
+            ShowToast = true;
+            StateHasChanged();
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(3200, token);
+                    if (!token.IsCancellationRequested)
+                    {
+                        ShowToast = false;
+                        await InvokeAsync(StateHasChanged);
+                    }
+                }
+                catch { }
+            }, token);
+        }
+
         private async Task RefreshFavoritesCacheAsync()
         {
             var favs = await FavoriteService.GetFavoritesAsync();
@@ -273,12 +540,13 @@ namespace DotNetProject.Balzor.Components.Pages
                 Category = "Korean Drama",
                 Description = drama.Description,
                 Year = drama.ReleaseDate?.Year.ToString() ?? "2023",
-                Rating = 9.2,
+                Rating = 9.4,
                 TotalEpisodes = 16
             };
             bool added = await FavoriteService.ToggleFavoriteAsync(item);
             if (added) FavoriteDramaIds.Add(drama.ContentId);
             else FavoriteDramaIds.Remove(drama.ContentId);
+            TriggerToast(added ? $"✓ '{drama.Title}' added to Favorites!" : $"Removed '{drama.Title}' from Favorites.");
             StateHasChanged();
         }
 
@@ -305,6 +573,7 @@ namespace DotNetProject.Balzor.Components.Pages
             bool added = await WatchLaterService.ToggleWatchLaterAsync(item);
             if (added) WatchLaterDramaIds.Add(drama.ContentId);
             else WatchLaterDramaIds.Remove(drama.ContentId);
+            TriggerToast(added ? $"✓ '{drama.Title}' saved to Watch Later!" : $"Removed '{drama.Title}' from Watch Later.");
             StateHasChanged();
         }
 
@@ -330,6 +599,7 @@ namespace DotNetProject.Balzor.Components.Pages
             bool added = await FavoriteService.ToggleFavoriteAsync(item);
             if (added) FavoriteThaiIds.Add(thai.Id);
             else FavoriteThaiIds.Remove(thai.Id);
+            TriggerToast(added ? $"✓ '{thai.Title}' added to Favorites!" : $"Removed '{thai.Title}' from Favorites.");
             StateHasChanged();
         }
 
@@ -356,6 +626,7 @@ namespace DotNetProject.Balzor.Components.Pages
             bool added = await WatchLaterService.ToggleWatchLaterAsync(item);
             if (added) WatchLaterThaiIds.Add(thai.Id);
             else WatchLaterThaiIds.Remove(thai.Id);
+            TriggerToast(added ? $"✓ '{thai.Title}' saved to Watch Later!" : $"Removed '{thai.Title}' from Watch Later.");
             StateHasChanged();
         }
 
@@ -375,12 +646,13 @@ namespace DotNetProject.Balzor.Components.Pages
                 Category = "Movie",
                 Description = $"{movie.Title} is an exciting cinematic feature film.",
                 Year = movie.ReleaseYear?.ToString() ?? "2023",
-                Rating = 9.0,
+                Rating = 9.1,
                 TotalEpisodes = 1
             };
             bool added = await FavoriteService.ToggleFavoriteAsync(item);
             if (added) FavoriteMovieIds.Add(movie.Id);
             else FavoriteMovieIds.Remove(movie.Id);
+            TriggerToast(added ? $"✓ '{movie.Title}' added to Favorites!" : $"Removed '{movie.Title}' from Favorites.");
             StateHasChanged();
         }
 
@@ -407,33 +679,7 @@ namespace DotNetProject.Balzor.Components.Pages
             bool added = await WatchLaterService.ToggleWatchLaterAsync(item);
             if (added) WatchLaterMovieIds.Add(movie.Id);
             else WatchLaterMovieIds.Remove(movie.Id);
-            StateHasChanged();
-        }
-
-        public async Task ToggleHeroWatchLater()
-        {
-            if (!AuthService.IsAuthenticated())
-            {
-                Nav.NavigateTo("/login?returnUrl=/");
-                return;
-            }
-            long kinnPorscheId = 7;
-            var item = new WatchLaterItem
-            {
-                Id = kinnPorscheId,
-                IsContent = true,
-                Title = "KinnPorsche",
-                PosterUrl = "https://upload.wikimedia.org/wikipedia/en/9/9e/KinnPorsche_series_poster.jpg",
-                Category = "Thai BL",
-                Description = "The second son of a mafia family, Kinn, is assigned a bodyguard, Porsche.",
-                TotalEpisodes = 14,
-                CurrentEpisode = 1,
-                Status = "Want to Watch",
-                AddedAt = DateTime.UtcNow
-            };
-            bool added = await WatchLaterService.ToggleWatchLaterAsync(item);
-            if (added) WatchLaterThaiIds.Add(kinnPorscheId);
-            else WatchLaterThaiIds.Remove(kinnPorscheId);
+            TriggerToast(added ? $"✓ '{movie.Title}' saved to Watch Later!" : $"Removed '{movie.Title}' from Watch Later.");
             StateHasChanged();
         }
 
@@ -477,6 +723,8 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public void Dispose()
         {
+            _toastCts?.Cancel();
+            _toastCts?.Dispose();
             FavoriteService.OnChange -= HandleFavoritesChanged;
             WatchLaterService.OnChange -= HandleWatchLaterChanged;
             WatchHistoryService.OnChange -= HandleHistoryChange;

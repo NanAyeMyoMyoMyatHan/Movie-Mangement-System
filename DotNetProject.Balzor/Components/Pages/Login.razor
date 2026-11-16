@@ -10,19 +10,27 @@
 <PageTitle>Sign In — NangWorld</PageTitle>
 
 <div class="login-wrapper">
-    <!-- Ambient Background Glows -->
-    <div class="login-ambient-1"></div>
-    <div class="login-ambient-2"></div>
+    <!-- Ambient Background Glows (Soft Violet & Soft Pink) -->
+    <div class="login-ambient-violet"></div>
+    <div class="login-ambient-pink"></div>
 
     <div class="login-card">
-        <!-- Logo & Brand -->
+        <!-- Logo & Brand with Violet/Pink Gradient -->
         <div class="login-brand">
             <a href="/" class="login-logo-link">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="#DE7149">
-                    <path d="M6 3.5c0-.9 1-.1.4.1l13.5 7.5c.8.5.8 1.6 0 2.1L7.4 20.6c-.6.4-1.4 0-1.4-.8V3.5z" />
-                </svg>
+                <div class="login-logo-badge">
+                    <svg class="login-logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M6 3.5c0-.9 1-.1.4.1l13.5 7.5c.8.5.8 1.6 0 2.1L7.4 20.6c-.6.4-1.4 0-1.4-.8V3.5z" fill="url(#loginBrandGrad)" />
+                        <defs>
+                            <linearGradient id="loginBrandGrad" x1="6" y1="3.5" x2="20" y2="20.6" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#A78BFA" />
+                                <stop offset="1" stop-color="#F472B6" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
                 <span class="login-logo-text">
-                    <span class="logo-white">Nang</span><span class="logo-accent">World</span>
+                    <span class="logo-pink">Nang</span><span class="logo-violet">World</span>
                 </span>
             </a>
             <p class="login-tagline">Stream the finest Asian dramas, movies, and series.</p>
@@ -38,7 +46,7 @@
             </button>
         </div>
 
-        <!-- Quick Demo Fill Pills -->
+        <!-- Quick Demo Fill Pills (Soft Violet & Soft Pink) -->
         @if (!IsRegisterMode)
         {
             <div class="login-demo-box">
@@ -186,47 +194,51 @@
 <style>
     .login-wrapper {
         min-height: 100vh;
-        background: #0B1613;
+        background: #0B0813;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 40px 20px;
         position: relative;
         overflow: hidden;
-        font-family: inherit;
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    .login-ambient-1 {
+    .login-ambient-violet {
         position: absolute;
-        top: -100px;
-        left: -100px;
-        width: 480px;
-        height: 480px;
-        background: radial-gradient(circle, rgba(222, 113, 73, 0.22) 0%, rgba(11, 22, 19, 0) 70%);
+        top: -120px;
+        left: -120px;
+        width: 520px;
+        height: 520px;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.28) 0%, rgba(11, 8, 19, 0) 70%);
         pointer-events: none;
     }
 
-    .login-ambient-2 {
+    .login-ambient-pink {
         position: absolute;
-        bottom: -120px;
-        right: -100px;
-        width: 520px;
-        height: 520px;
-        background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, rgba(11, 22, 19, 0) 70%);
+        bottom: -140px;
+        right: -120px;
+        width: 560px;
+        height: 560px;
+        background: radial-gradient(circle, rgba(236, 72, 153, 0.22) 0%, rgba(11, 8, 19, 0) 70%);
         pointer-events: none;
     }
 
     .login-card {
         width: 100%;
-        max-width: 450px;
-        background: #0F2420;
-        border: 1px solid rgba(244, 239, 234, 0.12);
-        border-radius: 24px;
-        padding: 40px 36px;
-        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+        max-width: 440px;
+        background: rgba(21, 16, 38, 0.88);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(167, 139, 250, 0.2);
+        border-radius: 26px;
+        padding: 38px 34px;
+        box-shadow: 
+            0 24px 60px rgba(0, 0, 0, 0.65),
+            0 0 40px rgba(139, 92, 246, 0.12);
         position: relative;
         z-index: 2;
-        color: #F4EFEA;
+        color: #F5F3FF;
     }
 
     .login-brand {
@@ -237,9 +249,21 @@
     .login-logo-link {
         display: inline-flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         text-decoration: none;
         margin-bottom: 8px;
+    }
+
+    .login-logo-badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(139, 92, 246, 0.15);
+        border: 1px solid rgba(167, 139, 250, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
     }
 
     .login-logo-text {
@@ -248,12 +272,19 @@
         letter-spacing: -0.5px;
     }
 
-    .logo-white { color: #F4EFEA; }
-    .logo-accent { color: #DE7149; }
+    .logo-pink {
+        color: #F472B6;
+        text-shadow: 0 0 16px rgba(244, 114, 182, 0.4);
+    }
+
+    .logo-violet {
+        color: #A78BFA;
+        text-shadow: 0 0 16px rgba(167, 139, 250, 0.4);
+    }
 
     .login-tagline {
-        font-size: 13.5px;
-        color: #8FA9AA;
+        font-size: 13px;
+        color: #A39BB8;
         margin: 0;
     }
 
@@ -262,18 +293,19 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 6px;
-        background: rgba(0, 0, 0, 0.3);
+        background: rgba(11, 8, 19, 0.6);
+        border: 1px solid rgba(167, 139, 250, 0.15);
         padding: 5px;
-        border-radius: 12px;
+        border-radius: 14px;
         margin-bottom: 20px;
     }
 
     .login-tab-btn {
         background: transparent;
         border: none;
-        color: #8FA9AA;
+        color: #A39BB8;
         padding: 9px 14px;
-        border-radius: 8px;
+        border-radius: 10px;
         font-size: 13.5px;
         font-weight: 700;
         cursor: pointer;
@@ -281,9 +313,9 @@
     }
 
     .login-tab-btn.active {
-        background: #DE7149;
+        background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
         color: #FFFFFF;
-        box-shadow: 0 3px 10px rgba(222, 113, 73, 0.35);
+        box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
     }
 
     /* Demo Quick Fill Box */
@@ -291,16 +323,16 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px dashed rgba(244, 239, 234, 0.15);
+        background: rgba(139, 92, 246, 0.08);
+        border: 1px dashed rgba(167, 139, 250, 0.28);
         padding: 8px 12px;
-        border-radius: 10px;
+        border-radius: 12px;
         margin-bottom: 20px;
         font-size: 12px;
     }
 
     .login-demo-label {
-        color: #8FA9AA;
+        color: #C4B5FD;
         font-weight: 600;
     }
 
@@ -308,29 +340,35 @@
         display: inline-flex;
         align-items: center;
         gap: 5px;
-        padding: 4px 10px;
-        border-radius: 6px;
+        padding: 4px 11px;
+        border-radius: 8px;
         font-size: 11.5px;
         font-weight: 700;
         border: none;
         cursor: pointer;
-        transition: transform 0.15s ease;
-    }
-
-    .login-demo-pill:hover {
-        transform: translateY(-1px);
+        transition: all 0.2s ease;
     }
 
     .admin-pill {
-        background: rgba(222, 113, 73, 0.2);
-        color: #DE7149;
-        border: 1px solid rgba(222, 113, 73, 0.4);
+        background: rgba(236, 72, 153, 0.18);
+        color: #F472B6;
+        border: 1px solid rgba(244, 114, 182, 0.4);
+    }
+
+    .admin-pill:hover {
+        background: rgba(236, 72, 153, 0.3);
+        transform: translateY(-1px);
     }
 
     .user-pill {
-        background: rgba(16, 185, 129, 0.18);
-        color: #10b981;
-        border: 1px solid rgba(16, 185, 129, 0.35);
+        background: rgba(139, 92, 246, 0.18);
+        color: #C4B5FD;
+        border: 1px solid rgba(167, 139, 250, 0.4);
+    }
+
+    .user-pill:hover {
+        background: rgba(139, 92, 246, 0.3);
+        transform: translateY(-1px);
     }
 
     /* Alerts */
@@ -339,7 +377,7 @@
         align-items: center;
         gap: 10px;
         padding: 11px 14px;
-        border-radius: 10px;
+        border-radius: 12px;
         font-size: 13px;
         font-weight: 600;
         margin-bottom: 18px;
@@ -348,13 +386,13 @@
     .login-alert.error {
         background: rgba(239, 68, 68, 0.15);
         border: 1px solid rgba(239, 68, 68, 0.35);
-        color: #fca5a5;
+        color: #FCA5A5;
     }
 
     .login-alert.success {
-        background: rgba(16, 185, 129, 0.15);
-        border: 1px solid rgba(16, 185, 129, 0.35);
-        color: #6ee7b7;
+        background: rgba(139, 92, 246, 0.2);
+        border: 1px solid rgba(167, 139, 250, 0.45);
+        color: #DDD6FE;
     }
 
     /* Form Styles */
@@ -371,9 +409,9 @@
     }
 
     .form-label {
-        font-size: 13px;
+        font-size: 12.5px;
         font-weight: 600;
-        color: #C5D2CE;
+        color: #C4B5FD;
     }
 
     .input-wrap {
@@ -385,15 +423,15 @@
     .input-icon {
         position: absolute;
         left: 14px;
-        color: #6E8882;
+        color: #7C7496;
         pointer-events: none;
     }
 
     .form-input {
         width: 100%;
-        background: #142E28;
-        border: 1px solid rgba(244, 239, 234, 0.15);
-        color: #F4EFEA;
+        background: rgba(11, 8, 19, 0.55);
+        border: 1px solid rgba(167, 139, 250, 0.22);
+        color: #F5F3FF;
         border-radius: 12px;
         padding: 12px 42px 12px 42px;
         font-size: 14px;
@@ -402,9 +440,13 @@
         box-sizing: border-box;
     }
 
+    .form-input::placeholder {
+        color: #6B6282;
+    }
+
     .form-input:focus {
-        border-color: #DE7149;
-        box-shadow: 0 0 0 3px rgba(222, 113, 73, 0.2);
+        border-color: #A78BFA;
+        box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.25);
     }
 
     .btn-toggle-eye {
@@ -412,16 +454,17 @@
         right: 12px;
         background: transparent;
         border: none;
-        color: #8FA9AA;
+        color: #7C7496;
         cursor: pointer;
         padding: 4px;
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: color 0.15s ease;
     }
 
     .btn-toggle-eye:hover {
-        color: #F4EFEA;
+        color: #F472B6;
     }
 
     .form-actions-row {
@@ -429,21 +472,25 @@
         align-items: center;
         justify-content: space-between;
         font-size: 12.5px;
-        color: #8FA9AA;
+        color: #A39BB8;
     }
 
     .remember-label {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 7px;
         cursor: pointer;
     }
 
+    .remember-label input[type="checkbox"] {
+        accent-color: #8B5CF6;
+    }
+
     .btn-login-submit {
-        background: #DE7149;
+        background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
         color: #FFFFFF;
         border: none;
-        border-radius: 12px;
+        border-radius: 14px;
         padding: 13px;
         font-size: 15px;
         font-weight: 700;
@@ -452,15 +499,14 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        box-shadow: 0 6px 18px rgba(222, 113, 73, 0.35);
-        transition: all 0.2s ease;
+        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         margin-top: 6px;
     }
 
     .btn-login-submit:hover:not(:disabled) {
-        background: #C85F38;
         transform: translateY(-2px);
-        box-shadow: 0 8px 22px rgba(222, 113, 73, 0.45);
+        box-shadow: 0 8px 26px rgba(236, 72, 153, 0.45);
     }
 
     .btn-login-submit:disabled {
@@ -484,7 +530,7 @@
     .login-footer {
         margin-top: 26px;
         padding-top: 20px;
-        border-top: 1px solid rgba(244, 239, 234, 0.08);
+        border-top: 1px solid rgba(167, 139, 250, 0.12);
         text-align: center;
     }
 
@@ -492,7 +538,7 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        color: #8FA9AA;
+        color: #A39BB8;
         text-decoration: none;
         font-size: 13px;
         font-weight: 600;
@@ -500,7 +546,7 @@
     }
 
     .login-guest-link:hover {
-        color: #DE7149;
+        color: #F472B6;
     }
 </style>
 

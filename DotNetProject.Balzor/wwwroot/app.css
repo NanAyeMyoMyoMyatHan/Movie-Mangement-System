@@ -1,9 +1,67 @@
+/* ========================================================
+   NANGWORLD STREAMING PLATFORM - DESIGN SYSTEM
+   Modern Dark Cinema Experience (Soft Violet & Soft Pink)
+   ======================================================== */
+
+:root {
+    /* Color Palette: Soft Violet & Soft Pink */
+    --color-obsidian-950: #0B0813;
+    --color-obsidian-900: #110D1D;
+    --color-obsidian-850: #151026;
+    --color-obsidian-800: #1B1530;
+    --color-obsidian-700: #261F40;
+
+    --brand-violet: #8B5CF6;
+    --brand-violet-soft: #A78BFA;
+    --brand-violet-muted: #C4B5FD;
+    --brand-violet-dark: #6D28D9;
+    --brand-violet-subtle: rgba(139, 92, 246, 0.15);
+
+    --brand-pink: #EC4899;
+    --brand-pink-soft: #F472B6;
+    --brand-pink-muted: #FDA4AF;
+    --brand-pink-dark: #BE185D;
+    --brand-pink-subtle: rgba(236, 72, 153, 0.15);
+
+    --brand-gradient: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+    --brand-gradient-hover: linear-gradient(135deg, #7C3AED 0%, #DB2777 100%);
+    --brand-gradient-soft: linear-gradient(135deg, rgba(139, 92, 246, 0.22) 0%, rgba(236, 72, 153, 0.22) 100%);
+
+    --border-glass: rgba(167, 139, 250, 0.18);
+    --border-glass-light: rgba(255, 255, 255, 0.1);
+    --border-glass-focus: rgba(167, 139, 250, 0.45);
+
+    --text-primary: #F5F3FF;
+    --text-secondary: #C4B5FD;
+    --text-muted: #948BA8;
+    --text-dim: #6B6282;
+
+    --radius-pill: 9999px;
+    --radius-card: 20px;
+    --radius-card-sm: 14px;
+    --radius-card-lg: 26px;
+
+    --glow-violet: 0 4px 20px rgba(139, 92, 246, 0.35);
+    --glow-pink: 0 4px 20px rgba(236, 72, 153, 0.35);
+    --glow-brand: 0 4px 22px rgba(139, 92, 246, 0.28), 0 2px 10px rgba(236, 72, 153, 0.2);
+}
+
+/* ========================================================
+   BASE RESETS & CANVAS
+   ======================================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 html, body {
-    font-family: 'Plus Jakarta Sans', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #F4EFEA;
-    color: #183B36;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--color-obsidian-950) !important;
+    color: var(--text-primary) !important;
     margin: 0;
     padding: 0;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 a, .btn-link {
@@ -11,24 +69,47 @@ a, .btn-link {
     text-decoration: none;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem #F4EFEA, 0 0 0 0.25rem #DE7149;
+/* Focus styles */
+:focus-visible {
+    outline: 2px solid var(--brand-violet-soft);
+    outline-offset: 2px;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-obsidian-950);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-obsidian-700);
+    border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--brand-violet-soft);
 }
 
 /* ========================================================
-   REELORA LAYOUT
+   CORE LAYOUT
    ======================================================== */
 .empty-layout {
     min-height: 100vh;
     width: 100%;
     margin: 0;
     padding: 0;
+    background: var(--color-obsidian-950);
 }
 
 .petale-layout {
     min-height: 100vh;
-    background: #F4EFEA !important;
-    color: #183B36 !important;
+    background: var(--color-obsidian-950) !important;
+    color: var(--text-primary) !important;
+    position: relative;
 }
 
 .petale-sidebar-container {
@@ -43,17 +124,21 @@ a, .btn-link {
 .petale-main {
     min-height: 100vh;
     margin-left: 250px;
-    background: #F4EFEA !important;
+    background: var(--color-obsidian-950) !important;
+    background-image: 
+        radial-gradient(circle at 10% 8%, rgba(139, 92, 246, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 90% 55%, rgba(236, 72, 153, 0.06) 0%, transparent 50%) !important;
+    background-attachment: fixed !important;
 }
 
 .petale-content {
-    padding: 24px 36px 50px !important;
+    padding: 24px 36px 60px !important;
     max-width: 1440px;
     margin: 0 auto;
 }
 
 /* ========================================================
-   SIDEBAR STYLES (WARM ALMOND SAND)
+   STREAMING SIDEBAR (DARK ACRYLIC WITH SOFT ACCENTS)
    ======================================================== */
 .myflix-sidebar,
 .petale-sidebar {
@@ -65,14 +150,15 @@ a, .btn-link {
     left: 0;
     bottom: 0;
     padding: 24px 16px 20px 16px !important;
-    background: #EFE6DC !important;
-    border-right: 1px solid rgba(44, 62, 53, 0.08) !important;
+    background: var(--color-obsidian-900) !important;
+    border-right: 1px solid var(--border-glass) !important;
+    box-shadow: 6px 0 28px rgba(0, 0, 0, 0.45) !important;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     overflow-y: auto;
-    font-family: "Plus Jakarta Sans", "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: inherit;
     z-index: 1000;
 }
 
@@ -88,30 +174,54 @@ a, .btn-link {
     gap: 12px;
     margin-bottom: 26px;
     padding-left: 6px;
+    text-decoration: none;
+}
+
+.myflix-logo-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(167, 139, 250, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.25);
 }
 
 .myflix-logo-icon {
     flex-shrink: 0;
-    color: #DE7149 !important;
-    fill: #DE7149 !important;
 }
 
 .myflix-logo-text {
     font-size: 22px;
     font-weight: 800;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+}
+
+.myflix-text-pink {
+    color: var(--brand-pink-soft);
+    text-shadow: 0 0 16px rgba(244, 114, 182, 0.4);
+}
+
+.myflix-text-violet {
+    color: var(--brand-violet-soft);
+    text-shadow: 0 0 16px rgba(167, 139, 250, 0.4);
+}
+
+/* Nav Item styling */
+.myflix-nav-section-title {
+    font-size: 11px;
+    font-weight: 800;
     text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-dim);
+    padding: 0 12px 6px;
+    margin-top: 4px;
 }
 
-.myflix-text-white {
-    color: #183B36;
-}
-
-.myflix-text-green {
-    color: #DE7149;
-}
-
-/* Top Navigation */
 .myflix-nav {
     display: flex;
     flex-direction: column;
@@ -124,12 +234,12 @@ a.myflix-nav-item,
     align-items: center;
     justify-content: space-between;
     padding: 10px 14px;
-    border-radius: 12px;
-    color: #4A554E !important;
+    border-radius: 14px;
+    color: var(--text-secondary) !important;
     text-decoration: none !important;
     font-size: 14.5px;
     font-weight: 500;
-    transition: all 0.18s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .myflix-nav-left {
@@ -140,17 +250,17 @@ a.myflix-nav-item,
 
 a.myflix-nav-item:hover,
 .myflix-nav-item:hover {
-    background: rgba(222, 113, 73, 0.08);
-    color: #183B36 !important;
+    background: rgba(139, 92, 246, 0.12) !important;
+    color: var(--text-primary) !important;
+    transform: translateX(3px);
 }
 
-/* Active Nav Item (Terracotta Pill) */
 a.myflix-nav-item.active,
 .myflix-nav-item.active {
-    background: #DE7149 !important;
+    background: var(--brand-gradient) !important;
     color: #FFFFFF !important;
     font-weight: 700;
-    box-shadow: 0 4px 12px rgba(222, 113, 73, 0.25);
+    box-shadow: 0 4px 18px rgba(236, 72, 153, 0.35);
 }
 
 a.myflix-nav-item.active svg,
@@ -161,24 +271,33 @@ a.myflix-nav-item.active svg,
 
 /* Badges */
 .myflix-badge {
-    background: #E2D7CB !important;
-    color: #DE7149 !important;
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 700;
-    padding: 2px 9px;
-    border-radius: 9999px;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
     min-width: 20px;
     text-align: center;
 }
 
-/* Divider */
-.myflix-divider {
-    height: 1px;
-    background: rgba(44, 62, 53, 0.08);
-    margin: 18px 8px;
+.badge-violet {
+    background: rgba(139, 92, 246, 0.25) !important;
+    color: var(--brand-violet-soft) !important;
+    border: 1px solid rgba(167, 139, 250, 0.4);
 }
 
-/* Special Category Links */
+.badge-pink {
+    background: rgba(236, 72, 153, 0.25) !important;
+    color: var(--brand-pink-soft) !important;
+    border: 1px solid rgba(244, 114, 182, 0.4);
+}
+
+.myflix-divider {
+    height: 1px;
+    background: var(--border-glass);
+    margin: 16px 8px;
+}
+
+/* Category Links */
 .myflix-category-links {
     display: flex;
     flex-direction: column;
@@ -191,58 +310,166 @@ a.myflix-category-link,
     align-items: center;
     gap: 12px;
     padding: 8px 12px;
-    color: #4A554E !important;
+    color: var(--text-muted) !important;
     text-decoration: none !important;
     font-size: 14px;
     font-weight: 500;
-    border-radius: 10px;
-    transition: all 0.15s ease;
+    border-radius: 12px;
+    transition: all 0.18s ease;
 }
 
 a.myflix-category-link:hover,
 .myflix-category-link:hover {
-    background: rgba(222, 113, 73, 0.08);
-    color: #183B36 !important;
+    background: rgba(139, 92, 246, 0.1) !important;
+    color: var(--text-primary) !important;
+    transform: translateX(3px);
 }
 
 a.myflix-category-link.active,
 .myflix-category-link.active {
-    background: #DE7149 !important;
+    background: var(--brand-gradient) !important;
     color: #FFFFFF !important;
     font-weight: 700;
-}
-
-a.myflix-category-link.active svg,
-.myflix-category-link.active svg {
-    stroke: #FFFFFF !important;
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
 }
 
 .myflix-badge-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 22px;
-    height: 18px;
-    border: 1.5px solid #8A958F;
-    border-radius: 5px;
-    font-size: 10px;
+    width: 24px;
+    height: 20px;
+    border-radius: 6px;
+    font-size: 10.5px;
     font-weight: 800;
-    color: #8A958F;
     line-height: 1;
 }
 
-/* Bottom Nav */
+.icon-pink {
+    background: rgba(236, 72, 153, 0.18);
+    color: var(--brand-pink-soft);
+    border: 1px solid rgba(244, 114, 182, 0.35);
+}
+
+.icon-violet {
+    background: rgba(139, 92, 246, 0.18);
+    color: var(--brand-violet-soft);
+    border: 1px solid rgba(167, 139, 250, 0.35);
+}
+
+.icon-accent {
+    background: rgba(236, 72, 153, 0.25);
+    color: #FFFFFF;
+    border: 1px solid var(--brand-pink-soft);
+}
+
+/* Sidebar Bottom (User Status) */
 .myflix-bottom-nav {
     margin-top: 24px;
-    padding-top: 14px;
-    border-top: 1px solid rgba(44, 62, 53, 0.08);
+    padding-top: 16px;
+    border-top: 1px solid var(--border-glass);
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
+}
+
+.myflix-user-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px solid var(--border-glass);
+    border-radius: 14px;
+}
+
+.myflix-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--brand-gradient);
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+}
+
+.myflix-user-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.myflix-user-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.myflix-user-role {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.myflix-admin-tag {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: var(--radius-pill);
+    background: rgba(236, 72, 153, 0.25);
+    color: var(--brand-pink-soft);
+    border: 1px solid rgba(244, 114, 182, 0.4);
+}
+
+.myflix-signout-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.myflix-signout-btn:hover {
+    color: var(--brand-pink-soft);
+    background: rgba(236, 72, 153, 0.15);
+}
+
+.myflix-signin-nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: var(--brand-gradient);
+    color: #FFFFFF !important;
+    font-size: 13.5px;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+    transition: all 0.2s ease;
+}
+
+.myflix-signin-nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(236, 72, 153, 0.45);
 }
 
 /* ========================================================
-   TOP HEADER
+   HEADER & SEARCH BAR
    ======================================================== */
 .myflix-header {
     display: flex;
@@ -256,22 +483,33 @@ a.myflix-category-link.active svg,
     display: flex;
     align-items: center;
     gap: 10px;
+    flex: 1;
+    max-width: 520px;
 }
 
 .myflix-search-bar {
-    width: 400px;
+    width: 100%;
     display: flex;
     align-items: center;
     gap: 12px;
-    background: #FFFFFF;
-    border: 1px solid rgba(44, 62, 53, 0.1);
-    border-radius: 9999px !important;
-    padding: 10px 18px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    background: rgba(21, 16, 38, 0.8) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--border-glass) !important;
+    border-radius: var(--radius-pill) !important;
+    padding: 11px 20px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    transition: all 0.2s ease;
+}
+
+.myflix-search-bar:focus-within {
+    border-color: var(--brand-violet-soft) !important;
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.25), 0 6px 20px rgba(0, 0, 0, 0.4) !important;
 }
 
 .myflix-search-bar svg {
-    color: #8A958F !important;
+    color: var(--brand-violet-soft) !important;
+    flex-shrink: 0;
 }
 
 .myflix-search-bar input {
@@ -280,12 +518,12 @@ a.myflix-category-link.active svg,
     width: 100% !important;
     background: transparent !important;
     font: inherit;
-    font-size: 13.5px;
-    color: #183B36 !important;
+    font-size: 14px;
+    color: var(--text-primary) !important;
 }
 
 .myflix-search-bar input::placeholder {
-    color: #9AA39E !important;
+    color: var(--text-dim) !important;
 }
 
 .myflix-search-btn {
@@ -293,139 +531,198 @@ a.myflix-category-link.active svg,
     align-items: center;
     justify-content: center;
     padding: 10px 22px !important;
-    border-radius: 9999px !important;
-    background: #183B36 !important;
-    color: #F4EFEA !important;
+    border-radius: var(--radius-pill) !important;
+    background: var(--brand-gradient) !important;
+    color: #FFFFFF !important;
     font-size: 13.5px;
     font-weight: 700;
     border: 0 !important;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(24, 59, 54, 0.15);
-    transition: all 0.15s ease;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+    transition: all 0.2s ease;
     white-space: nowrap;
 }
 
 .myflix-search-btn:hover {
-    background: #DE7149 !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(222, 113, 73, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.45);
 }
 
 .myflix-header-right {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 16px;
 }
 
 .myflix-notif-btn {
-    background: transparent !important;
-    border: 0 !important;
-    color: #183B36 !important;
+    background: rgba(21, 16, 38, 0.8) !important;
+    border: 1px solid var(--border-glass) !important;
+    color: var(--text-secondary) !important;
     position: relative;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6px;
-    transition: transform 0.15s ease, opacity 0.15s ease;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
 }
 
 .myflix-notif-btn:hover {
-    opacity: 0.8;
-    transform: scale(1.05);
+    background: rgba(139, 92, 246, 0.2) !important;
+    color: #FFFFFF !important;
+    transform: scale(1.06);
+    border-color: var(--brand-violet-soft) !important;
 }
 
 .myflix-notif-dot {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 7px;
-    height: 7px;
-    background: #DE7149;
+    top: 9px;
+    right: 9px;
+    width: 8px;
+    height: 8px;
+    background: var(--brand-pink);
     border-radius: 50%;
-    border: 1.5px solid #F4EFEA;
+    border: 1.5px solid var(--color-obsidian-950);
+    box-shadow: 0 0 8px var(--brand-pink);
 }
 
 .myflix-user-profile {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 10px;
     cursor: pointer;
-    color: #183B36;
+    color: var(--text-primary);
     font-size: 13.5px;
     font-weight: 700;
+    padding: 5px 12px 5px 5px;
+    background: rgba(21, 16, 38, 0.8);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-pill);
+    transition: all 0.2s ease;
 }
 
-.myflix-avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #DE7149;
+.myflix-user-profile:hover {
+    border-color: var(--brand-violet-soft);
+    background: rgba(139, 92, 246, 0.12);
 }
 
+.myflix-avatar,
 .myflix-avatar-text {
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    background: #183B36;
-    color: #F4EFEA;
-    font-size: 14px;
+    background: var(--brand-gradient);
+    color: #FFFFFF;
+    font-size: 13.5px;
     font-weight: 800;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #DE7149;
+    box-shadow: 0 2px 10px rgba(139, 92, 246, 0.4);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
     flex-shrink: 0;
 }
 
 .header-admin-badge {
-    background: #DE7149;
-    color: #FFFFFF;
+    background: rgba(236, 72, 153, 0.25);
+    color: var(--brand-pink-soft);
     font-size: 10px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 2px 7px;
-    border-radius: 999px;
-    margin-left: 4px;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(244, 114, 182, 0.4);
 }
 
 .myflix-signin-pill {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 8px 16px;
-    background: #DE7149;
+    gap: 8px;
+    padding: 9px 18px;
+    background: var(--brand-gradient);
     color: #FFFFFF !important;
     font-size: 13.5px;
     font-weight: 700;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     text-decoration: none !important;
-    transition: all 0.18s ease;
-    box-shadow: 0 4px 12px rgba(222, 113, 73, 0.28);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
 }
 
 .myflix-signin-pill:hover {
-    background: #C85E38;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(222, 113, 73, 0.36);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.45);
 }
 
 /* ========================================================
-   HERO BANNER
+   CATEGORY FILTER PILLS (STREAMING STYLE)
+   ======================================================== */
+.myflix-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 26px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+}
+
+.myflix-filter-bar::-webkit-scrollbar {
+    display: none;
+}
+
+.myflix-filter-pill,
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 18px;
+    background: rgba(21, 16, 38, 0.75);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-pill);
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+}
+
+.myflix-filter-pill:hover,
+.filter-chip:hover {
+    background: rgba(139, 92, 246, 0.15);
+    color: #FFFFFF;
+    border-color: var(--brand-violet-soft);
+    transform: translateY(-2px);
+}
+
+.myflix-filter-pill.active,
+.filter-chip.active {
+    background: var(--brand-gradient) !important;
+    color: #FFFFFF !important;
+    border-color: transparent !important;
+    font-weight: 700;
+    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
+}
+
+/* ========================================================
+   HERO BANNER & CAROUSEL (CINEMATIC)
    ======================================================== */
 .myflix-hero-banner {
     position: relative;
-    border-radius: 24px !important;
+    border-radius: var(--radius-card-lg) !important;
     overflow: hidden;
-    min-height: 300px;
+    min-height: 380px;
     display: flex;
     align-items: center;
-    padding: 38px 44px !important;
-    margin-bottom: 34px !important;
-    background: #E6DACB !important;
-    box-shadow: 0 14px 32px rgba(44, 62, 53, 0.12);
+    padding: 44px 52px !important;
+    margin-bottom: 38px !important;
+    background: var(--color-obsidian-850) !important;
+    border: 1px solid var(--border-glass) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
 }
 
 .myflix-hero-backdrop {
@@ -439,365 +736,530 @@ a.myflix-category-link.active svg,
     right: 0;
     top: 0;
     bottom: 0;
-    width: 58%;
+    width: 65%;
 }
 
 .myflix-hero-bg-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 20%;
+    object-position: center 25%;
+    filter: brightness(0.9);
 }
 
 .myflix-hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, #E6DACB 0%, #E6DACB 34%, rgba(230, 218, 203, 0.88) 60%, rgba(230, 218, 203, 0.15) 100%), linear-gradient(180deg, rgba(230, 218, 203, 0) 65%, #E6DACB 100%);
+    background: 
+        linear-gradient(90deg, #151026 0%, #151026 35%, rgba(21, 16, 38, 0.85) 65%, rgba(21, 16, 38, 0.2) 100%),
+        linear-gradient(180deg, rgba(21, 16, 38, 0) 60%, #151026 100%);
 }
 
 .myflix-hero-content {
     position: relative;
     z-index: 2;
-    max-width: 440px;
+    max-width: 500px;
 }
 
 .myflix-hero-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(24, 59, 54, 0.12);
-    color: #183B36;
-    padding: 5px 12px;
-    border-radius: 9999px;
+    background: rgba(139, 92, 246, 0.25);
+    color: var(--brand-violet-soft);
+    border: 1px solid rgba(167, 139, 250, 0.4);
+    padding: 5px 14px;
+    border-radius: var(--radius-pill);
     font-size: 12px;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .myflix-hero-title {
-    font-family: 'Playfair Display', Georgia, serif !important;
-    font-size: clamp(32px, 3.4vw, 44px) !important;
+    font-size: clamp(30px, 3.2vw, 42px) !important;
     font-weight: 800 !important;
-    color: #183B36 !important;
-    margin: 0 0 8px !important;
-    line-height: 1.05 !important;
+    color: #FFFFFF !important;
+    margin: 0 0 12px !important;
+    line-height: 1.15 !important;
     letter-spacing: -0.5px;
-    display: flex;
-    flex-direction: column;
-}
-
-.myflix-hero-script {
-    font-family: 'Caveat', cursive, sans-serif !important;
-    font-size: 32px !important;
-    font-weight: 700 !important;
-    color: #DE7149 !important;
-    line-height: 0.95 !important;
-    margin-top: 4px;
 }
 
 .myflix-hero-desc {
-    font-size: 13px !important;
+    font-size: 14px !important;
     line-height: 1.6 !important;
-    color: #5C6B64 !important;
-    margin: 0 0 22px !important;
-    max-width: 390px;
+    color: var(--text-secondary) !important;
+    margin: 0 0 24px !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .myflix-hero-actions {
     display: flex;
-    gap: 12px;
     align-items: center;
-}
-
-.myflix-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 24px !important;
-    border-radius: 9999px !important;
-    font-size: 13.5px;
-    font-weight: 700;
-    border: 0 !important;
-    cursor: pointer;
-    transition: transform 0.15s ease, opacity 0.15s ease;
-}
-
-.myflix-btn:hover {
-    transform: translateY(-2px);
-    opacity: 0.95;
+    gap: 14px;
 }
 
 .myflix-btn-primary {
-    background: #DE7149 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 12px 28px;
+    border-radius: var(--radius-pill);
+    background: var(--brand-gradient) !important;
     color: #FFFFFF !important;
-    box-shadow: 0 4px 14px rgba(222, 113, 73, 0.35);
+    font-size: 14.5px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.myflix-btn-primary:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 26px rgba(236, 72, 153, 0.5);
 }
 
 .myflix-btn-secondary {
-    background: rgba(24, 59, 54, 0.08) !important;
-    border: 1.5px solid rgba(24, 59, 54, 0.25) !important;
-    color: #183B36 !important;
-}
-
-.myflix-carousel-dots {
-    display: flex;
-    gap: 6px;
-    margin-top: 24px;
+    display: inline-flex;
     align-items: center;
-}
-
-.myflix-carousel-dots .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #C8B9A6;
+    justify-content: center;
+    gap: 9px;
+    padding: 12px 24px;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-glass) !important;
+    color: #FFFFFF !important;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.myflix-carousel-dots .dot.active {
-    width: 22px;
-    border-radius: 9999px;
-    background: #DE7149;
+.myflix-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.16) !important;
+    border-color: var(--brand-pink-soft) !important;
+    transform: translateY(-2px);
+}
+
+/* Hero Carousel Navigation */
+.myflix-hero-nav {
+    position: absolute;
+    bottom: 22px;
+    right: 32px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hero-nav-arrow {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(21, 16, 38, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-glass);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hero-nav-arrow:hover {
+    background: var(--brand-gradient);
+    border-color: transparent;
+    transform: scale(1.1);
+}
+
+.hero-nav-dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hero-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: none;
+    padding: 0;
+}
+
+.hero-dot.active {
+    width: 24px;
+    background: var(--brand-gradient);
+    box-shadow: 0 0 10px rgba(236, 72, 153, 0.6);
 }
 
 /* ========================================================
    SECTIONS & GRIDS
    ======================================================== */
 .myflix-section-block {
-    margin-bottom: 32px !important;
+    margin-bottom: 40px !important;
 }
 
 .myflix-section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .myflix-section-header h2 {
-    font-family: 'Playfair Display', Georgia, serif !important;
-    font-size: 20px !important;
-    font-weight: 700 !important;
-    color: #183B36 !important;
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: #FFFFFF !important;
     margin: 0 !important;
     letter-spacing: -0.3px;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .myflix-see-all {
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 700;
-    color: #8A958F !important;
+    color: var(--brand-pink-soft) !important;
     text-decoration: none !important;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
 }
-
-.myflix-see-all svg { transition: transform 0.15s ease; }
 
 .myflix-see-all:hover {
-    color: #DE7149 !important;
+    color: #FFFFFF !important;
+    transform: translateX(4px);
 }
 
-.myflix-see-all:hover svg {
-    transform: translateX(3px);
-}
-
-/* Continue Watching Grid */
-.myflix-continue-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-}
-
-.myflix-continue-card {
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-    border-radius: 14px !important;
-    overflow: hidden;
-    background: #0F2420 !important;
-    box-shadow: 0 6px 18px rgba(15, 36, 32, 0.15);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.myflix-continue-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 28px rgba(15, 36, 32, 0.25);
-}
-
-.myflix-continue-thumb {
-    aspect-ratio: 16 / 9;
-    position: relative;
-    overflow: hidden;
-    background: #0F2420;
-}
-
-.myflix-continue-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.myflix-thumb-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(15, 36, 32, 0.25);
-    transition: background 0.2s ease;
-}
-
-.myflix-continue-card:hover .myflix-thumb-overlay {
-    background: rgba(15, 36, 32, 0.45);
-}
-
-.myflix-play-icon-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: rgba(15, 36, 32, 0.7) !important;
-    backdrop-filter: blur(6px);
-    border: 1.5px solid rgba(244, 239, 234, 0.8) !important;
-    color: #F4EFEA !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.15s ease;
-}
-
-.myflix-play-icon-btn:hover {
-    transform: scale(1.12);
-}
-
-.myflix-continue-info {
-    padding: 10px 12px 12px !important;
-    background: #0F2420 !important;
-}
-
-.myflix-continue-info h3 {
-    font-size: 13.5px !important;
-    font-weight: 700 !important;
-    color: #F4EFEA !important;
-    margin: 0 0 2px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.myflix-continue-info p {
-    font-size: 11.5px !important;
-    color: #8FA9AA !important;
-    margin: 0 !important;
-}
-
-/* Poster Grid */
+/* Poster Cards Grid */
 .myflix-poster-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 22px;
 }
 
 .myflix-poster-card {
-    position: relative;
-    aspect-ratio: 2 / 3;
-    border-radius: 14px !important;
+    background: var(--color-obsidian-850);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-card);
     overflow: hidden;
-    background: #0F2420 !important;
-    box-shadow: 0 8px 24px rgba(15, 36, 32, 0.16);
-    cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
 }
 
 .myflix-poster-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 14px 32px rgba(15, 36, 32, 0.28);
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--brand-violet-soft);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(139, 92, 246, 0.25);
 }
 
-.myflix-poster-img {
+.myflix-card-poster-wrapper {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    background: #000;
+}
+
+.myflix-card-poster {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.4s ease;
 }
 
-.myflix-card-heart {
+.myflix-poster-card:hover .myflix-card-poster {
+    transform: scale(1.08);
+}
+
+.myflix-card-badge-top {
     position: absolute;
-    top: 9px;
-    right: 9px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: rgba(15, 36, 32, 0.55) !important;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 3;
+}
+
+.badge-quality {
+    background: rgba(11, 8, 19, 0.75);
     backdrop-filter: blur(6px);
-    border: 1px solid rgba(222, 113, 73, 0.3) !important;
-    color: #DE7149 !important;
+    color: var(--brand-violet-soft);
+    border: 1px solid rgba(167, 139, 250, 0.4);
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+}
+
+.badge-rating {
+    background: rgba(236, 72, 153, 0.85);
+    color: #FFFFFF;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(236, 72, 153, 0.4);
+}
+
+.myflix-card-hover-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(11, 8, 19, 0) 30%, rgba(11, 8, 19, 0.95) 100%);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.25s ease;
+    z-index: 2;
+}
+
+.myflix-poster-card:hover .myflix-card-hover-overlay {
+    opacity: 1;
+}
+
+.myflix-play-action {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--brand-gradient);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5);
+    transform: scale(0.85);
+    transition: transform 0.2s ease;
+}
+
+.myflix-poster-card:hover .myflix-play-action {
+    transform: scale(1);
+}
+
+.myflix-card-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.myflix-action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(21, 16, 38, 0.8);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-glass);
+    color: #FFFFFF;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 3;
-    transition: transform 0.15s ease, background 0.2s ease;
+    transition: all 0.18s ease;
 }
 
-.myflix-card-heart:hover {
-    transform: scale(1.12);
-    background: rgba(15, 36, 32, 0.85) !important;
-    color: #DE7149 !important;
+.myflix-action-btn:hover {
+    background: var(--brand-pink);
+    border-color: var(--brand-pink-soft);
+    transform: scale(1.1);
 }
 
-.myflix-poster-content {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 28px 12px 12px;
-    background: linear-gradient(180deg, rgba(15, 36, 32, 0) 0%, rgba(15, 36, 32, 0.85) 55%, #0F2420 100%);
-    z-index: 2;
+.myflix-card-details {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
 }
 
-.myflix-poster-content h3 {
-    font-size: 13px !important;
-    font-weight: 700 !important;
-    color: #F4EFEA !important;
-    margin: 0 0 2px !important;
-    line-height: 1.2 !important;
-    white-space: nowrap;
+.myflix-card-title {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
 }
 
-.myflix-poster-content p {
-    font-size: 11px !important;
-    color: #8FA9AA !important;
-    margin: 0 !important;
+.myflix-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-muted);
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
-    .myflix-continue-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .myflix-poster-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
+.myflix-card-category {
+    color: var(--brand-violet-soft);
+    font-weight: 600;
 }
 
+/* ========================================================
+   CINEMATIC VIDEO MODAL
+   ======================================================== */
+.video-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(11, 8, 19, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: modalFade 0.25s ease-out;
+}
+
+.video-modal-container {
+    width: 100%;
+    max-width: 960px;
+    background: var(--color-obsidian-850);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-card-lg);
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 50px rgba(139, 92, 246, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+.video-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    background: var(--color-obsidian-900);
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.video-modal-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.video-modal-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-glass);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.video-modal-close:hover {
+    background: var(--brand-pink);
+    transform: rotate(90deg);
+}
+
+.video-modal-body {
+    padding: 24px;
+}
+
+.video-episodes-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.video-ep-pill {
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    background: rgba(21, 16, 38, 0.8);
+    border: 1px solid var(--border-glass);
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.video-ep-pill:hover {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: var(--brand-violet-soft);
+    color: #FFFFFF;
+}
+
+.video-ep-pill.active {
+    background: var(--brand-gradient);
+    border-color: transparent;
+    color: #FFFFFF;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(236, 72, 153, 0.4);
+}
+
+@keyframes modalFade {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ========================================================
+   TOAST NOTIFICATIONS (SOFT VIOLET & SOFT PINK)
+   ======================================================== */
+.myflix-toast,
+.cat-toast,
+.fav-toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 99999;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 22px;
+    background: rgba(21, 16, 38, 0.94);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    color: #FFFFFF;
+    border: 1px solid var(--border-glass);
+    border-left: 4px solid var(--brand-pink);
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 24px rgba(236, 72, 153, 0.25);
+    font-size: 14px;
+    font-weight: 600;
+    animation: toastSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes toastSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================================
+   RESPONSIVE DESIGN
+   ======================================================== */
 @media (max-width: 900px) {
-    .petale-sidebar-container,
-    .myflix-sidebar {
-        display: none !important;
+    .petale-sidebar-container {
+        display: none;
     }
 
     .petale-main {
-        margin-left: 0 !important;
+        margin-left: 0;
     }
 
     .petale-content {
@@ -809,484 +1271,38 @@ a.myflix-category-link.active svg,
         align-items: stretch;
     }
 
-    .myflix-search-bar {
-        width: 100%;
+    .myflix-search-group {
         max-width: 100%;
     }
 
-    .myflix-header-right {
-        justify-content: space-between;
+    .myflix-hero-banner {
+        padding: 28px 24px !important;
+        min-height: auto;
     }
 
     .myflix-hero-img-wrapper {
         width: 100%;
-        opacity: 0.25;
+        opacity: 0.3;
     }
 
-    .myflix-continue-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .myflix-hero-overlay {
+        background: rgba(21, 16, 38, 0.9);
     }
 
     .myflix-poster-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
     }
 }
 
-/* ========================================================
-   CINEMATIC VIDEO MODAL
-   ======================================================== */
-.video-modal-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: rgba(15, 36, 32, 0.88);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    animation: modalFade 0.2s ease-out;
+@media (max-width: 540px) {
+    .myflix-poster-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .myflix-hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }
-
-.video-modal-container {
-    width: 100%;
-    max-width: 960px;
-    background: #0F2420;
-    border: 1px solid rgba(222, 113, 73, 0.25);
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.7);
-    display: flex;
-    flex-direction: column;
-}
-
-.video-modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 22px;
-    background: #183B36;
-    border-bottom: 1px solid rgba(244, 239, 234, 0.1);
-}
-
-.video-modal-title {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: #F4EFEA;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.video-modal-badge {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    background: #DE7149;
-    color: #FFFFFF;
-    padding: 2px 8px;
-    border-radius: 9999px;
-}
-
-.video-modal-close {
-    background: rgba(244, 239, 234, 0.1);
-    border: 0;
-    color: #F4EFEA;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.video-modal-close:hover {
-    background: #DE7149;
-    color: #FFFFFF;
-    transform: scale(1.1);
-}
-
-.video-player-frame {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background: #000000;
-    position: relative;
-}
-
-.video-player-frame video,
-.video-player-frame iframe {
-    width: 100%;
-    height: 100%;
-    border: 0;
-    display: block;
-}
-
-.video-modal-footer {
-    padding: 16px 22px;
-    background: #0F2420;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.video-modal-info {
-    font-size: 13px;
-    color: #8FA9AA;
-    line-height: 1.5;
-    margin: 0;
-}
-
-.video-episode-pills {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.video-ep-pill {
-    padding: 6px 14px;
-    border-radius: 9999px;
-    background: rgba(24, 59, 54, 0.6);
-    border: 1px solid rgba(244, 239, 234, 0.15);
-    color: #F4EFEA;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.video-ep-pill:hover,
-.video-ep-pill.active {
-    background: #DE7149;
-    border-color: #DE7149;
-    color: #FFFFFF;
-}
-
-@keyframes modalFade {
-    from { opacity: 0; transform: scale(0.97); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-/* ========================================================
-   CLAYMORPHISM DESIGN SYSTEM (NangWorld 3D Tactile Theme)
-   ======================================================== */
-:root {
-    --clay-radius-pill: 9999px;
-    --clay-radius-card: 24px;
-    --clay-radius-sm: 16px;
-    --clay-radius-lg: 30px;
-
-    /* Light Surface Clay */
-    --clay-light-bg: #FFFFFF;
-    --clay-light-border: 1.5px solid rgba(255, 255, 255, 0.85);
-    --clay-light-shadow: 
-        0 14px 28px -4px rgba(44, 62, 53, 0.08),
-        0 6px 12px -2px rgba(44, 62, 53, 0.04),
-        inset 3px 3px 6px rgba(255, 255, 255, 0.95),
-        inset -3px -4px 7px rgba(44, 62, 53, 0.07);
-
-    --clay-light-hover: 
-        0 20px 36px -4px rgba(44, 62, 53, 0.13),
-        0 8px 16px -2px rgba(44, 62, 53, 0.06),
-        inset 3px 3px 7px rgba(255, 255, 255, 1),
-        inset -4px -5px 8px rgba(44, 62, 53, 0.09);
-
-    /* Terracotta Clay (Primary Buttons & Active Badges) */
-    --clay-terracotta-bg: linear-gradient(145deg, #E87850, #D2633A);
-    --clay-terracotta-border: 1px solid rgba(255, 255, 255, 0.4);
-    --clay-terracotta-shadow: 
-        0 10px 22px rgba(222, 113, 73, 0.36),
-        inset 2px 3px 5px rgba(255, 255, 255, 0.55),
-        inset -2px -4px 6px rgba(160, 50, 20, 0.35);
-
-    --clay-terracotta-active: 
-        0 4px 10px rgba(222, 113, 73, 0.28),
-        inset 3px 3px 6px rgba(0, 0, 0, 0.3),
-        inset -2px -2px 4px rgba(255, 255, 255, 0.35);
-
-    /* Forest Green Clay (Secondary Buttons & Headers) */
-    --clay-forest-bg: linear-gradient(145deg, #204C45, #14322D);
-    --clay-forest-border: 1px solid rgba(255, 255, 255, 0.25);
-    --clay-forest-shadow: 
-        0 10px 22px rgba(24, 59, 54, 0.28),
-        inset 2px 3px 5px rgba(255, 255, 255, 0.35),
-        inset -2px -4px 6px rgba(0, 0, 0, 0.4);
-
-    /* Recessed Inset Clay (Inputs & Search) */
-    --clay-inset-shadow: 
-        inset 3px 3px 6px rgba(44, 62, 53, 0.1),
-        inset -2px -2px 5px rgba(255, 255, 255, 0.95),
-        0 3px 8px rgba(44, 62, 53, 0.04);
-
-    /* Dark Jade Clay (Posters, Continue Cards, Modals) */
-    --clay-dark-bg: linear-gradient(150deg, #16362F 0%, #0E221E 100%);
-    --clay-dark-border: 1.5px solid rgba(255, 255, 255, 0.14);
-    --clay-dark-shadow: 
-        0 16px 36px rgba(0, 0, 0, 0.42),
-        inset 2px 3px 6px rgba(255, 255, 255, 0.18),
-        inset -3px -4px 8px rgba(0, 0, 0, 0.6);
-}
-
-/* Claymorphic Body Canvas */
-body {
-    background-color: #F4EFEA !important;
-    background-image: 
-        radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.8) 0%, transparent 40%),
-        radial-gradient(circle at 90% 90%, rgba(222, 113, 73, 0.06) 0%, transparent 40%) !important;
-}
-
-/* Claymorphic Sidebar */
-.myflix-sidebar,
-.petale-sidebar {
-    background: #EFE6DC !important;
-    border-radius: 0 28px 28px 0 !important;
-    border-right: 2px solid rgba(255, 255, 255, 0.6) !important;
-    box-shadow: 
-        10px 0 32px rgba(44, 62, 53, 0.07),
-        inset -3px 0 7px rgba(44, 62, 53, 0.05),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.8) !important;
-}
-
-/* Claymorphic Nav Items */
-a.myflix-nav-item,
-.myflix-nav-item,
-a.myflix-category-link,
-.myflix-category-link {
-    border-radius: 16px !important;
-    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-a.myflix-nav-item:hover,
-.myflix-nav-item:hover,
-a.myflix-category-link:hover,
-.myflix-category-link:hover {
-    background: #FFFFFF !important;
-    box-shadow: var(--clay-light-shadow) !important;
-    transform: translateY(-2px) scale(1.01) !important;
-    color: #183B36 !important;
-}
-
-a.myflix-nav-item.active,
-.myflix-nav-item.active,
-a.myflix-category-link.active,
-.myflix-category-link.active {
-    background: var(--clay-terracotta-bg) !important;
-    color: #FFFFFF !important;
-    border: var(--clay-terracotta-border) !important;
-    box-shadow: var(--clay-terracotta-shadow) !important;
-    transform: scale(1.02) !important;
-}
-
-a.myflix-nav-item:active,
-.myflix-nav-item:active {
-    transform: translateY(1px) scale(0.98) !important;
-    box-shadow: var(--clay-terracotta-active) !important;
-}
-
-/* Clay Badges */
-.myflix-badge {
-    background: #FFFFFF !important;
-    border: 1px solid rgba(255, 255, 255, 0.9) !important;
-    box-shadow: 
-        0 3px 8px rgba(44, 62, 53, 0.06),
-        inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.95),
-        inset -1.5px -2px 3px rgba(44, 62, 53, 0.08) !important;
-}
-
-/* Claymorphic Search Bar */
-.myflix-search-bar {
-    background: #FFFFFF !important;
-    border-radius: 9999px !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
-    box-shadow: var(--clay-inset-shadow) !important;
-    transition: all 0.2s ease !important;
-}
-
-.myflix-search-bar:focus-within {
-    box-shadow: 
-        inset 3px 3px 6px rgba(44, 62, 53, 0.12),
-        inset -2px -2px 5px rgba(255, 255, 255, 0.95),
-        0 0 0 3px rgba(222, 113, 73, 0.2) !important;
-}
-
-/* Claymorphic Buttons */
-.myflix-search-btn {
-    background: var(--clay-forest-bg) !important;
-    border: var(--clay-forest-border) !important;
-    box-shadow: var(--clay-forest-shadow) !important;
-    border-radius: 9999px !important;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-.myflix-search-btn:hover {
-    background: var(--clay-terracotta-bg) !important;
-    box-shadow: var(--clay-terracotta-shadow) !important;
-    transform: translateY(-2px) scale(1.02) !important;
-}
-
-.myflix-search-btn:active {
-    transform: translateY(2px) scale(0.97) !important;
-    box-shadow: var(--clay-terracotta-active) !important;
-}
-
-.myflix-signin-pill {
-    background: var(--clay-terracotta-bg) !important;
-    border: var(--clay-terracotta-border) !important;
-    box-shadow: var(--clay-terracotta-shadow) !important;
-    border-radius: 9999px !important;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-.myflix-signin-pill:hover {
-    transform: translateY(-2px) scale(1.03) !important;
-    box-shadow: 0 14px 26px rgba(222, 113, 73, 0.45), inset 2px 3px 5px rgba(255, 255, 255, 0.65) !important;
-}
-
-.myflix-signin-pill:active {
-    transform: translateY(2px) scale(0.97) !important;
-    box-shadow: var(--clay-terracotta-active) !important;
-}
-
-/* Claymorphic Hero Banner */
-.myflix-hero-banner {
-    border-radius: 28px !important;
-    border: 2.5px solid rgba(255, 255, 255, 0.8) !important;
-    background: linear-gradient(135deg, #EBDCCF 0%, #E2D0BE 100%) !important;
-    box-shadow: 
-        0 22px 45px rgba(44, 62, 53, 0.12),
-        inset 4px 4px 10px rgba(255, 255, 255, 0.9),
-        inset -4px -5px 12px rgba(44, 62, 53, 0.08) !important;
-    transition: all 0.3s ease !important;
-}
-
-.myflix-btn-primary {
-    background: var(--clay-terracotta-bg) !important;
-    border: var(--clay-terracotta-border) !important;
-    box-shadow: var(--clay-terracotta-shadow) !important;
-    border-radius: 9999px !important;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-.myflix-btn-primary:hover {
-    transform: translateY(-3px) scale(1.03) !important;
-    box-shadow: 0 14px 28px rgba(222, 113, 73, 0.44), inset 2px 3px 5px rgba(255, 255, 255, 0.7) !important;
-}
-
-.myflix-btn-primary:active {
-    transform: translateY(2px) scale(0.97) !important;
-    box-shadow: var(--clay-terracotta-active) !important;
-}
-
-.myflix-btn-secondary {
-    background: #FFFFFF !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
-    box-shadow: var(--clay-light-shadow) !important;
-    border-radius: 9999px !important;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-.myflix-btn-secondary:hover {
-    transform: translateY(-2px) scale(1.02) !important;
-    box-shadow: var(--clay-light-hover) !important;
-}
-
-.myflix-btn-secondary:active {
-    transform: translateY(2px) scale(0.97) !important;
-}
-
-/* Claymorphic Media Cards (Posters & Continue Watching) */
-.myflix-poster-card,
-.myflix-continue-card {
-    border-radius: 22px !important;
-    border: 2px solid rgba(255, 255, 255, 0.16) !important;
-    background: var(--clay-dark-bg) !important;
-    box-shadow: var(--clay-dark-shadow) !important;
-    transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s ease !important;
-}
-
-.myflix-poster-card:hover,
-.myflix-continue-card:hover {
-    transform: translateY(-6px) scale(1.02) !important;
-    box-shadow: 
-        0 24px 44px rgba(0, 0, 0, 0.55),
-        inset 2px 3px 6px rgba(255, 255, 255, 0.26),
-        inset -3px -4px 8px rgba(0, 0, 0, 0.65) !important;
-}
-
-/* Clay Circle Buttons (Hearts, Play Buttons, Close Buttons) */
-.myflix-card-heart,
-.myflix-play-icon-btn,
-.video-modal-close {
-    border-radius: 50% !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 
-        0 6px 14px rgba(0, 0, 0, 0.3),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.35),
-        inset -2px -2px 4px rgba(0, 0, 0, 0.5) !important;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-.myflix-card-heart:hover,
-.myflix-play-icon-btn:hover,
-.video-modal-close:hover {
-    transform: scale(1.15) !important;
-    box-shadow: 
-        0 8px 18px rgba(0, 0, 0, 0.4),
-        inset 2px 2px 5px rgba(255, 255, 255, 0.5),
-        inset -2px -2px 4px rgba(0, 0, 0, 0.5) !important;
-}
-
-.myflix-card-heart:active,
-.myflix-play-icon-btn:active {
-    transform: scale(0.92) !important;
-}
-
-/* Claymorphic Filter Chips */
-.filter-chip,
-.video-ep-pill {
-    border-radius: 9999px !important;
-    background: #FFFFFF !important;
-    color: #183B36 !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
-    box-shadow: var(--clay-light-shadow) !important;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-.filter-chip:hover,
-.video-ep-pill:hover {
-    transform: translateY(-2px) scale(1.02) !important;
-    box-shadow: var(--clay-light-hover) !important;
-}
-
-.filter-chip.active,
-.video-ep-pill.active {
-    background: var(--clay-terracotta-bg) !important;
-    color: #FFFFFF !important;
-    border: var(--clay-terracotta-border) !important;
-    box-shadow: var(--clay-terracotta-shadow) !important;
-}
-
-.filter-chip:active,
-.video-ep-pill:active {
-    transform: translateY(1px) scale(0.96) !important;
-    box-shadow: var(--clay-terracotta-active) !important;
-}
-
-/* Claymorphic Video Modal */
-.video-modal-container {
-    border-radius: 28px !important;
-    border: 2px solid rgba(255, 255, 255, 0.16) !important;
-    background: var(--clay-dark-bg) !important;
-    box-shadow: 
-        0 30px 70px rgba(0, 0, 0, 0.65),
-        inset 3px 3px 8px rgba(255, 255, 255, 0.2),
-        inset -4px -5px 12px rgba(0, 0, 0, 0.7) !important;
-}
-
-
-
