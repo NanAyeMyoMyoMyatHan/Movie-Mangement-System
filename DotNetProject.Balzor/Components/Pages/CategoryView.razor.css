@@ -1,4 +1,8 @@
-﻿/* Toast Notification */
+﻿/* ========================================================
+   CATEGORY VIEW PAGE — DREAMY LIGHT PASTEL THEME
+   ======================================================== */
+
+/* Toast Notification */
 .cat-toast {
     position: fixed;
     bottom: 24px;
@@ -7,14 +11,15 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 12px 20px;
-    background: rgba(255, 255, 255, 0.95); border: 1.5px solid rgba(167, 139, 250, 0.28); box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
-    color: #F5F3FF;
-    border: 1px solid #EC4899;
+    padding: 12px 22px;
+    background: #FFFFFF;
+    color: #2E1065;
+    border: 1.5px solid rgba(167, 139, 250, 0.35);
+    border-left: 5px solid #EC4899;
     border-radius: 9999px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 12px 32px rgba(139, 92, 246, 0.16);
     font-size: 13.5px;
-    font-weight: 600;
+    font-weight: 700;
     animation: catToastSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -51,11 +56,17 @@
     align-items: center;
     gap: 10px;
     background: #FFFFFF;
-    border: 1px solid rgba(167, 139, 250, 0.2);
+    border: 1.5px solid rgba(167, 139, 250, 0.32);
     border-radius: 9999px;
     padding: 9px 18px;
     width: 100%;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.06);
+    transition: all 0.2s ease;
+}
+
+.myflix-search-bar:focus-within {
+    border-color: #8B5CF6;
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.25), 0 6px 20px rgba(139, 92, 246, 0.12);
 }
 
 .myflix-search-bar input {
@@ -64,11 +75,31 @@
     background: transparent;
     width: 100%;
     font-size: 13.5px;
-    color: #183B36;
+    color: #2E1065;
 }
 
 .myflix-search-bar input::placeholder {
-    color: #8da39e;
+    color: #9382B2;
+}
+
+.myflix-search-clear {
+    background: rgba(139, 92, 246, 0.12);
+    border: none;
+    color: #6D28D9;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.myflix-search-clear:hover {
+    background: #EC4899;
+    color: #FFFFFF;
 }
 
 .myflix-header-right {
@@ -80,16 +111,23 @@
 .myflix-notif-btn {
     position: relative;
     background: #FFFFFF;
-    border: 1px solid rgba(167, 139, 250, 0.2);
+    border: 1.5px solid rgba(167, 139, 250, 0.32);
     width: 40px;
     height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #183B36;
+    color: #4C1D95;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
+    transition: all 0.2s ease;
+}
+
+.myflix-notif-btn:hover {
+    background: #F3E8FF;
+    border-color: #8B5CF6;
+    color: #2E1065;
 }
 
 .myflix-notif-dot {
@@ -100,7 +138,7 @@
     height: 8px;
     background: #EC4899;
     border-radius: 50%;
-    border: 2px solid #FFFFFF;
+    border: 1.5px solid #FFFFFF;
 }
 
 .myflix-user-profile {
@@ -108,14 +146,14 @@
     align-items: center;
     gap: 10px;
     background: #FFFFFF;
-    border: 1px solid rgba(167, 139, 250, 0.2);
+    border: 1.5px solid rgba(167, 139, 250, 0.32);
     border-radius: 9999px;
-    padding: 4px 12px 4px 4px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-    cursor: pointer;
+    padding: 4px 14px 4px 5px;
+    color: #2E1065;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
 }
 
-.myflix-avatar {
+.myflix-avatar-img {
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -125,7 +163,27 @@
 .myflix-username {
     font-size: 13px;
     font-weight: 700;
-    color: #183B36;
+    color: #2E1065;
+}
+
+.myflix-signin-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 20px;
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
+    color: #FFFFFF !important;
+    font-size: 13.5px;
+    font-weight: 700;
+    border-radius: 999px;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+}
+
+.myflix-signin-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(236, 72, 153, 0.45);
 }
 
 /* Category Hero Banner */
@@ -134,21 +192,22 @@
     align-items: flex-end;
     justify-content: space-between;
     gap: 24px;
-    background: linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%); border: 1.5px solid rgba(167, 139, 250, 0.35); box-shadow: 0 16px 40px rgba(139, 92, 246, 0.12);
+    background: linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%);
+    border: 1.5px solid rgba(167, 139, 250, 0.35);
+    box-shadow: 0 16px 40px rgba(139, 92, 246, 0.12);
     border-radius: 20px;
     padding: 32px 36px;
-    color: #F5F3FF;
+    color: #2E1065;
     margin-bottom: 24px;
-    box-shadow: 0 10px 30px rgba(15, 36, 32, 0.15);
 }
 
 .cat-hero-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(236, 72, 153, 0.2);
+    background: rgba(236, 72, 153, 0.15);
     border: 1px solid rgba(236, 72, 153, 0.4);
-    color: #f79672;
+    color: #BE185D;
     padding: 5px 12px;
     border-radius: 9999px;
     font-size: 11.5px;
@@ -162,13 +221,13 @@
     font-size: 32px;
     font-weight: 800;
     margin: 0 0 6px 0;
-    color: #FFFFFF;
+    color: #2E1065 !important;
     letter-spacing: -0.5px;
 }
 
 .cat-subtitle {
     margin: 0;
-    color: #4C1D95;
+    color: #4C1D95 !important;
     font-size: 14px;
     max-width: 560px;
     line-height: 1.5;
@@ -181,25 +240,26 @@
 }
 
 .cat-stat-card {
-    background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(167, 139, 250, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1.5px solid rgba(167, 139, 250, 0.35);
     border-radius: 14px;
     padding: 12px 20px;
     text-align: center;
     min-width: 110px;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.08);
 }
 
 .cat-stat-num {
     display: block;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 800;
-    color: #FFFFFF;
+    color: #2E1065 !important;
 }
 
 .cat-stat-label {
     font-size: 11.5px;
-    font-weight: 600;
-    color: rgba(244, 239, 234, 0.7);
+    font-weight: 700;
+    color: #6D28D9 !important;
     text-transform: uppercase;
     letter-spacing: 0.4px;
 }
@@ -227,30 +287,32 @@
     gap: 8px;
     padding: 8px 18px;
     background: #FFFFFF;
-    border: 1px solid rgba(167, 139, 250, 0.2);
+    border: 1.5px solid rgba(167, 139, 250, 0.28);
     border-radius: 9999px;
-    color: #183B36;
+    color: #4C1D95;
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.06);
     transition: all 0.2s ease;
 }
 
 .cat-pill:hover {
-    border-color: #EC4899;
-    color: #EC4899;
+    background: #F3E8FF;
+    border-color: #8B5CF6;
+    color: #2E1065;
 }
 
 .cat-pill.active {
-    background: #EC4899;
+    background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
     color: #FFFFFF;
-    border-color: #EC4899;
-    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
 }
 
 .cat-mini-badge {
-    background: rgba(167, 139, 250, 0.15);
-    color: #183B36;
+    background: rgba(167, 139, 250, 0.18);
+    color: #4C1D95;
     font-size: 10px;
     font-weight: 800;
     padding: 2px 6px;
@@ -271,17 +333,17 @@
 .cat-sort-label {
     font-size: 13px;
     font-weight: 600;
-    color: #637873;
+    color: #4C1D95;
 }
 
 .cat-sort-select {
     padding: 7px 14px;
     border-radius: 9999px;
-    border: 1px solid rgba(24, 59, 54, 0.15);
+    border: 1.5px solid rgba(167, 139, 250, 0.3);
     background: #FFFFFF;
     font-size: 13px;
     font-weight: 600;
-    color: #183B36;
+    color: #2E1065;
     outline: none;
     cursor: pointer;
 }
@@ -318,26 +380,28 @@
 }
 
 .cat-poster-card {
-    background: rgba(255, 255, 255, 0.95); border: 1.5px solid rgba(167, 139, 250, 0.28); box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
-    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1.5px solid rgba(167, 139, 250, 0.28);
+    border-radius: 18px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 6px 18px rgba(15, 36, 32, 0.16);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
     cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .cat-poster-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 14px 32px rgba(15, 36, 32, 0.28);
+    transform: translateY(-6px);
+    border-color: #8B5CF6;
+    box-shadow: 0 16px 36px rgba(139, 92, 246, 0.16);
 }
 
 .cat-poster-thumb-wrap {
     position: relative;
     aspect-ratio: 2 / 3;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.95); border: 1.5px solid rgba(167, 139, 250, 0.28); box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
+    background: #EDE9FE;
 }
 
 .cat-poster-img {
@@ -354,7 +418,7 @@
 .cat-poster-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(15, 36, 32, 0.35);
+    background: rgba(46, 16, 101, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -370,13 +434,13 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: #EC4899;
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
     border: none;
     color: #FFFFFF;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 16px rgba(236, 72, 153, 0.45);
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
     cursor: pointer;
     transform: scale(0.9);
     transition: transform 0.2s ease;
@@ -401,10 +465,10 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(6px);
-    border: 1px solid rgba(244, 239, 234, 0.25);
-    color: #F5F3FF;
+    border: 1px solid rgba(167, 139, 250, 0.35);
+    color: #4C1D95;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -414,16 +478,16 @@
 
 .cat-card-later:hover {
     transform: scale(1.15);
-    background: rgba(15, 36, 32, 0.9);
-    color: #10B981;
-    border-color: #10B981;
+    background: #8B5CF6;
+    color: #FFFFFF;
+    border-color: #8B5CF6;
 }
 
 .cat-card-later.active {
-    background: #10B981;
-    border-color: #10B981;
+    background: #8B5CF6;
+    border-color: #8B5CF6;
     color: #FFFFFF;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
 }
 
 .cat-card-later.active svg {
@@ -435,7 +499,7 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(6px);
     border: 1px solid rgba(236, 72, 153, 0.4);
     color: #EC4899;
@@ -448,7 +512,8 @@
 
 .cat-card-heart:hover {
     transform: scale(1.15);
-    background: rgba(15, 36, 32, 0.9);
+    background: #EC4899;
+    color: #FFFFFF;
 }
 
 .cat-card-heart.active {
@@ -468,9 +533,8 @@
     position: absolute;
     top: 9px;
     left: 9px;
-    background: rgba(255, 255, 255, 0.9);
-    color: #F5F3FF;
-    backdrop-filter: blur(4px);
+    background: #EC4899;
+    color: #FFFFFF;
     font-size: 11px;
     font-weight: 800;
     padding: 3px 7px;
@@ -479,6 +543,7 @@
     align-items: center;
     gap: 3px;
     z-index: 3;
+    box-shadow: 0 2px 8px rgba(236, 72, 153, 0.35);
 }
 
 /* Episode tag on bottom-right */
@@ -486,10 +551,10 @@
     position: absolute;
     bottom: 9px;
     right: 9px;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(46, 16, 101, 0.75);
     color: #FFFFFF;
     font-size: 10.5px;
-    font-weight: 600;
+    font-weight: 700;
     padding: 2px 7px;
     border-radius: 4px;
     z-index: 3;
@@ -498,7 +563,7 @@
 /* Poster Card Bottom Info */
 .cat-poster-info {
     padding: 10px 12px 14px;
-    background: rgba(255, 255, 255, 0.95); border: 1.5px solid rgba(167, 139, 250, 0.28); box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
+    background: #FFFFFF;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -512,24 +577,24 @@
 
 .cat-meta-year {
     font-size: 11px;
-    color: #8FA9AA;
-    font-weight: 600;
+    color: #6B5B95;
+    font-weight: 700;
 }
 
 .cat-meta-badge {
     font-size: 9.5px;
-    font-weight: 700;
-    background: rgba(244, 239, 234, 0.1);
-    color: #d1dfdb;
-    padding: 1px 5px;
-    border-radius: 3px;
+    font-weight: 800;
+    background: rgba(139, 92, 246, 0.15);
+    color: #6D28D9;
+    padding: 1px 6px;
+    border-radius: 4px;
     text-transform: uppercase;
 }
 
 .cat-poster-title {
     font-size: 13.5px;
     font-weight: 700;
-    color: #F5F3FF;
+    color: #2E1065 !important;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -538,20 +603,20 @@
 }
 
 .cat-poster-card:hover .cat-poster-title {
-    color: #EC4899;
+    color: #EC4899 !important;
 }
 
 /* Loading & Empty States */
 .cat-loading {
     padding: 60px 20px;
     text-align: center;
-    color: #183B36;
+    color: #4C1D95;
 }
 
 .cat-spinner {
     width: 44px;
     height: 44px;
-    border: 3.5px solid rgba(24, 59, 54, 0.15);
+    border: 3.5px solid rgba(139, 92, 246, 0.2);
     border-top-color: #EC4899;
     border-radius: 50%;
     animation: catSpin 0.8s linear infinite;
@@ -564,19 +629,20 @@
 
 .cat-empty-state {
     padding: 60px 24px;
-    background: #FFFFFF;
-    border: 1px solid rgba(167, 139, 250, 0.15);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1.5px solid rgba(167, 139, 250, 0.28);
     border-radius: 20px;
     text-align: center;
     max-width: 500px;
     margin: 40px auto;
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.08);
 }
 
 .cat-empty-icon-wrap {
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    background: rgba(236, 72, 153, 0.1);
+    background: rgba(236, 72, 153, 0.12);
     color: #EC4899;
     display: flex;
     align-items: center;
@@ -584,10 +650,24 @@
     margin: 0 auto 16px;
 }
 
+.cat-empty-state h3 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #2E1065;
+    margin: 0 0 8px 0;
+}
+
+.cat-empty-state p {
+    font-size: 13.5px;
+    color: #4C1D95;
+    line-height: 1.5;
+    margin: 0 0 20px 0;
+}
+
 .cat-btn-primary {
     display: inline-flex;
     align-items: center;
-    background: #EC4899;
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
     color: #FFFFFF;
     border: none;
     border-radius: 9999px;
@@ -595,7 +675,14 @@
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+    transition: all 0.2s ease;
+}
+
+.cat-btn-primary:hover {
+    background: linear-gradient(135deg, #7C3AED, #DB2777);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.45);
 }
 
 @media (max-width: 768px) {

@@ -3,18 +3,18 @@
 @inject AuthService AuthService
 @inject NavigationManager Nav
 
-<link rel="stylesheet" href="admin.css?v=pastel-1.0" />
+<link rel="stylesheet" href="admin.css?v=pastel-1.1" />
 
 @if (!CanAccessAdminPanel)
 {
-    <div style="min-height: 100vh; background: #0F2420; display: flex; align-items: center; justify-content: center; color: #F4EFEA; font-family: 'Plus Jakarta Sans', sans-serif;">
-        <div style="text-align: center; max-width: 400px; padding: 40px; background: rgba(255,255,255,0.03); border: 1px solid rgba(222,113,73,0.2); border-radius: 20px;">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DE7149" stroke-width="2" style="margin-bottom: 16px;">
+    <div style="min-height: 100vh; background: linear-gradient(145deg, #FAF5FF 0%, #F5EEFD 45%, #FDF2F8 100%); display: flex; align-items: center; justify-content: center; color: #2E1065; font-family: 'Plus Jakarta Sans', sans-serif;">
+        <div style="text-align: center; max-width: 440px; padding: 44px 36px; background: rgba(255,255,255,0.98); border: 1.5px solid rgba(167,139,250,0.35); border-radius: 26px; box-shadow: 0 20px 50px rgba(139,92,246,0.16);">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#EC4899" stroke-width="2" style="margin-bottom: 16px;">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Admin Authorization Required</h2>
-            <p style="color: #9ab4ae; font-size: 14px; margin-bottom: 24px;">Please sign in with authorized credentials to access the NangWorld Admin Panel.</p>
-            <a href="/login?returnUrl=/admin" style="display: inline-block; padding: 12px 28px; background: #DE7149; color: #fff; border-radius: 12px; font-weight: 700; text-decoration: none;">
+            <h2 style="font-size: 22px; font-weight: 800; color: #2E1065; margin-bottom: 10px;">Admin Authorization Required</h2>
+            <p style="color: #4C1D95; font-size: 14px; line-height: 1.5; margin-bottom: 24px;">Please sign in with authorized credentials to access the NangWorld Admin Panel.</p>
+            <a href="/login?returnUrl=/admin" style="display: inline-block; padding: 12px 28px; background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%); color: #fff; border-radius: 9999px; font-weight: 700; text-decoration: none; box-shadow: 0 6px 20px rgba(139,92,246,0.35);">
                 Sign In to Admin
             </a>
         </div>
