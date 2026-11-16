@@ -3,7 +3,7 @@
 @inject AuthService AuthService
 @inject NavigationManager Nav
 
-@if (!AuthService.IsAdmin())
+@if (!CanAccessAdminPanel)
 {
     <div style="min-height: 100vh; background: #0F2420; display: flex; align-items: center; justify-content: center; color: #F4EFEA; font-family: 'Plus Jakarta Sans', sans-serif;">
         <div style="text-align: center; max-width: 400px; padding: 40px; background: rgba(255,255,255,0.03); border: 1px solid rgba(222,113,73,0.2); border-radius: 20px;">
@@ -11,9 +11,9 @@
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
             <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Admin Authorization Required</h2>
-            <p style="color: #9ab4ae; font-size: 14px; margin-bottom: 24px;">Please sign in with administrator credentials to access the NangWorld Admin Panel.</p>
+            <p style="color: #9ab4ae; font-size: 14px; margin-bottom: 24px;">Please sign in with authorized credentials to access the NangWorld Admin Panel.</p>
             <a href="/login?returnUrl=/admin" style="display: inline-block; padding: 12px 28px; background: #DE7149; color: #fff; border-radius: 12px; font-weight: 700; text-decoration: none;">
-                Sign In as Admin
+                Sign In to Admin
             </a>
         </div>
     </div>
@@ -39,62 +39,93 @@ else
 
                 <!-- Nav Links -->
                 <nav class="myflix-nav">
-                    <p class="admin-nav-label">Overview</p>
-                    <NavLink href="/admin" Match="NavLinkMatch.All" class="myflix-nav-item">
-                        <div class="myflix-nav-left">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
-                                <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
-                            </svg>
-                            <span>Dashboard</span>
-                        </div>
-                    </NavLink>
+                    @if (AuthService.HasPermission("Dashboard.View"))
+                    {
+                        <p class="admin-nav-label">Overview</p>
+                        <NavLink href="/admin" Match="NavLinkMatch.All" class="myflix-nav-item">
+                            <div class="myflix-nav-left">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+                                    <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+                                </svg>
+                                <span>Dashboard</span>
+                            </div>
+                        </NavLink>
+                    }
 
-                    <p class="admin-nav-label">Content Management</p>
-                    <NavLink href="/admin/movies" class="myflix-nav-item">
-                        <div class="myflix-nav-left">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2" y="4" width="20" height="16" rx="2.5" />
-                                <line x1="2" y1="9" x2="22" y2="9" />
-                                <line x1="7" y1="4" x2="7" y2="9" />
-                                <line x1="12" y1="4" x2="12" y2="9" />
-                                <line x1="17" y1="4" x2="17" y2="9" />
-                            </svg>
-                            <span>Movies</span>
-                        </div>
-                    </NavLink>
+                    @if (AuthService.HasAnyPermission("Content.View", "Episode.View"))
+                    {
+                        <p class="admin-nav-label">Content Management</p>
+                        @if (AuthService.HasPermission("Content.View"))
+                        {
+                            <NavLink href="/admin/movies" class="myflix-nav-item">
+                                <div class="myflix-nav-left">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="2" y="4" width="20" height="16" rx="2.5" />
+                                        <line x1="2" y1="9" x2="22" y2="9" />
+                                        <line x1="7" y1="4" x2="7" y2="9" />
+                                        <line x1="12" y1="4" x2="12" y2="9" />
+                                        <line x1="17" y1="4" x2="17" y2="9" />
+                                    </svg>
+                                    <span>Movies</span>
+                                </div>
+                            </NavLink>
 
-                    <NavLink href="/admin/contents" class="myflix-nav-item">
-                        <div class="myflix-nav-left">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2" y="3" width="20" height="14" rx="2" />
-                                <path d="M8 21h8M12 17v4" />
-                            </svg>
-                            <span>Dramas &amp; Series</span>
-                        </div>
-                    </NavLink>
+                            <NavLink href="/admin/contents" class="myflix-nav-item">
+                                <div class="myflix-nav-left">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="2" y="3" width="20" height="14" rx="2" />
+                                        <path d="M8 21h8M12 17v4" />
+                                    </svg>
+                                    <span>Dramas &amp; Series</span>
+                                </div>
+                            </NavLink>
+                        }
 
-                    <NavLink href="/admin/episodes" class="myflix-nav-item">
-                        <div class="myflix-nav-left">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                            </svg>
-                            <span>Episodes</span>
-                        </div>
-                    </NavLink>
+                        @if (AuthService.HasPermission("Episode.View"))
+                        {
+                            <NavLink href="/admin/episodes" class="myflix-nav-item">
+                                <div class="myflix-nav-left">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    <span>Episodes</span>
+                                </div>
+                            </NavLink>
+                        }
+                    }
 
-                    <p class="admin-nav-label">System</p>
-                    <NavLink href="/admin/users" class="myflix-nav-item">
-                        <div class="myflix-nav-left">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                <circle cx="9" cy="7" r="4" />
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                            </svg>
-                            <span>Users</span>
-                        </div>
-                        <span class="myflix-badge">Active</span>
-                    </NavLink>
+                    @if (AuthService.HasAnyPermission("User.View", "Role.View"))
+                    {
+                        <p class="admin-nav-label">System &amp; Access</p>
+                        @if (AuthService.HasPermission("User.View"))
+                        {
+                            <NavLink href="/admin/users" class="myflix-nav-item">
+                                <div class="myflix-nav-left">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                    <span>Users</span>
+                                </div>
+                                <span class="myflix-badge">Active</span>
+                            </NavLink>
+                        }
+
+                        @if (AuthService.HasPermission("Role.View"))
+                        {
+                            <NavLink href="/admin/roles" class="myflix-nav-item">
+                                <div class="myflix-nav-left">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    </svg>
+                                    <span>Roles &amp; Permissions</span>
+                                </div>
+                            </NavLink>
+                        }
+                    }
                 </nav>
 
                 <!-- Status Card -->
@@ -103,7 +134,7 @@ else
                         <span class="admin-status-dot"></span>
                         <span>System Status</span>
                     </div>
-                    <p class="admin-status-text">API · DB · Storage healthy</p>
+                    <p class="admin-status-text">RBAC · DB · Storage healthy</p>
                 </div>
             </div>
 
@@ -123,7 +154,7 @@ else
                     </div>
                     <div class="admin-user-info">
                         <span class="admin-user-name">@(string.IsNullOrWhiteSpace(AuthService.CurrentUser.DisplayName) ? "Admin" : AuthService.CurrentUser.DisplayName)</span>
-                        <span class="admin-user-role">🛡 Administrator</span>
+                        <span class="admin-user-role">🛡 @(AuthService.CurrentUser.Roles.Any() ? string.Join(", ", AuthService.CurrentUser.Roles) : AuthService.CurrentUser.Role)</span>
                     </div>
                 </div>
 
@@ -153,9 +184,13 @@ else
 </div>
 
 @code {
+    private bool CanAccessAdminPanel =>
+        AuthService.IsAuthenticated() &&
+        (AuthService.IsAdmin() || AuthService.HasAnyPermission("Dashboard.View", "Content.View", "Episode.View", "User.View", "Role.View"));
+
     protected override void OnInitialized()
     {
-        if (!AuthService.IsAdmin())
+        if (!CanAccessAdminPanel)
         {
             Nav.NavigateTo("/login?returnUrl=/admin");
         }

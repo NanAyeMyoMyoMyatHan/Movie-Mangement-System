@@ -2,6 +2,7 @@
 @layout AdminLayout
 @using DotNetProject.Balzor.Components.Shared
 @using DotNetProject.Balzor.Components.Layout
+@inject AuthService AuthService
 @rendermode InteractiveServer
 
 <PageTitle>Movies — NangWorld Admin</PageTitle>
@@ -12,10 +13,13 @@
         <p>Manage all movie entries, posters, and metadata.</p>
     </div>
     <div class="admin-header-actions">
-        <a href="admin/movies/create" class="btn-admin btn-admin-primary">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Movie
-        </a>
+        @if (AuthService.HasPermission("Content.Create"))
+        {
+            <a href="admin/movies/create" class="btn-admin btn-admin-primary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Movie
+            </a>
+        }
     </div>
 </div>
 
@@ -96,8 +100,14 @@
                                 <td class="admin-sub-cell">@(m.ReleaseYear?.ToString() ?? "—")</td>
                                 <td>
                                     <div style="display:flex;gap:.4rem;align-items:center;">
-                                        <a href="admin/movies/edit/@m.Id" class="btn-admin btn-admin-edit">Edit</a>
-                                        <a href="admin/movies/delete/@m.Id" class="btn-admin btn-admin-delete">Delete</a>
+                                        @if (AuthService.HasPermission("Content.Edit"))
+                                        {
+                                            <a href="admin/movies/edit/@m.Id" class="btn-admin btn-admin-edit">Edit</a>
+                                        }
+                                        @if (AuthService.HasPermission("Content.Delete"))
+                                        {
+                                            <a href="admin/movies/delete/@m.Id" class="btn-admin btn-admin-delete">Delete</a>
+                                        }
                                     </div>
                                 </td>
                             </tr>

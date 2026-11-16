@@ -25,5 +25,5 @@ public partial class User
 
     public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 
-    public virtual ICollection<WatchlistItem> WatchlistItems { get; set; } = new List<WatchlistItem>();
+    public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 }

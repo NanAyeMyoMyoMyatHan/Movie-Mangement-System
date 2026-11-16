@@ -31,7 +31,13 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    public virtual DbSet<WatchlistItem> WatchlistItems { get; set; }
+    public virtual DbSet<Role> Roles { get; set; }
+
+    public virtual DbSet<Permission> Permissions { get; set; }
+
+    public virtual DbSet<RolePermission> RolePermissions { get; set; }
+
+    public virtual DbSet<UserRole> UserRoles { get; set; }
 
     public virtual DbSet<UserFavorite> UserFavorites { get; set; }
 
@@ -209,26 +215,55 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Role).HasMaxLength(50).HasDefaultValue("User");
         });
 
-        modelBuilder.Entity<WatchlistItem>(entity =>
+        modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Watchlis__3214EC0798EB2021");
+            entity.HasKey(e => e.RoleId);
+            entity.ToTable("Roles");
+            entity.HasIndex(e => e.RoleName, "UQ_Roles_RoleName").IsUnique();
+            entity.Property(e => e.RoleName).HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+        });
 
-            entity.HasIndex(e => new { e.UserId, e.MovieId }, "UX_WatchlistItems_UserId_MovieId_Active")
-                .IsUnique()
-                .HasFilter("([IsDeleted]=(0))");
+        modelBuilder.Entity<Permission>(entity =>
+        {
+            entity.HasKey(e => e.PermissionId);
+            entity.ToTable("Permissions");
+            entity.HasIndex(e => e.PermissionCode, "UQ_Permissions_PermissionCode").IsUnique();
+            entity.Property(e => e.PermissionCode).HasMaxLength(100);
+            entity.Property(e => e.PermissionName).HasMaxLength(100);
+            entity.Property(e => e.Module).HasMaxLength(50);
+            entity.Property(e => e.Description).HasMaxLength(250);
+        });
 
-            entity.Property(e => e.AddedAt).HasDefaultValueSql("(getutcdate())");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getutcdate())");
+        modelBuilder.Entity<RolePermission>(entity =>
+        {
+            entity.HasKey(e => new { e.RoleId, e.PermissionId });
+            entity.ToTable("RolePermissions");
+            entity.Property(e => e.AssignedAt).HasDefaultValueSql("(sysutcdatetime())");
 
-            entity.HasOne(d => d.Movie).WithMany(p => p.WatchlistItems)
-                .HasForeignKey(d => d.MovieId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_WatchlistItems_Movies");
+            entity.HasOne(d => d.Role).WithMany(p => p.RolePermissions)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne(d => d.User).WithMany(p => p.WatchlistItems)
+            entity.HasOne(d => d.Permission).WithMany(p => p.RolePermissions)
+                .HasForeignKey(d => d.PermissionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<UserRole>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.RoleId });
+            entity.ToTable("UserRoles");
+            entity.Property(e => e.AssignedAt).HasDefaultValueSql("(sysutcdatetime())");
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserRoles)
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_WatchlistItems_Users");
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(d => d.Role).WithMany(p => p.UserRoles)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<UserFavorite>(entity =>

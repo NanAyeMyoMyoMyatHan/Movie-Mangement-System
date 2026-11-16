@@ -17,7 +17,7 @@ namespace DotNetProject.WebApi.Features.WatchList
 
         public async Task<WatchListModel> GetWatchListByUserIdAsync(int userId)
         {
-            var watchList = await _db.WatchlistItems
+            var watchList = await _db.UserWatchLaters
                 .FirstOrDefaultAsync(w => w.UserId == userId && !w.IsDeleted);
             if (watchList == null)
             {
@@ -27,15 +27,15 @@ namespace DotNetProject.WebApi.Features.WatchList
             {
                 Id = watchList.Id,
                 UserId = watchList.UserId,
-                MovieId = watchList.MovieId,
-                Status = (WatchStatus)watchList.Status,
+                MovieId = (int)watchList.ContentId,
+                Status = WatchStatus.WantToWatch,
                 CurrentEpisode = watchList.CurrentEpisode,
                 TotalEpisodes = watchList.TotalEpisodes
             };
         }
         public async Task<WatchListModel?> GetWatchListByIdAsync(int id)
         {
-            var watchList = await _db.WatchlistItems.FindAsync(id);
+            var watchList = await _db.UserWatchLaters.FindAsync(id);
             if (watchList == null || watchList.IsDeleted)
             {
                 return null;
@@ -44,23 +44,25 @@ namespace DotNetProject.WebApi.Features.WatchList
             {
                 Id = watchList.Id,
                 UserId = watchList.UserId,
-                MovieId = watchList.MovieId,
-                Status = (WatchStatus)watchList.Status,
+                MovieId = (int)watchList.ContentId,
+                Status = WatchStatus.WantToWatch,
                 CurrentEpisode = watchList.CurrentEpisode,
                 TotalEpisodes = watchList.TotalEpisodes
             };
         }
         public async Task<WatchListCreateResponseModel> CreateWatchListAsync(int userId, WatchListCreateRequestModel model)
         {
-            var watchList = new WatchlistItem
+            var watchList = new UserWatchLater
             {
                 UserId = userId,
-                MovieId = model.MovieId,
-                Status = (int)model.Status,
+                ContentId = model.MovieId,
+                Title = $"Content {model.MovieId}",
+                Status = model.Status.ToString(),
                 CurrentEpisode = model.CurrentEpisode,
-                TotalEpisodes = model.TotalEpisodes
+                TotalEpisodes = model.TotalEpisodes,
+                AddedAt = DateTime.UtcNow
             };
-            _db.WatchlistItems.Add(watchList);
+            _db.UserWatchLaters.Add(watchList);
             await _db.SaveChangesAsync();
             return new WatchListCreateResponseModel
             {
@@ -70,7 +72,7 @@ namespace DotNetProject.WebApi.Features.WatchList
         }
         public async Task<WatchListUpdateResponseModel> UpdateWatchListAsync(int id, WatchListUpdateRequestModel model)
         {
-            var watchList = await _db.WatchlistItems.FindAsync(id);
+            var watchList = await _db.UserWatchLaters.FindAsync(id);
             if (watchList == null)
             {
                 return new WatchListUpdateResponseModel
@@ -79,7 +81,7 @@ namespace DotNetProject.WebApi.Features.WatchList
                     Message = "Watch list not found."
                 };
             }
-            watchList.Status = (int)model.Status;
+            watchList.Status = model.Status.ToString();
             watchList.CurrentEpisode = model.CurrentEpisode;
             watchList.TotalEpisodes = model.TotalEpisodes;
             await _db.SaveChangesAsync();
@@ -91,7 +93,7 @@ namespace DotNetProject.WebApi.Features.WatchList
         }
         public async Task<WatchListDeleteResponseModel> DeleteWatchListAsync(int id)
         {
-            var watchList = await _db.WatchlistItems.FindAsync(id);
+            var watchList = await _db.UserWatchLaters.FindAsync(id);
             if (watchList == null)
             {
                 return new WatchListDeleteResponseModel
@@ -101,7 +103,6 @@ namespace DotNetProject.WebApi.Features.WatchList
                 };
             }
             watchList.IsDeleted = true;
-            watchList.DeletedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync();
             return new WatchListDeleteResponseModel
             {

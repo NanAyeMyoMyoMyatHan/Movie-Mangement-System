@@ -2,6 +2,7 @@
 @layout AdminLayout
 @using DotNetProject.Balzor.Components.Shared
 @using DotNetProject.Balzor.Components.Layout
+@inject AuthService AuthService
 @rendermode InteractiveServer
 
 <PageTitle>Dramas &amp; Series — NangWorld Admin</PageTitle>
@@ -12,18 +13,24 @@
         <p>Manage drama series, banners, and episode counts.</p>
     </div>
     <div class="admin-header-actions" style="display:flex;gap:10px;align-items:center;">
-        <a href="/admin/contents/import" class="btn-admin" style="background:#183B36;color:#F4EFEA;text-decoration:none;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;font-weight:600;font-size:13px;border:1px solid rgba(24,59,54,0.2);">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-            </svg>
-            Import from TMDB
-        </a>
-        <a href="admin/contents/create" class="btn-admin btn-admin-primary">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Drama
-        </a>
+        @if (AuthService.HasPermission("Content.Import"))
+        {
+            <a href="/admin/contents/import" class="btn-admin" style="background:#183B36;color:#F4EFEA;text-decoration:none;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;font-weight:600;font-size:13px;border:1px solid rgba(24,59,54,0.2);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                Import from TMDB
+            </a>
+        }
+        @if (AuthService.HasPermission("Content.Create"))
+        {
+            <a href="admin/contents/create" class="btn-admin btn-admin-primary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Drama
+            </a>
+        }
     </div>
 </div>
 
@@ -112,9 +119,18 @@
                                 <td class="admin-sub-cell">@(c.Country ?? "—")</td>
                                 <td>
                                     <div style="display:flex;gap:.4rem;align-items:center;">
-                                        <a href="admin/episodes?contentId=@c.ContentId" class="btn-admin" style="background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;text-decoration:none;">🎬 Episodes</a>
-                                        <a href="admin/contents/edit/@c.ContentId" class="btn-admin btn-admin-edit">Edit</a>
-                                        <a href="admin/contents/delete/@c.ContentId" class="btn-admin btn-admin-delete">Delete</a>
+                                        @if (AuthService.HasPermission("Episode.View"))
+                                        {
+                                            <a href="admin/episodes?contentId=@c.ContentId" class="btn-admin" style="background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;text-decoration:none;">🎬 Episodes</a>
+                                        }
+                                        @if (AuthService.HasPermission("Content.Edit"))
+                                        {
+                                            <a href="admin/contents/edit/@c.ContentId" class="btn-admin btn-admin-edit">Edit</a>
+                                        }
+                                        @if (AuthService.HasPermission("Content.Delete"))
+                                        {
+                                            <a href="admin/contents/delete/@c.ContentId" class="btn-admin btn-admin-delete">Delete</a>
+                                        }
                                     </div>
                                 </td>
                             </tr>

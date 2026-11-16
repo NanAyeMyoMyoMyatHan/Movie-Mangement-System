@@ -26,6 +26,7 @@ builder.Services.AddScoped<WatchLaterService>();
 builder.Services.AddScoped<FavoriteService>();
 builder.Services.AddScoped<WatchHistoryService>();
 builder.Services.AddScoped<TmdbService>();
+builder.Services.AddScoped<RbacService>();
 
 // Clean startup: delete any leftover session file on server boot so fresh runs always start clean as Guest!
 try

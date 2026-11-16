@@ -28,6 +28,4 @@ public partial class Movie
     public DateTime? DeletedAt { get; set; }
 
     public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
-
-    public virtual ICollection<WatchlistItem> WatchlistItems { get; set; } = new List<WatchlistItem>();
 }

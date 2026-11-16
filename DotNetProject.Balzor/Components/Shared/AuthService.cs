@@ -17,11 +17,19 @@ namespace DotNetProject.Balzor.Components.Shared
         public string UserName { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string Role { get; set; } = "Guest"; // "Admin", "User", "Guest"
+        public string Role { get; set; } = "Guest"; // Fallback primary role: "SuperAdmin", "Admin", "User", "Guest"
+        public List<string> Roles { get; set; } = new();
+        public HashSet<string> Permissions { get; set; } = new(StringComparer.OrdinalIgnoreCase);
         public DateTime LoggedInAt { get; set; } = DateTime.UtcNow;
 
         public bool IsAuthenticated => Id > 0 && !string.IsNullOrWhiteSpace(UserName) && !Role.Equals("Guest", StringComparison.OrdinalIgnoreCase);
-        public bool IsAdmin => IsAuthenticated && Role.Equals("Admin", StringComparison.OrdinalIgnoreCase);
+        public bool IsAdmin => IsAuthenticated && (Role.Equals("Admin", StringComparison.OrdinalIgnoreCase) || Role.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase) || Roles.Any(r => r.Equals("Admin", StringComparison.OrdinalIgnoreCase) || r.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase)));
+
+        public bool HasPermission(string code) =>
+            IsAdmin || Permissions.Contains("*") || Permissions.Contains(code);
+
+        public bool HasRole(string roleName) =>
+            Roles.Any(r => r.Equals(roleName, StringComparison.OrdinalIgnoreCase)) || Role.Equals(roleName, StringComparison.OrdinalIgnoreCase);
     }
 
     public class StoredUserAccount
@@ -65,6 +73,38 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public bool IsAdmin() => CurrentUser.IsAdmin;
         public bool IsAuthenticated() => CurrentUser.IsAuthenticated;
+        public bool HasPermission(string code) => CurrentUser.HasPermission(code);
+        public bool HasAnyPermission(params string[] codes) =>
+            CurrentUser.IsAdmin || CurrentUser.Permissions.Contains("*") || codes.Any(c => CurrentUser.Permissions.Contains(c));
+        public bool HasRole(string roleName) => CurrentUser.HasRole(roleName);
+
+        public async Task RefreshPermissionsAsync()
+        {
+            if (!CurrentUser.IsAuthenticated || CurrentUser.Id <= 0) return;
+
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var rbac = scope.ServiceProvider.GetService<RbacService>();
+                if (rbac != null)
+                {
+                    var roleNames = await rbac.GetUserRoleNamesAsync(CurrentUser.Id);
+                    var perms = await rbac.GetUserPermissionsAsync(CurrentUser.Id);
+
+                    _currentUser.Roles = roleNames;
+                    _currentUser.Permissions = perms;
+                    if (roleNames.Any())
+                    {
+                        _currentUser.Role = roleNames.First();
+                    }
+
+                    await RefreshPermissionsAsync();
+                    SaveSession();
+                    OnAuthStateChanged?.Invoke();
+                }
+            }
+            catch { }
+        }
 
         public string GetCurrentUserKey()
         {
@@ -133,8 +173,13 @@ namespace DotNetProject.Balzor.Components.Shared
                     var user = JsonSerializer.Deserialize<CurrentUserDto>(json);
                     if (user != null && user.IsAuthenticated)
                     {
+                        user.Permissions = new HashSet<string>(user.Permissions ?? new(), StringComparer.OrdinalIgnoreCase);
                         _currentUser = user;
                         _isInitialized = true;
+                        if (!_currentUser.Permissions.Any() && _currentUser.Id > 0)
+                        {
+                            _ = RefreshPermissionsAsync();
+                        }
                         return;
                     }
                 }
@@ -250,6 +295,7 @@ namespace DotNetProject.Balzor.Components.Shared
                             LoggedInAt = DateTime.UtcNow
                         };
 
+                        await RefreshPermissionsAsync();
                         SaveSession();
                         OnAuthStateChanged?.Invoke();
 
@@ -297,6 +343,8 @@ namespace DotNetProject.Balzor.Components.Shared
                         LoggedInAt = DateTime.UtcNow
                     };
 
+                    await RefreshPermissionsAsync();
+                    await RefreshPermissionsAsync();
                     SaveSession();
                     OnAuthStateChanged?.Invoke();
                     return res;
@@ -305,9 +353,10 @@ namespace DotNetProject.Balzor.Components.Shared
             catch { }
 
             // 3. Fallback to Local Persistent File (users.json)
+            StoredUserAccount? matchedUser = null;
             lock (_accountsLock)
             {
-                var matchedUser = _accounts.FirstOrDefault(u =>
+                matchedUser = _accounts.FirstOrDefault(u =>
                     string.Equals(u.Password.Trim(), cleanPwd, StringComparison.Ordinal) &&
                     (
                         u.UserName.Equals(cleanInput, StringComparison.OrdinalIgnoreCase) ||
@@ -317,36 +366,37 @@ namespace DotNetProject.Balzor.Components.Shared
                         u.DisplayName.Replace(" ", "").Equals(inputNoSpace, StringComparison.OrdinalIgnoreCase) ||
                         u.Email.Replace(" ", "").Equals(inputNoSpace, StringComparison.OrdinalIgnoreCase)
                     ));
+            }
 
-                if (matchedUser != null)
+            if (matchedUser != null)
+            {
+                bool isAdmin = matchedUser.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase) ||
+                               matchedUser.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase);
+
+                _currentUser = new CurrentUserDto
                 {
-                    bool isAdmin = matchedUser.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase) ||
-                                   matchedUser.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase);
+                    Id = matchedUser.Id,
+                    UserName = matchedUser.UserName,
+                    DisplayName = !string.IsNullOrWhiteSpace(matchedUser.DisplayName) ? matchedUser.DisplayName : matchedUser.UserName,
+                    Email = matchedUser.Email,
+                    Role = isAdmin ? "Admin" : "User",
+                    LoggedInAt = DateTime.UtcNow
+                };
 
-                    _currentUser = new CurrentUserDto
-                    {
-                        Id = matchedUser.Id,
-                        UserName = matchedUser.UserName,
-                        DisplayName = !string.IsNullOrWhiteSpace(matchedUser.DisplayName) ? matchedUser.DisplayName : matchedUser.UserName,
-                        Email = matchedUser.Email,
-                        Role = isAdmin ? "Admin" : "User",
-                        LoggedInAt = DateTime.UtcNow
-                    };
+                await RefreshPermissionsAsync();
+                SaveSession();
+                OnAuthStateChanged?.Invoke();
 
-                    SaveSession();
-                    OnAuthStateChanged?.Invoke();
-
-                    return new UserLoginResponseModel
-                    {
-                        IsSuccess = true,
-                        Message = $"{matchedUser.Role} login successful.",
-                        Id = matchedUser.Id,
-                        UserName = matchedUser.UserName,
-                        DisplayName = _currentUser.DisplayName,
-                        Email = matchedUser.Email,
-                        Role = _currentUser.Role
-                    };
-                }
+                return new UserLoginResponseModel
+                {
+                    IsSuccess = true,
+                    Message = $"{matchedUser.Role} login successful.",
+                    Id = matchedUser.Id,
+                    UserName = matchedUser.UserName,
+                    DisplayName = _currentUser.DisplayName,
+                    Email = matchedUser.Email,
+                    Role = _currentUser.Role
+                };
             }
 
             return new UserLoginResponseModel
@@ -397,6 +447,20 @@ namespace DotNetProject.Balzor.Components.Shared
 
                     db.Users.Add(dbUser);
                     await db.SaveChangesAsync();
+
+                    // Seed dynamic UserRole entry for new user
+                    var matchedRole = await db.Roles.FirstOrDefaultAsync(r => r.RoleName == dbUser.Role)
+                                   ?? await db.Roles.FirstOrDefaultAsync(r => r.RoleName == "User");
+                    if (matchedRole != null)
+                    {
+                        db.UserRoles.Add(new UserRole
+                        {
+                            UserId = dbUser.Id,
+                            RoleId = matchedRole.RoleId,
+                            AssignedAt = DateTime.UtcNow
+                        });
+                        await db.SaveChangesAsync();
+                    }
 
                     // Also mirror into local persistent file
                     lock (_accountsLock)
@@ -491,6 +555,8 @@ namespace DotNetProject.Balzor.Components.Shared
                 if (db != null)
                 {
                     return await db.Users
+                        .Include(u => u.UserRoles)
+                            .ThenInclude(ur => ur.Role)
                         .OrderByDescending(u => u.Id)
                         .ToListAsync();
                 }
