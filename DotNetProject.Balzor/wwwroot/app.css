@@ -18,6 +18,13 @@ a, .btn-link {
 /* ========================================================
    REELORA LAYOUT
    ======================================================== */
+.empty-layout {
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 .petale-layout {
     min-height: 100vh;
     background: #F4EFEA !important;
