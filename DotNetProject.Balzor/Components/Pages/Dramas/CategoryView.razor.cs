@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DotNetProject.Balzor.Components.Pages
+namespace DotNetProject.Balzor.Components.Pages.Dramas
 {
     public class CategoryItemDto
     {

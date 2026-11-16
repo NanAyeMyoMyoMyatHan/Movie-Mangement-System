@@ -5,12 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DotNetProject.Balzor.Components.Pages
+namespace DotNetProject.Balzor.Components.Pages.Library
 {
-    public partial class WatchLater : ComponentBase, IDisposable
+    public partial class Favorites : ComponentBase, IDisposable
     {
         [Inject]
-        private WatchLaterService WatchLaterService { get; set; } = default!;
+        private FavoriteService FavoriteService { get; set; } = default!;
 
         [Inject]
         private NavigationManager Nav { get; set; } = default!;
@@ -18,11 +18,11 @@ namespace DotNetProject.Balzor.Components.Pages
         [Inject]
         public AuthService AuthService { get; set; } = default!;
 
-        protected List<WatchLaterItem> Items { get; set; } = new();
-        protected List<WatchLaterItem> FilteredItems { get; set; } = new();
+        protected List<FavoriteItem> Items { get; set; } = new();
+        protected List<FavoriteItem> FilteredItems { get; set; } = new();
 
         protected string SelectedFilter { get; set; } = "All";
-        protected string SortBy { get; set; } = "recent";
+        protected string SortBy { get; set; } = "rating";
         protected string SearchQuery { get; set; } = "";
         protected bool IsLoading { get; set; } = true;
         protected string? ToastMessage { get; set; }
@@ -31,11 +31,11 @@ namespace DotNetProject.Balzor.Components.Pages
         protected int CountKorean => Items.Count(i => i.Category != null && i.Category.Contains("Korean", StringComparison.OrdinalIgnoreCase));
         protected int CountThai => Items.Count(i => i.Category != null && i.Category.Contains("Thai", StringComparison.OrdinalIgnoreCase));
         protected int CountMovies => Items.Count(i => !i.IsContent || (i.Category != null && i.Category.Contains("Movie", StringComparison.OrdinalIgnoreCase)));
-        protected int CountWatching => Items.Count(i => i.Status == "Watching");
+        protected double TopRating => Items.Any() ? Items.Max(i => i.Rating) : 9.5;
 
         protected override async Task OnInitializedAsync()
         {
-            WatchLaterService.OnChange += HandleServiceChange;
+            FavoriteService.OnChange += HandleServiceChange;
             AuthService.OnAuthStateChanged += HandleAuthChange;
             await LoadItemsAsync();
         }
@@ -43,7 +43,7 @@ namespace DotNetProject.Balzor.Components.Pages
         private async Task LoadItemsAsync()
         {
             IsLoading = true;
-            Items = await WatchLaterService.GetItemsAsync();
+            Items = await FavoriteService.GetFavoritesAsync();
             ApplyFilters();
             IsLoading = false;
         }
@@ -62,7 +62,7 @@ namespace DotNetProject.Balzor.Components.Pages
 
         protected void OnSortChanged(ChangeEventArgs e)
         {
-            SortBy = e.Value?.ToString() ?? "recent";
+            SortBy = e.Value?.ToString() ?? "rating";
             ApplyFilters();
         }
 
@@ -70,7 +70,6 @@ namespace DotNetProject.Balzor.Components.Pages
         {
             var query = Items.AsEnumerable();
 
-            // Category filter
             if (SelectedFilter == "Korean Drama")
             {
                 query = query.Where(i => i.Category != null && i.Category.Contains("Korean", StringComparison.OrdinalIgnoreCase));
@@ -83,12 +82,7 @@ namespace DotNetProject.Balzor.Components.Pages
             {
                 query = query.Where(i => !i.IsContent || (i.Category != null && i.Category.Contains("Movie", StringComparison.OrdinalIgnoreCase)));
             }
-            else if (SelectedFilter == "Watching")
-            {
-                query = query.Where(i => i.Status == "Watching");
-            }
 
-            // Search query filter
             if (!string.IsNullOrWhiteSpace(SearchQuery))
             {
                 var q = SearchQuery.Trim().ToLower();
@@ -97,24 +91,23 @@ namespace DotNetProject.Balzor.Components.Pages
                                          (i.Category != null && i.Category.ToLower().Contains(q)));
             }
 
-            // Sorting
             if (SortBy == "title")
             {
                 query = query.OrderBy(i => i.Title);
             }
-            else if (SortBy == "episodes")
+            else if (SortBy == "recent")
             {
-                query = query.OrderByDescending(i => i.TotalEpisodes);
+                query = query.OrderByDescending(i => i.AddedAt);
             }
             else
             {
-                query = query.OrderByDescending(i => i.AddedAt);
+                query = query.OrderByDescending(i => i.Rating);
             }
 
             FilteredItems = query.ToList();
         }
 
-        protected void NavigateToItem(WatchLaterItem item)
+        protected void NavigateToItem(FavoriteItem item)
         {
             if (item.IsContent)
             {
@@ -126,10 +119,10 @@ namespace DotNetProject.Balzor.Components.Pages
             }
         }
 
-        protected async Task RemoveItem(WatchLaterItem item)
+        protected async Task RemoveFavorite(FavoriteItem item)
         {
-            await WatchLaterService.RemoveItemAsync(item.Id, item.IsContent);
-            ShowToast($"Removed \"{item.Title}\" from Watch Later.");
+            await FavoriteService.RemoveFavoriteAsync(item.Id, item.IsContent);
+            ShowToast($"Removed \"{item.Title}\" from Favorites.");
         }
 
         protected void ExploreCatalog()
@@ -162,7 +155,7 @@ namespace DotNetProject.Balzor.Components.Pages
 
         public void Dispose()
         {
-            WatchLaterService.OnChange -= HandleServiceChange;
+            FavoriteService.OnChange -= HandleServiceChange;
             AuthService.OnAuthStateChanged -= HandleAuthChange;
         }
     }

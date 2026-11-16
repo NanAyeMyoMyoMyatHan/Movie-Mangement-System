@@ -3,7 +3,7 @@ using DotNetProject.Domain.Features.Contents;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace DotNetProject.Balzor.Components.Pages
+namespace DotNetProject.Balzor.Components.Pages.Dramas
 {
     public partial class DramaDetail
     {
