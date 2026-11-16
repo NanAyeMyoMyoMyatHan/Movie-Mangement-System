@@ -18,11 +18,11 @@
 
 <div class="admin-content-area">
     <!-- Notice Card -->
-    <div style="background:rgba(24,59,54,0.06); border:1px solid rgba(24,59,54,0.15); border-radius:14px; padding:16px 20px; margin-bottom:24px; display:flex; align-items:center; gap:14px;">
+    <div style="background:rgba(139,92,246,0.08); border:1px solid rgba(167,139,250,0.3); border-radius:14px; padding:16px 20px; margin-bottom:24px; display:flex; align-items:center; gap:14px;">
         <div style="font-size:24px;">🌐</div>
         <div>
-            <div style="font-weight:700; color:#183B36; font-size:14px;">TMDB Free API Integration</div>
-            <div style="font-size:13px; color:#5A6E66; margin-top:2px;">
+            <div style="font-weight:700; color:#2E1065; font-size:14px;">TMDB Free API Integration</div>
+            <div style="font-size:13px; color:#6B5B95; margin-top:2px;">
                 Dramas not in your PC will be automatically fetched with official posters, banners, descriptions, and episode lists. Existing dramas in your database are strictly protected and will not be overwritten.
             </div>
         </div>
@@ -32,12 +32,12 @@
     <div class="admin-card" style="padding: 24px; margin-bottom: 24px;">
         <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
             <div style="flex:1; min-width:280px; position:relative;">
-                <input type="text" class="admin-search-input" style="width:100%; padding:12px 16px; border-radius:12px; border:1px solid rgba(24,59,54,0.2); font-size:14px;"
+                <input type="text" class="admin-search-input" style="width:100%; padding:12px 16px; border-radius:12px; border:1px solid rgba(167,139,250,0.35); font-size:14px; color:#2E1065;"
                        placeholder="Enter Drama Title (e.g. Queen of Tears, Lovely Runner, KinnPorsche, Crash Landing on You)..."
                        @bind="_searchQuery" @bind:event="oninput" @onkeyup="HandleKeyUp" />
             </div>
 
-            <select class="admin-select" style="padding:12px 14px; border-radius:12px; border:1px solid rgba(24,59,54,0.2); font-size:14px;" @bind="_selectedContentTypeId">
+            <select class="admin-select" style="padding:12px 14px; border-radius:12px; border:1px solid rgba(167,139,250,0.35); font-size:14px; color:#4C1D95;" @bind="_selectedContentTypeId">
                 <option value="2">Korean Drama</option>
                 <option value="3">Thai Series / BL</option>
                 <option value="1">Movie</option>
@@ -57,7 +57,7 @@
 
         @if (!string.IsNullOrWhiteSpace(_statusMessage))
         {
-            <div style="margin-top:16px; padding:12px 16px; border-radius:10px; background:@(_isError ? "rgba(222,113,73,0.1)" : "rgba(16,185,129,0.1)"); color:@(_isError ? "#DE7149" : "#10B981"); font-size:13.5px; font-weight:600;">
+            <div style="margin-top:16px; padding:12px 16px; border-radius:10px; background:@(_isError ? "rgba(239,68,68,0.1)" : "rgba(16,185,129,0.12)"); color:@(_isError ? "#DC2626" : "#047857"); font-size:13.5px; font-weight:600; border:1px solid @(_isError ? "rgba(239,68,68,0.3)" : "rgba(52,211,153,0.4)");">
                 @_statusMessage
             </div>
         }
@@ -66,13 +66,13 @@
     <!-- Search Results -->
     @if (_results != null)
     {
-        <div style="margin-bottom:16px; font-size:14px; font-weight:700; color:#232C24;">
+        <div style="margin-bottom:16px; font-size:14px; font-weight:700; color:#2E1065;">
             Found @_results.Count results:
         </div>
 
         @if (_results.Count == 0)
         {
-            <div class="admin-card" style="padding:40px; text-align:center; color:#7B977D;">
+            <div class="admin-card" style="padding:40px; text-align:center; color:#6B5B95;">
                 No dramas found matching "@_lastSearchedQuery". Try another keyword or English title.
             </div>
         }
@@ -83,15 +83,15 @@
                 {
                     <div class="admin-card" style="padding:0; overflow:hidden; display:flex; flex-direction:column; border-radius:16px; transition:transform 0.2s ease, box-shadow 0.2s ease;">
                         <div style="display:flex; gap:16px; padding:16px;">
-                            <img src="@item.PosterUrl" alt="@item.Title" style="width:90px; height:130px; object-fit:cover; border-radius:10px; flex-shrink:0; background:#E5EAE6;" />
+                            <img src="@item.PosterUrl" alt="@item.Title" style="width:90px; height:130px; object-fit:cover; border-radius:10px; flex-shrink:0; background:rgba(139,92,246,0.12);" />
                             
                             <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
-                                <div style="font-weight:700; font-size:15px; color:#183B36; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                <div style="font-weight:700; font-size:15px; color:#2E1065; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                                     @item.Title
                                 </div>
                                 @if (!string.IsNullOrWhiteSpace(item.OriginalTitle) && item.OriginalTitle != item.Title)
                                 {
-                                    <div style="font-size:12px; color:#7B977D; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    <div style="font-size:12px; color:#6B5B95; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                                         @item.OriginalTitle
                                     </div>
                                 }
@@ -99,32 +99,32 @@
                                 <div style="display:flex; gap:6px; align-items:center; margin-top:6px; flex-wrap:wrap;">
                                     @if (!string.IsNullOrWhiteSpace(item.ReleaseDate))
                                     {
-                                        <span style="font-size:11.5px; background:rgba(24,59,54,0.08); padding:2px 8px; border-radius:6px; font-weight:600; color:#183B36;">
+                                        <span style="font-size:11.5px; background:rgba(139,92,246,0.12); padding:2px 8px; border-radius:6px; font-weight:600; color:#4C1D95;">
                                             @item.ReleaseDate.Split('-')[0]
                                         </span>
                                     }
-                                    <span style="font-size:11.5px; background:rgba(24,59,54,0.08); padding:2px 8px; border-radius:6px; font-weight:600; color:#183B36;">
+                                    <span style="font-size:11.5px; background:rgba(139,92,246,0.12); padding:2px 8px; border-radius:6px; font-weight:600; color:#4C1D95;">
                                         @item.Country
                                     </span>
                                     @if (item.VoteAverage > 0)
                                     {
-                                        <span style="font-size:11.5px; background:rgba(222,113,73,0.15); color:#DE7149; padding:2px 8px; border-radius:6px; font-weight:700;">
+                                        <span style="font-size:11.5px; background:rgba(236,72,153,0.15); color:#EC4899; padding:2px 8px; border-radius:6px; font-weight:700;">
                                             ★ @item.VoteAverage
                                         </span>
                                     }
                                 </div>
 
-                                <div style="font-size:12px; color:#5A6E66; margin-top:8px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; line-height:1.4;">
+                                <div style="font-size:12px; color:#6B5B95; margin-top:8px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; line-height:1.4;">
                                     @item.Overview
                                 </div>
                             </div>
                         </div>
 
                         <!-- Action Bar -->
-                        <div style="padding:12px 16px; background:rgba(24,59,54,0.03); border-top:1px solid rgba(24,59,54,0.08); display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
+                        <div style="padding:12px 16px; background:rgba(243,232,255,0.4); border-top:1px solid rgba(167,139,250,0.2); display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
                             @if (item.AlreadyInDatabase)
                             {
-                                <span style="font-size:12px; font-weight:700; color:#10B981; display:flex; align-items:center; gap:4px;">
+                                <span style="font-size:12px; font-weight:700; color:#047857; display:flex; align-items:center; gap:4px;">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                                     Already in Database
                                 </span>
@@ -134,7 +134,7 @@
                             }
                             else
                             {
-                                <span style="font-size:12px; color:#7B977D;">Not in PC / DB</span>
+                                <span style="font-size:12px; color:#6B5B95;">Not in PC / DB</span>
                                 <button type="button" class="btn-admin btn-admin-primary" style="font-size:12px; padding:6px 14px;"
                                         @onclick="() => ImportItemAsync(item)" disabled="@_importingIds.Contains(item.Id)">
                                     @if (_importingIds.Contains(item.Id))

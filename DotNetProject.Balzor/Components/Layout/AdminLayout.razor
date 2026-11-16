@@ -3,7 +3,7 @@
 @inject AuthService AuthService
 @inject NavigationManager Nav
 
-<link rel="stylesheet" href="admin.css?v=pastel-1.1" />
+<link rel="stylesheet" href="admin.css?v=pastel-2.0" />
 
 @if (!CanAccessAdminPanel)
 {
@@ -26,15 +26,23 @@ else
         <!-- Admin Sidebar matching NANGWORLD -->
         <aside class="admin-sidebar">
             <div class="admin-sidebar-top">
-                <!-- Brand Logo -->
-                <div class="myflix-logo" style="margin-bottom: 20px;">
-                    <svg class="myflix-logo-icon" width="26" height="26" viewBox="0 0 24 24" fill="#DE7149">
-                        <path d="M6 3.5c0-.9 1-.1.4.1l13.5 7.5c.8.5.8 1.6 0 2.1L7.4 20.6c-.6.4-1.4 0-1.4-.8V3.5z" />
-                    </svg>
+                <!-- Brand Logo matching NANGWORLD -->
+                <div class="myflix-logo" style="margin-bottom: 22px;">
+                    <div class="myflix-logo-badge">
+                        <svg class="myflix-logo-icon" width="20" height="20" viewBox="0 0 24 24" fill="url(#violetPinkGradAdmin)">
+                            <defs>
+                                <linearGradient id="violetPinkGradAdmin" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#8B5CF6"/>
+                                    <stop offset="100%" stop-color="#EC4899"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M5 3.5c0-.9 1-.1.4.1l13.5 7.5c.8.5.8 1.6 0 2.1L7.4 20.6c-.6.4-1.4 0-1.4-.8V3.5z"/>
+                        </svg>
+                    </div>
                     <div>
-                        <span class="myflix-logo-text">
-                            <span class="myflix-text-white">Nang</span><span class="myflix-text-green">World</span>
-                        </span>
+                        <div class="myflix-logo-text">
+                            <span class="myflix-text-pink">NANG</span><span class="myflix-text-violet">WORLD</span>
+                        </div>
                         <span class="admin-panel-badge">Admin Panel</span>
                     </div>
                 </div>

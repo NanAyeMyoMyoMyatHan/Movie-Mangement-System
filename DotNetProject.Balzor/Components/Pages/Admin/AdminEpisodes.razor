@@ -28,7 +28,7 @@
     <!-- Drama Selector Bar -->
     <div class="admin-card" style="padding:1.2rem 1.4rem;">
         <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-            <label style="font-weight:700;font-size:0.9rem;color:#285843;">Select Drama:</label>
+            <label style="font-weight:700;font-size:0.9rem;color:#4C1D95;">Select Drama:</label>
             <select class="admin-select" style="min-width:260px;" value="@SelectedContentId" @onchange="OnDramaChange">
                 @foreach (var d in DramaList)
                 {
@@ -38,7 +38,7 @@
             <button class="btn-admin btn-admin-primary" @onclick="() => LoadDramaEpisodesAsync(SelectedContentId)">
                 Load Episodes
             </button>
-            <span style="font-size:0.85rem;color:#5F7961;margin-left:auto;">
+            <span style="font-size:0.85rem;color:#6B5B95;margin-left:auto;">
                 Total Episodes: <strong>@Episodes.Count</strong>
             </span>
         </div>
@@ -47,13 +47,13 @@
     <!-- Active Video Player Preview (if an episode is selected) -->
     @if (CurrentPlayingEpisode != null)
     {
-        <div class="admin-card" style="padding:1.4rem;border-left:4px solid #418F6B;">
+        <div class="admin-card" style="padding:1.4rem;border-left:4px solid #8B5CF6;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
                 <div>
-                    <h3 style="margin:0;font-size:1.15rem;color:#1F4233;font-weight:700;">
+                    <h3 style="margin:0;font-size:1.15rem;color:#2E1065;font-weight:700;">
                         ▶ Now Streaming: @CurrentPlayingEpisode.Title
                     </h3>
-                    <p style="margin:4px 0 0;font-size:0.85rem;color:#5F7961;">
+                    <p style="margin:4px 0 0;font-size:0.85rem;color:#6B5B95;">
                         Episode @CurrentPlayingEpisode.EpisodeNumber · Duration: @(CurrentPlayingEpisode.Duration)m · Status: @CurrentPlayingEpisode.Status
                     </p>
                 </div>
@@ -68,7 +68,7 @@
             </div>
             @if (!string.IsNullOrWhiteSpace(CurrentPlayingEpisode.Description))
             {
-                <p style="margin:12px 0 0;font-size:0.85rem;color:#4A483E;background:#F4FAF6;padding:10px 14px;border-radius:8px;">
+                <p style="margin:12px 0 0;font-size:0.85rem;color:#2E1065;background:#FAF5FF;padding:10px 14px;border-radius:8px;border:1px solid rgba(167,139,250,0.25);">
                     <strong>Synopsis:</strong> @CurrentPlayingEpisode.Description
                 </p>
             }
@@ -110,8 +110,8 @@
                         @foreach (var ep in Episodes)
                         {
                             bool isCurrent = CurrentPlayingEpisode?.EpisodeId == ep.EpisodeId;
-                            <tr style="@(isCurrent ? "background:rgba(204,233,220,0.35);" : "")">
-                                <td style="font-weight:700;color:#285843;text-align:center;">
+                            <tr style="@(isCurrent ? "background:rgba(243,232,255,0.6);" : "")">
+                                <td style="font-weight:700;color:#4C1D95;text-align:center;">
                                     @ep.EpisodeNumber
                                 </td>
                                 <td>
@@ -125,21 +125,21 @@
                                     }
                                 </td>
                                 <td>
-                                    <div class="admin-title-cell" style="font-weight:600;">@ep.Title</div>
+                                    <div class="admin-title-cell" style="font-weight:700;">@ep.Title</div>
                                     @if (!string.IsNullOrWhiteSpace(ep.Description))
                                     {
-                                        <div class="admin-sub-cell" style="max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.75rem;color:#7B977D;">
+                                        <div class="admin-sub-cell" style="max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.75rem;color:#6B5B95;">
                                             @ep.Description
                                         </div>
                                     }
                                 </td>
                                 <td>
-                                    <span style="font-size:0.8rem;color:#327255;font-weight:600;">
+                                    <span style="font-size:0.8rem;color:#6D28D9;font-weight:600;">
                                         @(ep.Duration.HasValue ? $"{ep.Duration}m" : "-")
                                     </span>
                                 </td>
                                 <td>
-                                    <code style="font-size:0.75rem;background:#F4FAF6;color:#1F4233;padding:3px 6px;border-radius:4px;border:1px solid #CCE9DC;word-break:break-all;">
+                                    <code style="font-size:0.75rem;background:#FAF5FF;color:#4C1D95;padding:3px 8px;border-radius:6px;border:1px solid rgba(167,139,250,0.3);word-break:break-all;">
                                         @ep.VideoUrl
                                     </code>
                                 </td>
@@ -177,52 +177,52 @@
     <!-- Edit Episode Video URL Modal -->
     @if (EditingEpisode != null)
     {
-        <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
-            <div style="background:#FFFFFF;border-radius:18px;max-width:540px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.3);overflow:hidden;border:1px solid #CCE9DC;">
-                <div style="padding:16px 22px;background:#F4FAF6;border-bottom:1px solid #CCE9DC;display:flex;align-items:center;justify-content:space-between;">
-                    <h3 style="margin:0;font-size:16px;color:#1F4233;font-weight:700;">
+        <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(46,16,101,0.45);backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
+            <div style="background:#FFFFFF;border-radius:24px;max-width:540px;width:100%;box-shadow:0 24px 60px rgba(139,92,246,0.2);overflow:hidden;border:1.5px solid rgba(167,139,250,0.35);">
+                <div style="padding:16px 22px;background:#FAF5FF;border-bottom:1px solid rgba(167,139,250,0.25);display:flex;align-items:center;justify-content:space-between;">
+                    <h3 style="margin:0;font-size:16px;color:#2E1065;font-weight:700;">
                         ✏ Edit Episode @EditingEpisode.EpisodeNumber Video & Info
                     </h3>
-                    <button type="button" @onclick="CloseEditModal" style="border:none;background:transparent;cursor:pointer;font-size:18px;color:#7B977D;">✕</button>
+                    <button type="button" @onclick="CloseEditModal" style="border:none;background:transparent;cursor:pointer;font-size:18px;color:#6B5B95;">✕</button>
                 </div>
 
                 <div style="padding:22px;display:flex;flex-direction:column;gap:14px;">
                     @if (!string.IsNullOrEmpty(EditSuccessMessage))
                     {
-                        <div style="padding:10px 14px;border-radius:8px;background:rgba(16,185,129,0.12);color:#10B981;font-size:13px;font-weight:600;">
+                        <div style="padding:10px 14px;border-radius:8px;background:rgba(16,185,129,0.12);color:#047857;font-size:13px;font-weight:600;border:1px solid rgba(52,211,153,0.4);">
                             @EditSuccessMessage
                         </div>
                     }
 
                     <div>
-                        <label style="display:block;font-size:13px;font-weight:700;color:#285843;margin-bottom:6px;">Video URL / Stream Link <span style="color:#DE7149;">*</span></label>
-                        <input type="text" class="admin-input" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid #CCE9DC;font-size:13px;"
+                        <label style="display:block;font-size:13px;font-weight:700;color:#4C1D95;margin-bottom:6px;">Video URL / Stream Link <span style="color:#EC4899;">*</span></label>
+                        <input type="text" class="admin-input" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid rgba(167,139,250,0.35);font-size:13px;color:#2E1065;"
                                @bind="EditVideoUrl" placeholder="e.g. /videos/... or https://www.youtube.com/embed/... or direct .mp4" />
-                        <span style="font-size:11.5px;color:#7B977D;margin-top:4px;display:block;">
+                        <span style="font-size:11.5px;color:#6B5B95;margin-top:4px;display:block;">
                             Supports YouTube embed links, local D:\ files (/videos/...), or online direct MP4 streams.
                         </span>
                     </div>
 
                     <div>
-                        <label style="display:block;font-size:13px;font-weight:700;color:#285843;margin-bottom:6px;">Episode Title</label>
-                        <input type="text" class="admin-input" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid #CCE9DC;font-size:13px;"
+                        <label style="display:block;font-size:13px;font-weight:700;color:#4C1D95;margin-bottom:6px;">Episode Title</label>
+                        <input type="text" class="admin-input" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid rgba(167,139,250,0.35);font-size:13px;color:#2E1065;"
                                @bind="EditTitle" placeholder="Episode title" />
                     </div>
 
                     <div>
-                        <label style="display:block;font-size:13px;font-weight:700;color:#285843;margin-bottom:6px;">Episode Synopsis / Description</label>
-                        <textarea class="admin-input" rows="3" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid #CCE9DC;font-size:13px;"
+                        <label style="display:block;font-size:13px;font-weight:700;color:#4C1D95;margin-bottom:6px;">Episode Synopsis / Description</label>
+                        <textarea class="admin-input" rows="3" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid rgba(167,139,250,0.35);font-size:13px;color:#2E1065;"
                                   @bind="EditDescription" placeholder="Short description of this episode..."></textarea>
                     </div>
 
                     <div>
-                        <label style="display:block;font-size:13px;font-weight:700;color:#285843;margin-bottom:6px;">Thumbnail URL</label>
-                        <input type="text" class="admin-input" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid #CCE9DC;font-size:13px;"
+                        <label style="display:block;font-size:13px;font-weight:700;color:#4C1D95;margin-bottom:6px;">Thumbnail URL</label>
+                        <input type="text" class="admin-input" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid rgba(167,139,250,0.35);font-size:13px;color:#2E1065;"
                                @bind="EditThumbnailUrl" placeholder="https://..." />
                     </div>
                 </div>
 
-                <div style="padding:14px 22px;background:#F8FAF9;border-top:1px solid #CCE9DC;display:flex;justify-content:flex-end;gap:10px;">
+                <div style="padding:14px 22px;background:#FAF5FF;border-top:1px solid rgba(167,139,250,0.2);display:flex;justify-content:flex-end;gap:10px;">
                     <button type="button" class="btn-admin btn-admin-edit" @onclick="CloseEditModal">Cancel</button>
                     <button type="button" class="btn-admin btn-admin-primary" @onclick="SaveEpisodeChangesAsync" disabled="@IsSavingEpisode">
                         @(IsSavingEpisode ? "Saving..." : "Save Changes")

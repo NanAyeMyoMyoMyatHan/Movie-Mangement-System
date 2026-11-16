@@ -61,7 +61,7 @@
         {
             <div class="admin-empty">
                 No movies found.
-                <a href="admin/movies/create" style="color:var(--brand-terracotta);font-weight:700;"> Add your first movie →</a>
+                <a href="admin/movies/create" style="color:var(--brand-pink);font-weight:700;"> Add your first movie →</a>
             </div>
         }
         else
@@ -83,7 +83,7 @@
                         {
                             rowNo++;
                             <tr>
-                                <td style="color:#9FB5A0;font-size:.78rem;">@rowNo</td>
+                                <td style="color:#6B5B95;font-size:.78rem;">@rowNo</td>
                                 <td>
                                     @if (!string.IsNullOrWhiteSpace(m.PosterUrl))
                                     {
@@ -117,8 +117,8 @@
             </div>
 
             <!-- Pagination -->
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.4rem;border-top:1px solid rgba(204,233,220,0.4);flex-wrap:wrap;gap:.5rem;">
-                <span style="font-size:.78rem;color:#7B977D;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.4rem;border-top:1px solid rgba(167,139,250,0.2);flex-wrap:wrap;gap:.5rem;">
+                <span style="font-size:.78rem;color:#6B5B95;">
                     Showing @((_currentPage - 1) * _pageSize + 1)–@(Math.Min(_currentPage * _pageSize, _totalCount)) of @_totalCount
                 </span>
                 <div style="display:flex;gap:.3rem;">

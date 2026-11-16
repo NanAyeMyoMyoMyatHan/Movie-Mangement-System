@@ -15,7 +15,7 @@
     <div class="admin-header-actions" style="display:flex;gap:10px;align-items:center;">
         @if (AuthService.HasPermission("Content.Import"))
         {
-            <a href="/admin/contents/import" class="btn-admin" style="background:#183B36;color:#F4EFEA;text-decoration:none;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;font-weight:600;font-size:13px;border:1px solid rgba(24,59,54,0.2);">
+            <a href="/admin/contents/import" class="btn-admin" style="background:rgba(139, 92, 246, 0.12);color:#6D28D9;text-decoration:none;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9999px;font-weight:700;font-size:13px;border:1px solid rgba(167, 139, 250, 0.35);">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="2" y1="12" x2="22" y2="12"></line>
@@ -72,7 +72,7 @@
         {
             <div class="admin-empty">
                 No dramas or series found.
-                <a href="admin/contents/create" style="color:var(--brand-terracotta);font-weight:700;"> Add one →</a>
+                <a href="admin/contents/create" style="color:var(--brand-pink);font-weight:700;"> Add one →</a>
             </div>
         }
         else
@@ -95,7 +95,7 @@
                         {
                             rowNo++;
                             <tr>
-                                <td style="color:#9FB5A0;font-size:.78rem;">@rowNo</td>
+                                <td style="color:#6B5B95;font-size:.78rem;">@rowNo</td>
                                 <td>
                                     @if (!string.IsNullOrWhiteSpace(c.PosterUrl))
                                     {
@@ -121,7 +121,7 @@
                                     <div style="display:flex;gap:.4rem;align-items:center;">
                                         @if (AuthService.HasPermission("Episode.View"))
                                         {
-                                            <a href="admin/episodes?contentId=@c.ContentId" class="btn-admin" style="background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;text-decoration:none;">🎬 Episodes</a>
+                                            <a href="admin/episodes?contentId=@c.ContentId" class="btn-admin" style="background:rgba(139,92,246,0.12);color:#6D28D9;border:1px solid rgba(167,139,250,0.35);text-decoration:none;">🎬 Episodes</a>
                                         }
                                         @if (AuthService.HasPermission("Content.Edit"))
                                         {
@@ -140,8 +140,8 @@
             </div>
 
             <!-- Pagination -->
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.4rem;border-top:1px solid rgba(204,233,220,0.4);flex-wrap:wrap;gap:.5rem;">
-                <span style="font-size:.78rem;color:#7B977D;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.4rem;border-top:1px solid rgba(167,139,250,0.2);flex-wrap:wrap;gap:.5rem;">
+                <span style="font-size:.78rem;color:#6B5B95;">
                     Showing @((_currentPage - 1) * _pageSize + 1)–@(Math.Min(_currentPage * _pageSize, _totalCount)) of @_totalCount
                 </span>
                 <div style="display:flex;gap:.3rem;">
