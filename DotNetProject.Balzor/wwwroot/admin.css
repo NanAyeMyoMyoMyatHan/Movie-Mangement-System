@@ -795,3 +795,113 @@
         padding: 16px;
     }
 }
+
+/* ========================================================
+   CLAYMORPHISM ADMIN DESIGN SYSTEM
+   ======================================================== */
+.admin-sidebar {
+    border-radius: 0 28px 28px 0 !important;
+    border-right: 2px solid rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 
+        10px 0 30px rgba(44, 62, 53, 0.07),
+        inset -3px 0 6px rgba(44, 62, 53, 0.04),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.8) !important;
+}
+
+.admin-card {
+    border-radius: 24px !important;
+    border: 2px solid rgba(255, 255, 255, 0.85) !important;
+    box-shadow: 
+        0 14px 28px -4px rgba(44, 62, 53, 0.08),
+        inset 3px 3px 6px rgba(255, 255, 255, 0.95),
+        inset -3px -4px 7px rgba(44, 62, 53, 0.06) !important;
+    background: #FFFFFF !important;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.admin-stat-card {
+    border-radius: 22px !important;
+    border: 2px solid rgba(255, 255, 255, 0.85) !important;
+    box-shadow: 
+        0 12px 26px -4px rgba(44, 62, 53, 0.07),
+        inset 3px 3px 6px rgba(255, 255, 255, 0.95),
+        inset -3px -4px 7px rgba(44, 62, 53, 0.06) !important;
+    background: #FFFFFF !important;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.admin-stat-card:hover {
+    transform: translateY(-4px) scale(1.02) !important;
+    box-shadow: 
+        0 20px 38px -4px rgba(44, 62, 53, 0.13),
+        inset 3px 3px 7px rgba(255, 255, 255, 1),
+        inset -4px -5px 8px rgba(44, 62, 53, 0.08) !important;
+}
+
+.admin-stat-icon {
+    border-radius: 14px !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 
+        0 4px 10px rgba(44, 62, 53, 0.08),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.85),
+        inset -2px -2px 4px rgba(44, 62, 53, 0.06) !important;
+}
+
+.btn-admin {
+    border-radius: 14px !important;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.btn-admin-primary,
+.btn-modal-save {
+    background: linear-gradient(145deg, #E87850, #D2633A) !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 
+        0 8px 18px rgba(222, 113, 73, 0.35),
+        inset 2px 3px 5px rgba(255, 255, 255, 0.55),
+        inset -2px -4px 6px rgba(160, 50, 20, 0.35) !important;
+}
+
+.btn-admin-primary:hover,
+.btn-modal-save:hover {
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 0 12px 24px rgba(222, 113, 73, 0.42), inset 2px 3px 5px rgba(255, 255, 255, 0.65) !important;
+}
+
+.btn-admin-primary:active,
+.btn-modal-save:active {
+    transform: translateY(2px) scale(0.97) !important;
+    box-shadow: 0 4px 8px rgba(222, 113, 73, 0.25), inset 3px 3px 5px rgba(0, 0, 0, 0.3) !important;
+}
+
+.btn-action-pill {
+    border-radius: 9999px !important;
+    transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    box-shadow: 0 4px 10px rgba(44, 62, 53, 0.08), inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.8), inset -1.5px -2px 3px rgba(44, 62, 53, 0.08) !important;
+}
+
+.btn-action-pill:active {
+    transform: translateY(1px) scale(0.96) !important;
+}
+
+.modal-card {
+    border-radius: 28px !important;
+    border: 2px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 
+        0 28px 60px rgba(44, 62, 53, 0.18),
+        inset 3px 3px 8px rgba(255, 255, 255, 0.95),
+        inset -3px -4px 8px rgba(44, 62, 53, 0.08) !important;
+}
+
+.input-admin,
+.admin-input,
+.search-input-wrap {
+    border-radius: 14px !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 
+        inset 3px 3px 6px rgba(44, 62, 53, 0.08),
+        inset -2px -2px 5px rgba(255, 255, 255, 0.9),
+        0 2px 6px rgba(44, 62, 53, 0.03) !important;
+}
+

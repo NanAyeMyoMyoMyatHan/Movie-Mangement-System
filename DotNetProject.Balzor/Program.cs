@@ -69,7 +69,9 @@ var dramaFolders = new[]
     @"D:\KingDomS1+S2",
     @"D:\Daung With You",
     @"D:\KhemJira",
-    @"D:\Fool In Love"
+    @"D:\Fool In Love",
+    @"D:\Queen Of Tears",
+    @"D:\QueenOfTears"
 };
 
 foreach (var folder in dramaFolders)
@@ -95,7 +97,9 @@ var dramaRouteMap = new Dictionary<string, string>
     { "/videos/kingdom", @"D:\KingDomS1+S2" },
     { "/videos/daung-with-you", @"D:\Daung With You" },
     { "/videos/khemjira", @"D:\KhemJira" },
-    { "/videos/alchemy-of-souls", @"D:\Alchemy Of Soule S1+S2" }
+    { "/videos/alchemy-of-souls", @"D:\Alchemy Of Soule S1+S2" },
+    { "/videos/queen-of-tears", @"D:\Queen Of Tears" },
+    { "/videos/queenoftears", @"D:\QueenOfTears" }
 };
 
 foreach (var kvp in dramaRouteMap)

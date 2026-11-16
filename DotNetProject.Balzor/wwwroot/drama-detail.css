@@ -583,3 +583,159 @@
         display: none;
     }
 }
+
+/* ========================================================
+   CLAYMORPHISM DRAMA DETAIL DESIGN SYSTEM
+   ======================================================== */
+.drama-theater-container,
+.drama-theater-card {
+    border-radius: 30px !important;
+    background: linear-gradient(155deg, #132E27 0%, #0B1C17 100%) !important;
+    border: 2px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 
+        0 24px 50px rgba(0, 0, 0, 0.45),
+        inset 3px 3px 8px rgba(255, 255, 255, 0.16),
+        inset -4px -5px 12px rgba(0, 0, 0, 0.65) !important;
+}
+
+.drama-theater-player {
+    border-radius: 24px !important;
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 
+        0 18px 40px rgba(0, 0, 0, 0.65),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.12),
+        inset -3px -4px 8px rgba(0, 0, 0, 0.75) !important;
+    overflow: hidden;
+}
+
+.drama-player-bar {
+    background: linear-gradient(145deg, #1A3E35, #112B25) !important;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.15);
+}
+
+.drama-back-pill,
+.drama-top-icon-btn,
+.drama-top-circle-btn {
+    border-radius: 9999px !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 
+        0 8px 18px rgba(44, 62, 53, 0.08),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+        inset -2px -3px 5px rgba(44, 62, 53, 0.06) !important;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.drama-back-pill:hover,
+.drama-top-icon-btn:hover,
+.drama-top-circle-btn:hover {
+    transform: translateY(-2px) scale(1.04) !important;
+    box-shadow: 
+        0 12px 24px rgba(44, 62, 53, 0.14),
+        inset 2px 2px 5px rgba(255, 255, 255, 1) !important;
+    background: #FFFFFF !important;
+    color: #DE7149 !important;
+}
+
+.drama-back-pill:active,
+.drama-top-icon-btn:active,
+.drama-top-circle-btn:active {
+    transform: translateY(2px) scale(0.96) !important;
+}
+
+.drama-poster-wrap {
+    border-radius: 24px !important;
+    border: 2px solid rgba(255, 255, 255, 0.18) !important;
+    box-shadow: 
+        0 18px 40px rgba(0, 0, 0, 0.5),
+        inset 3px 3px 7px rgba(255, 255, 255, 0.22),
+        inset -4px -5px 10px rgba(0, 0, 0, 0.6) !important;
+}
+
+.drama-btn-play-hero,
+.drama-btn-play {
+    border-radius: 9999px !important;
+    background: linear-gradient(145deg, #E87850, #D2633A) !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    box-shadow: 
+        0 10px 22px rgba(222, 113, 73, 0.38),
+        inset 2px 3px 5px rgba(255, 255, 255, 0.6),
+        inset -2px -4px 6px rgba(160, 50, 20, 0.35) !important;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.drama-btn-play-hero:hover,
+.drama-btn-play:hover {
+    transform: translateY(-3px) scale(1.03) !important;
+    box-shadow: 0 16px 30px rgba(222, 113, 73, 0.48), inset 2px 3px 5px rgba(255, 255, 255, 0.75) !important;
+}
+
+.drama-btn-play-hero:active,
+.drama-btn-play:active {
+    transform: translateY(2px) scale(0.97) !important;
+    box-shadow: 0 4px 10px rgba(222, 113, 73, 0.3), inset 3px 3px 5px rgba(0, 0, 0, 0.3) !important;
+}
+
+.drama-btn-action-hero {
+    border-radius: 9999px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 
+        0 6px 16px rgba(0, 0, 0, 0.2),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.18),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.4) !important;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.drama-btn-action-hero:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    transform: translateY(-2px) scale(1.02) !important;
+}
+
+.drama-btn-action-hero:active {
+    transform: translateY(2px) scale(0.97) !important;
+}
+
+.drama-ep-row-card {
+    border-radius: 20px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 
+        0 6px 16px rgba(0, 0, 0, 0.2),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.08),
+        inset -2px -3px 5px rgba(0, 0, 0, 0.35) !important;
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.drama-ep-row-card:hover {
+    transform: translateX(4px) scale(1.01) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(222, 113, 73, 0.35) !important;
+    box-shadow: 
+        0 10px 24px rgba(0, 0, 0, 0.3),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.15),
+        inset -2px -3px 5px rgba(0, 0, 0, 0.4) !important;
+}
+
+.drama-ep-row-card.active {
+    border-color: #DE7149 !important;
+    background: rgba(222, 113, 73, 0.12) !important;
+    box-shadow: 
+        0 8px 24px rgba(222, 113, 73, 0.3),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+        inset -2px -3px 5px rgba(0, 0, 0, 0.45) !important;
+}
+
+.drama-ep-thumb {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 1px 1px 2px rgba(255, 255, 255, 0.2) !important;
+}
+
+.drama-credits-box {
+    border-radius: 20px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.25), inset -2px -2px 5px rgba(255, 255, 255, 0.05) !important;
+}
+

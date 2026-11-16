@@ -552,7 +552,13 @@ else if (Drama != null)
                         <span>@ActiveVideoTitle</span>
                         <span class="drama-ep-badge">EP @ActiveEpisodeNumber</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        @if (!string.IsNullOrWhiteSpace(GetTelegramLink()))
+                        {
+                            <button type="button" class="btn-toggle-stream" @onclick="OpenTelegramQrModal" title="Watch on Telegram Channel" style="background: rgba(42, 171, 238, 0.18); border: 1px solid rgba(42, 171, 238, 0.45); color: #7BD2FF; border-radius: 9999px; padding: 4px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                                📲 Telegram (Scan QR)
+                            </button>
+                        }
                         @if (IsYoutubeUrl(ActiveVideoUrl))
                         {
                             <button type="button" class="btn-toggle-stream" @onclick="TogglePlayerMode" title="Toggle between YouTube & Direct Video Stream" style="background: rgba(222, 113, 73, 0.15); border: 1px solid rgba(222, 113, 73, 0.3); color: #DE7149; border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
@@ -646,6 +652,16 @@ else if (Drama != null)
                         </svg>
                         <span>Share</span>
                     </button>
+
+                    @if (!string.IsNullOrWhiteSpace(GetTelegramLink()))
+                    {
+                        <button type="button" class="drama-btn-action-hero" @onclick="OpenTelegramQrModal" style="color: #2AABEE; border-color: rgba(42, 171, 238, 0.4);" title="Watch on Telegram Channel @@WEAREALLTRYINGHEREMM">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.52 2.77-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                            </svg>
+                            <span>Telegram Channel</span>
+                        </button>
+                    }
                 </div>
 
                 <div class="drama-credits-box">
@@ -731,4 +747,48 @@ else if (Drama != null)
             }
         </div>
     </div>
+
+    <!-- Telegram QR Code & Channel Modal (Claymorphic) -->
+    @if (ShowTelegramQrModal)
+    {
+        <div style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(8px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 16px;">
+            <div style="background: linear-gradient(155deg, #16362F 0%, #0D221D 100%); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 28px; width: 100%; max-width: 440px; padding: 28px 24px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), inset 3px 3px 8px rgba(255, 255, 255, 0.2), inset -4px -5px 12px rgba(0, 0, 0, 0.6); color: #F4EFEA; text-align: center; position: relative;">
+                
+                <button type="button" @onclick="CloseTelegramQrModal" style="position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #FFFFFF; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
+                    &times;
+                </button>
+
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; box-shadow: 0 8px 20px rgba(42, 171, 238, 0.4), inset 2px 2px 4px rgba(255, 255, 255, 0.4);">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#FFFFFF">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.52 2.77-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                    </svg>
+                </div>
+
+                <h3 style="font-size: 1.3rem; font-weight: 800; color: #FFFFFF; margin: 0 0 6px 0;">
+                    Queen of Tears
+                </h3>
+                <p style="font-size: 0.95rem; color: #40C4FF; font-weight: 700; margin: 0 0 16px 0;">
+                    @@WEAREALLTRYINGHEREMM
+                </p>
+
+                <!-- Clay QR Code Frame -->
+                <div style="background: #FFFFFF; padding: 12px; border-radius: 20px; display: inline-block; box-shadow: 0 12px 30px rgba(0,0,0,0.4), inset 2px 2px 5px rgba(255,255,255,0.8), inset -2px -3px 6px rgba(0,0,0,0.1); margin-bottom: 16px;">
+                    <img src="/images/telegram_channel_qr.jpg" alt="Telegram Channel QR" style="width: 200px; height: 200px; object-fit: contain; display: block; border-radius: 12px;" />
+                </div>
+
+                <p style="font-size: 0.85rem; color: #A0B2AC; line-height: 1.5; margin: 0 0 20px 0; padding: 0 10px;">
+                    ဖုန်း Camera (သို့မဟုတ်) Telegram App မှ ဤ QR Code ကို Scan ဖတ်၍ ဇာတ်လမ်းတွဲ အပိုင်းအားလုံးကို မြန်မာစာတန်းထိုးဖြင့် တိုက်ရိုက် ကြည့်ရှုနိုင်ပါသည်။
+                </p>
+
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://t.me/WEAREALLTRYINGHEREMM" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%); color: #FFF; border: none; padding: 10px 24px; border-radius: 9999px; font-weight: 700; text-decoration: none; font-size: 0.9rem; box-shadow: 0 6px 16px rgba(42, 171, 238, 0.4), inset 2px 2px 4px rgba(255,255,255,0.4); display: inline-flex; align-items: center; gap: 8px;">
+                        <span>Open in Telegram ↗</span>
+                    </a>
+                    <button type="button" @onclick="CloseTelegramQrModal" style="background: rgba(255, 255, 255, 0.08); border: 1.5px solid rgba(255, 255, 255, 0.2); color: #FFF; padding: 10px 20px; border-radius: 9999px; font-weight: 600; cursor: pointer; font-size: 0.9rem;">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
 }

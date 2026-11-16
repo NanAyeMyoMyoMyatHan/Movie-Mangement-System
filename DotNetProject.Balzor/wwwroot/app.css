@@ -965,4 +965,321 @@ a.myflix-category-link.active svg,
     to { opacity: 1; transform: scale(1); }
 }
 
+/* ========================================================
+   CLAYMORPHISM DESIGN SYSTEM (NangWorld 3D Tactile Theme)
+   ======================================================== */
+:root {
+    --clay-radius-pill: 9999px;
+    --clay-radius-card: 24px;
+    --clay-radius-sm: 16px;
+    --clay-radius-lg: 30px;
+
+    /* Light Surface Clay */
+    --clay-light-bg: #FFFFFF;
+    --clay-light-border: 1.5px solid rgba(255, 255, 255, 0.85);
+    --clay-light-shadow: 
+        0 14px 28px -4px rgba(44, 62, 53, 0.08),
+        0 6px 12px -2px rgba(44, 62, 53, 0.04),
+        inset 3px 3px 6px rgba(255, 255, 255, 0.95),
+        inset -3px -4px 7px rgba(44, 62, 53, 0.07);
+
+    --clay-light-hover: 
+        0 20px 36px -4px rgba(44, 62, 53, 0.13),
+        0 8px 16px -2px rgba(44, 62, 53, 0.06),
+        inset 3px 3px 7px rgba(255, 255, 255, 1),
+        inset -4px -5px 8px rgba(44, 62, 53, 0.09);
+
+    /* Terracotta Clay (Primary Buttons & Active Badges) */
+    --clay-terracotta-bg: linear-gradient(145deg, #E87850, #D2633A);
+    --clay-terracotta-border: 1px solid rgba(255, 255, 255, 0.4);
+    --clay-terracotta-shadow: 
+        0 10px 22px rgba(222, 113, 73, 0.36),
+        inset 2px 3px 5px rgba(255, 255, 255, 0.55),
+        inset -2px -4px 6px rgba(160, 50, 20, 0.35);
+
+    --clay-terracotta-active: 
+        0 4px 10px rgba(222, 113, 73, 0.28),
+        inset 3px 3px 6px rgba(0, 0, 0, 0.3),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.35);
+
+    /* Forest Green Clay (Secondary Buttons & Headers) */
+    --clay-forest-bg: linear-gradient(145deg, #204C45, #14322D);
+    --clay-forest-border: 1px solid rgba(255, 255, 255, 0.25);
+    --clay-forest-shadow: 
+        0 10px 22px rgba(24, 59, 54, 0.28),
+        inset 2px 3px 5px rgba(255, 255, 255, 0.35),
+        inset -2px -4px 6px rgba(0, 0, 0, 0.4);
+
+    /* Recessed Inset Clay (Inputs & Search) */
+    --clay-inset-shadow: 
+        inset 3px 3px 6px rgba(44, 62, 53, 0.1),
+        inset -2px -2px 5px rgba(255, 255, 255, 0.95),
+        0 3px 8px rgba(44, 62, 53, 0.04);
+
+    /* Dark Jade Clay (Posters, Continue Cards, Modals) */
+    --clay-dark-bg: linear-gradient(150deg, #16362F 0%, #0E221E 100%);
+    --clay-dark-border: 1.5px solid rgba(255, 255, 255, 0.14);
+    --clay-dark-shadow: 
+        0 16px 36px rgba(0, 0, 0, 0.42),
+        inset 2px 3px 6px rgba(255, 255, 255, 0.18),
+        inset -3px -4px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Claymorphic Body Canvas */
+body {
+    background-color: #F4EFEA !important;
+    background-image: 
+        radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.8) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(222, 113, 73, 0.06) 0%, transparent 40%) !important;
+}
+
+/* Claymorphic Sidebar */
+.myflix-sidebar,
+.petale-sidebar {
+    background: #EFE6DC !important;
+    border-radius: 0 28px 28px 0 !important;
+    border-right: 2px solid rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 
+        10px 0 32px rgba(44, 62, 53, 0.07),
+        inset -3px 0 7px rgba(44, 62, 53, 0.05),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Claymorphic Nav Items */
+a.myflix-nav-item,
+.myflix-nav-item,
+a.myflix-category-link,
+.myflix-category-link {
+    border-radius: 16px !important;
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+a.myflix-nav-item:hover,
+.myflix-nav-item:hover,
+a.myflix-category-link:hover,
+.myflix-category-link:hover {
+    background: #FFFFFF !important;
+    box-shadow: var(--clay-light-shadow) !important;
+    transform: translateY(-2px) scale(1.01) !important;
+    color: #183B36 !important;
+}
+
+a.myflix-nav-item.active,
+.myflix-nav-item.active,
+a.myflix-category-link.active,
+.myflix-category-link.active {
+    background: var(--clay-terracotta-bg) !important;
+    color: #FFFFFF !important;
+    border: var(--clay-terracotta-border) !important;
+    box-shadow: var(--clay-terracotta-shadow) !important;
+    transform: scale(1.02) !important;
+}
+
+a.myflix-nav-item:active,
+.myflix-nav-item:active {
+    transform: translateY(1px) scale(0.98) !important;
+    box-shadow: var(--clay-terracotta-active) !important;
+}
+
+/* Clay Badges */
+.myflix-badge {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 
+        0 3px 8px rgba(44, 62, 53, 0.06),
+        inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.95),
+        inset -1.5px -2px 3px rgba(44, 62, 53, 0.08) !important;
+}
+
+/* Claymorphic Search Bar */
+.myflix-search-bar {
+    background: #FFFFFF !important;
+    border-radius: 9999px !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: var(--clay-inset-shadow) !important;
+    transition: all 0.2s ease !important;
+}
+
+.myflix-search-bar:focus-within {
+    box-shadow: 
+        inset 3px 3px 6px rgba(44, 62, 53, 0.12),
+        inset -2px -2px 5px rgba(255, 255, 255, 0.95),
+        0 0 0 3px rgba(222, 113, 73, 0.2) !important;
+}
+
+/* Claymorphic Buttons */
+.myflix-search-btn {
+    background: var(--clay-forest-bg) !important;
+    border: var(--clay-forest-border) !important;
+    box-shadow: var(--clay-forest-shadow) !important;
+    border-radius: 9999px !important;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.myflix-search-btn:hover {
+    background: var(--clay-terracotta-bg) !important;
+    box-shadow: var(--clay-terracotta-shadow) !important;
+    transform: translateY(-2px) scale(1.02) !important;
+}
+
+.myflix-search-btn:active {
+    transform: translateY(2px) scale(0.97) !important;
+    box-shadow: var(--clay-terracotta-active) !important;
+}
+
+.myflix-signin-pill {
+    background: var(--clay-terracotta-bg) !important;
+    border: var(--clay-terracotta-border) !important;
+    box-shadow: var(--clay-terracotta-shadow) !important;
+    border-radius: 9999px !important;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.myflix-signin-pill:hover {
+    transform: translateY(-2px) scale(1.03) !important;
+    box-shadow: 0 14px 26px rgba(222, 113, 73, 0.45), inset 2px 3px 5px rgba(255, 255, 255, 0.65) !important;
+}
+
+.myflix-signin-pill:active {
+    transform: translateY(2px) scale(0.97) !important;
+    box-shadow: var(--clay-terracotta-active) !important;
+}
+
+/* Claymorphic Hero Banner */
+.myflix-hero-banner {
+    border-radius: 28px !important;
+    border: 2.5px solid rgba(255, 255, 255, 0.8) !important;
+    background: linear-gradient(135deg, #EBDCCF 0%, #E2D0BE 100%) !important;
+    box-shadow: 
+        0 22px 45px rgba(44, 62, 53, 0.12),
+        inset 4px 4px 10px rgba(255, 255, 255, 0.9),
+        inset -4px -5px 12px rgba(44, 62, 53, 0.08) !important;
+    transition: all 0.3s ease !important;
+}
+
+.myflix-btn-primary {
+    background: var(--clay-terracotta-bg) !important;
+    border: var(--clay-terracotta-border) !important;
+    box-shadow: var(--clay-terracotta-shadow) !important;
+    border-radius: 9999px !important;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.myflix-btn-primary:hover {
+    transform: translateY(-3px) scale(1.03) !important;
+    box-shadow: 0 14px 28px rgba(222, 113, 73, 0.44), inset 2px 3px 5px rgba(255, 255, 255, 0.7) !important;
+}
+
+.myflix-btn-primary:active {
+    transform: translateY(2px) scale(0.97) !important;
+    box-shadow: var(--clay-terracotta-active) !important;
+}
+
+.myflix-btn-secondary {
+    background: #FFFFFF !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: var(--clay-light-shadow) !important;
+    border-radius: 9999px !important;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.myflix-btn-secondary:hover {
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: var(--clay-light-hover) !important;
+}
+
+.myflix-btn-secondary:active {
+    transform: translateY(2px) scale(0.97) !important;
+}
+
+/* Claymorphic Media Cards (Posters & Continue Watching) */
+.myflix-poster-card,
+.myflix-continue-card {
+    border-radius: 22px !important;
+    border: 2px solid rgba(255, 255, 255, 0.16) !important;
+    background: var(--clay-dark-bg) !important;
+    box-shadow: var(--clay-dark-shadow) !important;
+    transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s ease !important;
+}
+
+.myflix-poster-card:hover,
+.myflix-continue-card:hover {
+    transform: translateY(-6px) scale(1.02) !important;
+    box-shadow: 
+        0 24px 44px rgba(0, 0, 0, 0.55),
+        inset 2px 3px 6px rgba(255, 255, 255, 0.26),
+        inset -3px -4px 8px rgba(0, 0, 0, 0.65) !important;
+}
+
+/* Clay Circle Buttons (Hearts, Play Buttons, Close Buttons) */
+.myflix-card-heart,
+.myflix-play-icon-btn,
+.video-modal-close {
+    border-radius: 50% !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 
+        0 6px 14px rgba(0, 0, 0, 0.3),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.35),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.5) !important;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.myflix-card-heart:hover,
+.myflix-play-icon-btn:hover,
+.video-modal-close:hover {
+    transform: scale(1.15) !important;
+    box-shadow: 
+        0 8px 18px rgba(0, 0, 0, 0.4),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.5),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.5) !important;
+}
+
+.myflix-card-heart:active,
+.myflix-play-icon-btn:active {
+    transform: scale(0.92) !important;
+}
+
+/* Claymorphic Filter Chips */
+.filter-chip,
+.video-ep-pill {
+    border-radius: 9999px !important;
+    background: #FFFFFF !important;
+    color: #183B36 !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow: var(--clay-light-shadow) !important;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.filter-chip:hover,
+.video-ep-pill:hover {
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: var(--clay-light-hover) !important;
+}
+
+.filter-chip.active,
+.video-ep-pill.active {
+    background: var(--clay-terracotta-bg) !important;
+    color: #FFFFFF !important;
+    border: var(--clay-terracotta-border) !important;
+    box-shadow: var(--clay-terracotta-shadow) !important;
+}
+
+.filter-chip:active,
+.video-ep-pill:active {
+    transform: translateY(1px) scale(0.96) !important;
+    box-shadow: var(--clay-terracotta-active) !important;
+}
+
+/* Claymorphic Video Modal */
+.video-modal-container {
+    border-radius: 28px !important;
+    border: 2px solid rgba(255, 255, 255, 0.16) !important;
+    background: var(--clay-dark-bg) !important;
+    box-shadow: 
+        0 30px 70px rgba(0, 0, 0, 0.65),
+        inset 3px 3px 8px rgba(255, 255, 255, 0.2),
+        inset -4px -5px 12px rgba(0, 0, 0, 0.7) !important;
+}
+
+
 

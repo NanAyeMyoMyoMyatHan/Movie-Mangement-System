@@ -28,6 +28,9 @@ namespace DotNetProject.Balzor.Components.Pages
         [Inject]
         public AuthService AuthService { get; set; } = default!;
 
+        [Inject]
+        private DotNetProject.Database.AppDbModels.AppDbContext Db { get; set; } = default!;
+
         [Parameter]
         public long Id { get; set; }
 
@@ -46,6 +49,27 @@ namespace DotNetProject.Balzor.Components.Pages
         protected bool IsWatchlisted { get; set; } = false;
         protected bool IsFavorited { get; set; } = false;
         protected bool UseDirectStream { get; set; } = false;
+        protected bool UseDemoStream { get; set; } = false;
+        protected long ActiveEpisodeId { get; set; } = 0;
+
+        protected bool ShowQuickUrlModal { get; set; } = false;
+        protected string QuickModalVideoUrl { get; set; } = "";
+        protected string? QuickModalMessage { get; set; }
+        protected bool IsSavingQuickUrl { get; set; } = false;
+
+        protected bool ShowTelegramQrModal { get; set; } = false;
+
+        protected void OpenTelegramQrModal()
+        {
+            ShowTelegramQrModal = true;
+            StateHasChanged();
+        }
+
+        protected void CloseTelegramQrModal()
+        {
+            ShowTelegramQrModal = false;
+            StateHasChanged();
+        }
 
         protected string ActiveVideoTitle { get; set; } = "";
         protected string ActiveVideoDescription { get; set; } = "";
@@ -99,9 +123,10 @@ namespace DotNetProject.Balzor.Components.Pages
                     if (selectedEp != null)
                     {
                         ActiveEpisodeNumber = selectedEp.EpisodeNumber;
+                        ActiveEpisodeId = selectedEp.EpisodeId;
                         ActiveVideoTitle = !string.IsNullOrWhiteSpace(selectedEp.Title) ? selectedEp.Title : $"{Drama.Title} - Episode {selectedEp.EpisodeNumber}";
                         ActiveVideoDescription = !string.IsNullOrWhiteSpace(selectedEp.Description) ? selectedEp.Description : Drama.Description ?? "";
-                        ActiveVideoUrl = !string.IsNullOrWhiteSpace(selectedEp.VideoUrl) ? selectedEp.VideoUrl : "/videos/video_2026-08-04_13-49-33.mp4";
+                        ActiveVideoUrl = selectedEp.VideoUrl ?? "";
                         ActiveVideoPoster = !string.IsNullOrWhiteSpace(selectedEp.ThumbnailUrl) ? selectedEp.ThumbnailUrl : Drama.PosterUrl;
 
                         if (Autoplay == true && AuthService.IsAuthenticated())
@@ -171,14 +196,99 @@ namespace DotNetProject.Balzor.Components.Pages
             StateHasChanged();
         }
 
+        protected bool HasPlayableVideo()
+        {
+            if (UseDemoStream) return true;
+            return !string.IsNullOrWhiteSpace(ActiveVideoUrl);
+        }
+
+        protected string? GetTelegramLink()
+        {
+            if (Drama?.Title != null && (Drama.Title.Contains("Queen", StringComparison.OrdinalIgnoreCase) || Drama.Title.Contains("Tears", StringComparison.OrdinalIgnoreCase)))
+            {
+                return "https://t.me/WEAREALLTRYINGHEREMM";
+            }
+            return null;
+        }
+
+        protected void PlayTestStream()
+        {
+            UseDemoStream = true;
+            StateHasChanged();
+        }
+
+        protected void OpenQuickUrlModal()
+        {
+            QuickModalVideoUrl = ActiveVideoUrl ?? "";
+            QuickModalMessage = null;
+            ShowQuickUrlModal = true;
+            StateHasChanged();
+        }
+
+        protected void CloseQuickUrlModal()
+        {
+            ShowQuickUrlModal = false;
+            QuickModalMessage = null;
+        }
+
+        protected async Task SaveQuickUrlAsync()
+        {
+            if (ActiveEpisodeId <= 0) return;
+            IsSavingQuickUrl = true;
+            QuickModalMessage = null;
+
+            try
+            {
+                var dbEp = await Db.Episodes.FindAsync(ActiveEpisodeId);
+                if (dbEp != null)
+                {
+                    dbEp.VideoUrl = (QuickModalVideoUrl ?? "").Trim();
+                    dbEp.UpdatedAt = DateTime.UtcNow;
+                    await Db.SaveChangesAsync();
+
+                    var inMem = Episodes.FirstOrDefault(e => e.EpisodeId == ActiveEpisodeId);
+                    if (inMem != null)
+                    {
+                        inMem.VideoUrl = dbEp.VideoUrl;
+                    }
+                    ActiveVideoUrl = dbEp.VideoUrl;
+                    UseDemoStream = false;
+                    QuickModalMessage = "Saved successfully!";
+                    await Task.Delay(400);
+                    ShowQuickUrlModal = false;
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                QuickModalMessage = "Failed: " + ex.Message;
+            }
+            finally
+            {
+                IsSavingQuickUrl = false;
+            }
+        }
+
         protected string GetPlaybackUrl()
         {
+            if (UseDemoStream)
+            {
+                return "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+            }
             if (IsYoutubeUrl(ActiveVideoUrl) && UseDirectStream)
             {
                 // Direct stream fallback for regions/networks where YouTube embeds are blocked
                 return "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
             }
-            return !string.IsNullOrWhiteSpace(ActiveVideoUrl) ? ActiveVideoUrl : "/videos/video_2026-08-04_13-49-33.mp4";
+            if (!string.IsNullOrWhiteSpace(ActiveVideoUrl))
+            {
+                return ActiveVideoUrl;
+            }
+            if (Drama?.Title != null && Drama.Title.Contains("Alchemy", StringComparison.OrdinalIgnoreCase))
+            {
+                return "/videos/video_2026-08-04_13-49-33.mp4";
+            }
+            return string.Empty;
         }
 
         protected async Task PlayEpisode(EpisodeDto ep)
@@ -190,11 +300,13 @@ namespace DotNetProject.Balzor.Components.Pages
             }
 
             ActiveEpisodeNumber = ep.EpisodeNumber;
+            ActiveEpisodeId = ep.EpisodeId;
             ActiveVideoTitle = !string.IsNullOrWhiteSpace(ep.Title) ? ep.Title : $"{Drama?.Title} - Episode {ep.EpisodeNumber}";
             ActiveVideoDescription = !string.IsNullOrWhiteSpace(ep.Description) ? ep.Description : Drama?.Description ?? "";
-            ActiveVideoUrl = !string.IsNullOrWhiteSpace(ep.VideoUrl) ? ep.VideoUrl : "/videos/video_2026-08-04_13-49-33.mp4";
+            ActiveVideoUrl = ep.VideoUrl ?? "";
             ActiveVideoPoster = !string.IsNullOrWhiteSpace(ep.ThumbnailUrl) ? ep.ThumbnailUrl : Drama?.PosterUrl;
             IsPlayingVideo = true;
+            UseDemoStream = false;
             StateHasChanged();
 
             // Record into Continue Watching history

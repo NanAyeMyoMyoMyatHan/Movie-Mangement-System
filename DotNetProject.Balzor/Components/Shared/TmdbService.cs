@@ -349,10 +349,8 @@ namespace DotNetProject.Balzor.Components.Shared
                                 int runtime = ep.TryGetProperty("runtime", out var rt) && rt.ValueKind == JsonValueKind.Number ? rt.GetInt32() : 45;
                                 string stillUrl = !string.IsNullOrWhiteSpace(stillPath) ? $"https://image.tmdb.org/t/p/w500{stillPath}" : posterUrl;
 
-                                // Playable video stream link: YouTube embed or online stream
-                                string videoUrl = !string.IsNullOrWhiteSpace(youtubeKey)
-                                    ? $"https://www.youtube.com/embed/{youtubeKey}?autoplay=1"
-                                    : "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+                                // Episodes start with empty videoUrl so user/admin can link real episode video files or stream links
+                                string videoUrl = "";
 
                                 episodes.Add(new Episode
                                 {
@@ -377,9 +375,7 @@ namespace DotNetProject.Balzor.Components.Shared
                 // Fallback default 16 episodes if season episodes list was empty
                 if (episodes.Count == 0)
                 {
-                    string videoUrl = !string.IsNullOrWhiteSpace(youtubeKey)
-                        ? $"https://www.youtube.com/embed/{youtubeKey}?autoplay=1"
-                        : "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+                    string videoUrl = "";
 
                     for (int i = 1; i <= 16; i++)
                     {
