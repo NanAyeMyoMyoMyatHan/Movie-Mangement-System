@@ -1,4 +1,5 @@
 using DotNetProject.Balzor.Components.Shared;
+using DotNetProject.Domain.Features.Rbac;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
     public partial class AdminRoles
     {
         [Inject]
-        public RbacService RbacService { get; set; } = default!;
+        public RolePermissionService RolePermissionService { get; set; } = default!;
 
         [Inject]
         public AuthService AuthService { get; set; } = default!;
@@ -54,8 +55,11 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
 
             try
             {
-                RolesList = await RbacService.GetRolesAsync();
-                AllPermissions = await RbacService.GetAllPermissionsAsync();
+                var rolesRes = await RolePermissionService.GetRolesAsync();
+                RolesList = rolesRes.Data ?? new();
+
+                var permsRes = await RolePermissionService.GetAllPermissionsAsync();
+                AllPermissions = permsRes.Data ?? new();
             }
             catch (Exception ex)
             {
@@ -143,7 +147,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
             try
             {
                 CurrentRoleRequest.PermissionIds = SelectedPermissionIds.ToList();
-                var result = await RbacService.SaveRoleAsync(CurrentRoleRequest);
+                var result = await RolePermissionService.SaveRoleAsync(CurrentRoleRequest);
 
                 if (result.IsSuccess)
                 {
@@ -180,7 +184,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
 
             try
             {
-                var result = await RbacService.DeleteRoleAsync(role.RoleId);
+                var result = await RolePermissionService.DeleteRoleAsync(role.RoleId);
                 if (result.IsSuccess)
                 {
                     SuccessMessage = result.Message;

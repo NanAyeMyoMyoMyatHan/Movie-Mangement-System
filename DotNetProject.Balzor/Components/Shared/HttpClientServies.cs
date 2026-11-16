@@ -1,6 +1,7 @@
 using Common;
 using DotNetProject.Domain.Features.Contents;
 using DotNetProject.Domain.Features.Movies;
+using DotNetProject.Domain.Features.Rbac;
 using DotNetProject.Domain.Features.Thai;
 using DotNetProject.Domain.Features.Users;
 using Newtonsoft.Json;
@@ -122,6 +123,35 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public Task<Result<GetThaiPagedListResponse>?> GetThaiPagedAsync(GetThaiPagedListRequest request) =>
             PostAsync<Result<GetThaiPagedListResponse>>("api/Thai/GetPagedList", request);
+
+        // --- RBAC API client methods ---
+
+        public Task<Result<List<RoleDto>>?> GetRolesAsync() =>
+            ExecuteAsync<Result<List<RoleDto>>>("api/rbac/roles", EnumHttpMethod.Get);
+
+        public Task<Result<List<PermissionDto>>?> GetAllPermissionsAsync() =>
+            ExecuteAsync<Result<List<PermissionDto>>>("api/rbac/permissions", EnumHttpMethod.Get);
+
+        public Task<Result<RoleDto>?> SaveRoleAsync(SaveRoleRequest request) =>
+            PostAsync<Result<RoleDto>>("api/rbac/role", request);
+
+        public Task<Result<bool>?> DeleteRoleAsync(int roleId) =>
+            ExecuteAsync<Result<bool>>($"api/rbac/role/{roleId}", EnumHttpMethod.Delete);
+
+        public Task<Result<List<int>>?> GetUserRoleIdsAsync(int userId) =>
+            ExecuteAsync<Result<List<int>>>($"api/rbac/user/{userId}/role-ids", EnumHttpMethod.Get);
+
+        public Task<Result<List<string>>?> GetUserRoleNamesAsync(int userId) =>
+            ExecuteAsync<Result<List<string>>>($"api/rbac/user/{userId}/roles", EnumHttpMethod.Get);
+
+        public Task<Result<List<string>>?> GetUserPermissionsAsync(int userId) =>
+            ExecuteAsync<Result<List<string>>>($"api/rbac/user/{userId}/permissions", EnumHttpMethod.Get);
+
+        public Task<Result<bool>?> AssignUserRolesAsync(AssignUserRolesRequest request) =>
+            PostAsync<Result<bool>>("api/rbac/user/assign-roles", request);
+
+        public Task<Result<List<UserRoleAssignmentDto>>?> GetUserAssignmentsAsync() =>
+            ExecuteAsync<Result<List<UserRoleAssignmentDto>>>("api/rbac/user-assignments", EnumHttpMethod.Get);
     }
 
     public enum EnumHttpMethod { None, Get, Post, Put, Patch, Delete }

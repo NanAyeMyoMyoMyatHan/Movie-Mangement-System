@@ -3,8 +3,9 @@
 @using DotNetProject.Balzor.Components.Layout
 @using DotNetProject.Balzor.Components.Shared
 @using DotNetProject.Database.AppDbModels
+@using DotNetProject.Domain.Features.Rbac
 @inject AuthService AuthService
-@inject RbacService RbacService
+@inject RolePermissionService RolePermissionService
 @rendermode InteractiveServer
 
 <PageTitle>Users &amp; Roles — NangWorld Admin</PageTitle>
@@ -810,7 +811,7 @@
         try
         {
             var usersTask = AuthService.GetAllUsersFromDbAsync();
-            var rolesTask = RbacService.GetRolesAsync();
+            var rolesTask = RolePermissionService.GetRolesListAsync();
             await Task.WhenAll(usersTask, rolesTask);
 
             UsersList = await usersTask;
@@ -953,7 +954,7 @@
         IsSavingRoles = true;
         try
         {
-            var res = await RbacService.AssignUserRolesAsync(SelectedUserForRoles.Id, SelectedRoleIdsForUser.ToList());
+            var res = await RolePermissionService.AssignUserRolesAsync(SelectedUserForRoles.Id, SelectedRoleIdsForUser.ToList());
             if (res.IsSuccess)
             {
                 SuccessMessage = $"Updated role assignments for '{SelectedUserForRoles.DisplayName ?? SelectedUserForRoles.UserName}'.";

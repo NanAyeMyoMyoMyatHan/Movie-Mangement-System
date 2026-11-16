@@ -102,17 +102,17 @@ namespace DotNetProject.Balzor.Components.Shared
             try
             {
                 using var scope = _serviceProvider.CreateScope();
-                var rbac = scope.ServiceProvider.GetService<RbacService>();
+                var rbac = scope.ServiceProvider.GetService<RolePermissionService>();
                 if (rbac != null)
                 {
-                    var roleNames = await rbac.GetUserRoleNamesAsync(CurrentUser.Id);
-                    var perms = await rbac.GetUserPermissionsAsync(CurrentUser.Id);
+                    var roleNamesRes = await rbac.GetUserRoleNamesAsync(CurrentUser.Id);
+                    var perms = await rbac.GetUserPermissionSetAsync(CurrentUser.Id);
 
-                    _currentUser.Roles = roleNames;
+                    _currentUser.Roles = roleNamesRes.Data ?? new List<string>();
                     _currentUser.Permissions = perms;
-                    if (roleNames.Any())
+                    if (_currentUser.Roles.Any())
                     {
-                        _currentUser.Role = roleNames.First();
+                        _currentUser.Role = _currentUser.Roles.First();
                     }
 
                     SaveSession();

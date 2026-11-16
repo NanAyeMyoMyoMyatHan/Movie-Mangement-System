@@ -2,11 +2,13 @@ using DotNetProject.Database.AppDbModels;
 using DotNetProject.Domain.Features.Contents;
 using DotNetProject.Domain.Features.Movies;
 using DotNetProject.Domain.Features.Ratings;
+using DotNetProject.Domain.Features.Rbac;
 using DotNetProject.Domain.Features.Users;
 using DotNetProject.Domain.Features.WatchList;
 using DotNetProject.WebApi.Features.Contents;
 using DotNetProject.WebApi.Features.Movies;
 using DotNetProject.WebApi.Features.Ratings;
+using DotNetProject.WebApi.Features.Rbac;
 using DotNetProject.WebApi.Features.Users;
 using DotNetProject.WebApi.Features.WatchList;
 using DotNetProject.WebApi.Features.Thai;
@@ -36,6 +38,7 @@ builder.Services.AddScoped<IWatchListInterface, WatchListServices>();
 builder.Services.AddScoped<IRatingInterface, RatingServices>();
 builder.Services.AddScoped<IContent, ContentsServices>();
 builder.Services.AddScoped<IThaiInterface, ThaiServices>();
+builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
 
 // File storage service (singleton — stateless, holds only the configured root path)
 builder.Services.AddSingleton<FileStorageService>();
