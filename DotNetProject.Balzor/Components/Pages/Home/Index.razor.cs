@@ -103,7 +103,7 @@ namespace DotNetProject.Balzor.Components.Pages.Home
                 Script = "Crown Prince",
                 Description = "While strange rumors grip the Joseon kingdom, the crown prince investigates a mysterious plague that turns victims into undead creatures in this thrilling Korean period epic.",
                 PosterUrl = "/images/kingdom.jpg",
-                Badge = "Top Rated Series",
+                Badge = "Top Rated Series (13 Episodes)",
                 Category = "Korean Drama",
                 IsContent = true
             },
@@ -120,6 +120,17 @@ namespace DotNetProject.Balzor.Components.Pages.Home
             },
             new HeroSlideItem
             {
+                Id = 23,
+                Title = "Alchemy of Souls",
+                Script = "Fantasy Epic",
+                Description = "A powerful sorceress in a blind woman's body encounters a young man from a prestigious family who seeks her help to alter his fate.",
+                PosterUrl = "https://upload.wikimedia.org/wikipedia/en/3/36/Alchemy_of_Souls.jpg",
+                Badge = "Complete Series (30 Episodes)",
+                Category = "Korean Drama",
+                IsContent = true
+            },
+            new HeroSlideItem
+            {
                 Id = 30001,
                 Title = "Parasite",
                 Script = "Academy Award Winner",
@@ -128,6 +139,39 @@ namespace DotNetProject.Balzor.Components.Pages.Home
                 Badge = "Best Picture Winner",
                 Category = "Movie",
                 IsContent = false
+            },
+            new HeroSlideItem
+            {
+                Id = 20002,
+                Title = "Fool In Love",
+                Script = "The Series",
+                Description = "A romantic comedy Thai BL drama exploring tender affection and youthful dilemmas.",
+                PosterUrl = "https://upload.wikimedia.org/wikipedia/en/3/3c/Fool_in_love_the_series.jpg",
+                Badge = "1080P Full HD (11 Episodes)",
+                Category = "Thai BL",
+                IsContent = true
+            },
+            new HeroSlideItem
+            {
+                Id = 20004,
+                Title = "Daung With You",
+                Script = "Heartwarming Romance",
+                Description = "A heartwarming journey of love, friendship, and self-discovery in a modern university setting.",
+                PosterUrl = "/images/daung_with_you.jpg",
+                Badge = "Full Season (12 Episodes)",
+                Category = "Thai BL",
+                IsContent = true
+            },
+            new HeroSlideItem
+            {
+                Id = 20005,
+                Title = "KhemJira",
+                Script = "Supernatural Mystery",
+                Description = "A young man cursed by ancient karma seeks protection from a powerful sorcerer, sparking a supernatural and emotional adventure.",
+                PosterUrl = "/images/khemjira.jpg",
+                Badge = "Complete Season (12 Episodes)",
+                Category = "Thai BL",
+                IsContent = true
             }
         };
 
@@ -190,6 +234,23 @@ namespace DotNetProject.Balzor.Components.Pages.Home
                 ));
             }
 
+            // Ensure Alchemy of Souls is present
+            if (!Dramas.Any(d => d.Title.Contains("Alchemy", StringComparison.OrdinalIgnoreCase)))
+            {
+                Dramas.Add(new ContentListItemResponse(
+                    23,
+                    "Alchemy of Souls",
+                    "A powerful sorceress in a blind woman's body encounters a man from a prestigious family who wants her help to change his destiny.",
+                    "https://upload.wikimedia.org/wikipedia/en/3/36/Alchemy_of_Souls.jpg",
+                    null,
+                    null,
+                    "South Korea",
+                    "Korean",
+                    "Drama",
+                    "Completed"
+                ));
+            }
+
             // Movie Section
             try
             {
@@ -213,7 +274,7 @@ namespace DotNetProject.Balzor.Components.Pages.Home
             }
             catch { }
 
-            // Fallback for Movies if empty
+            // Ensure existing movie posters are preserved
             if (Movies == null || !Movies.Any())
             {
                 Movies = new List<MovieListItemResponse>

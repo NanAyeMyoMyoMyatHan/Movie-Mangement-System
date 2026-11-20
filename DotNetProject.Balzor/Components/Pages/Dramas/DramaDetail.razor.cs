@@ -1,4 +1,5 @@
 using DotNetProject.Balzor.Components.Shared;
+using DotNetProject.Balzor.Helpers;
 using DotNetProject.Domain.Features.Contents;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -185,9 +186,12 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
 
         protected bool IsYoutubeUrl(string? url)
         {
-            if (string.IsNullOrWhiteSpace(url)) return false;
-            return url.Contains("youtube.com", StringComparison.OrdinalIgnoreCase) || 
-                   url.Contains("youtu.be", StringComparison.OrdinalIgnoreCase);
+            return MediaStreamHelper.IsYouTube(url);
+        }
+
+        protected string GetYouTubeEmbedUrl(string? url)
+        {
+            return MediaStreamHelper.ToYouTubeEmbedUrl(url, autoplay: true) ?? (url ?? "");
         }
 
         protected void TogglePlayerMode()
@@ -558,8 +562,45 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
             }
         }
 
+        private static string GetFallbackYoutubeUrl(string seriesTitle)
+        {
+            if (seriesTitle.Contains("Your Name", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=xU47nhruN-Q";
+            if (seriesTitle.Contains("Spirited", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=ByXuk9QqQkk";
+            if (seriesTitle.Contains("Busan", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=pyWuHv2-Abk";
+            if (seriesTitle.Contains("Parasite", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=5xH0RwpEbSU";
+            if (seriesTitle.Contains("KinnPorsche", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=1F_U3mN8rJ0";
+            if (seriesTitle.Contains("Bad Buddy", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=0kG7uR0qU3Q";
+            if (seriesTitle.Contains("2gether", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=U18l74qGiaI";
+            if (seriesTitle.Contains("TharnType", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=w6-bNlJ9s_A";
+            if (seriesTitle.Contains("Thousand Stars", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=0d80m9_y9Yc";
+            if (seriesTitle.Contains("Crash Landing", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=GVQGWgeVc4k";
+            if (seriesTitle.Contains("Lovely Runner", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=0-x2w4U7D9g";
+            if (seriesTitle.Contains("Goblin", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=8AcNWVpdTHs";
+            if (seriesTitle.Contains("Queen", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=4b7_4sN9Uvg";
+            if (seriesTitle.Contains("Vincenzo", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=_J8tYxSB_LQ";
+            if (seriesTitle.Contains("The Glory", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=tqVVddp_G9Y";
+
+            return "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        }
+
         private List<EpisodeDto> GenerateFallbackEpisodes(string seriesTitle, int count)
         {
+            var fallbackUrl = GetFallbackYoutubeUrl(seriesTitle);
             var list = new List<EpisodeDto>();
             for (int i = 1; i <= count; i++)
             {
@@ -569,7 +610,7 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                     Title = $"Episode {i}",
                     Description = $"Follow the dramatic events and shocking revelations in Episode {i} of {seriesTitle}.",
                     Duration = 65 + (i % 15),
-                    VideoUrl = "/videos/video_2026-08-04_13-49-33.mp4"
+                    VideoUrl = fallbackUrl
                 });
             }
             return list;

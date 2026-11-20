@@ -410,7 +410,7 @@
 }
 
 <!-- Movie Section -->
-@if (!HasSearch && (SelectedFilter == "All" || SelectedFilter == "Movies" || SelectedFilter == "Trending"))
+@if (!HasSearch && (SelectedFilter == "All" || SelectedFilter == "Movies" || SelectedFilter == "Trending") && Movies != null && Movies.Any())
 {
     <section class="myflix-section-block">
         <div class="myflix-section-header">

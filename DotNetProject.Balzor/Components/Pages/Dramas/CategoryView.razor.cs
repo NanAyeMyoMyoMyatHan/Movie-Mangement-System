@@ -256,7 +256,7 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
             catch { }
 
             // Ensure curated Thai BL items are present
-            AddSeedIfMissing(20002, true, "Fool In Love", "https://upload.wikimedia.org/wikipedia/en/3/3c/Fool_in_love_the_series.jpg", "2026", "Thai BL", 9.3, 6, "The confident heir of Araya Group meets an intelligent young successor with a boxer past.");
+            AddSeedIfMissing(20002, true, "Fool In Love", "https://upload.wikimedia.org/wikipedia/en/3/3c/Fool_in_love_the_series.jpg", "2026", "Thai BL", 9.3, 11, "The confident heir of Araya Group meets an intelligent young successor with a boxer past.");
             AddSeedIfMissing(20004, true, "Daung With You", "/images/daung_with_you.jpg", "2026", "Thai BL", 9.0, 12, "A cheerful Decorative Arts student sparks a sweet campus romance with a jazz musician.");
             AddSeedIfMissing(20005, true, "KhemJira", "/images/khemjira.jpg", "2025", "Thai BL", 9.2, 12, "Born under a curse, Khemjira journeys to Isan to seek salvation from a powerful shaman.");
             AddSeedIfMissing(7, true, "KinnPorsche", "https://upload.wikimedia.org/wikipedia/en/9/9e/KinnPorsche_series_poster.jpg", "2022", "Thai BL", 9.5, 14, "The second son of a major mafia family is assigned an extraordinary bodyguard.");
@@ -287,7 +287,7 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                             Year = d.ReleaseDate?.Year.ToString() ?? "2023",
                             Category = "Korean Drama",
                             Rating = 9.3,
-                            TotalEpisodes = 16,
+                            TotalEpisodes = d.Title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase) ? 13 : 16,
                             Description = d.Description ?? $"{d.Title} is an acclaimed Korean drama series."
                         });
                     }
@@ -296,8 +296,8 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
             catch { }
 
             // Ensure top K-dramas are present
-            AddSeedIfMissing(23, true, "Alchemy of Souls", "https://upload.wikimedia.org/wikipedia/en/b/b5/Alchemy_of_Souls.jpg", "2022", "Korean Drama", 9.4, 30, "A powerful sorceress whose soul is trapped in another body becomes involved with a young nobleman.");
-            AddSeedIfMissing(20003, true, "Kingdom", "/images/kingdom.jpg", "2019", "Korean Drama", 9.1, 12, "While strange rumors grip the kingdom, the crown prince investigates a mysterious plague.");
+            AddSeedIfMissing(23, true, "Alchemy of Souls", "https://upload.wikimedia.org/wikipedia/en/3/36/Alchemy_of_Souls.jpg", "2022", "Korean Drama", 9.4, 30, "A powerful sorceress whose soul is trapped in another body becomes involved with a young nobleman.");
+            AddSeedIfMissing(20003, true, "Kingdom", "/images/kingdom.jpg", "2019", "Korean Drama", 9.1, 13, "While strange rumors grip the kingdom, the crown prince investigates a mysterious plague.");
             AddSeedIfMissing(24, true, "Lovely Runner", "https://upload.wikimedia.org/wikipedia/en/6/67/Lovely_Runner.png", "2024", "Korean Drama", 9.4, 16, "A passionate fan travels back in time to save her favorite top idol from a tragic fate.");
             AddSeedIfMissing(15, true, "Crash Landing on You", "https://upload.wikimedia.org/wikipedia/en/5/5e/Crash_Landing_on_You_poster.png", "2019", "Korean Drama", 9.6, 16, "A paragliding mishap drops a South Korean heiress into North Korea into the life of an army officer.");
             AddSeedIfMissing(21, true, "Vincenzo", "https://upload.wikimedia.org/wikipedia/en/5/5b/Vincenzo_TV_series.jpg", "2021", "Korean Drama", 9.3, 20, "A Korean-Italian mafia lawyer gives an untouchable conglomerate a taste of its own medicine.");
