@@ -847,6 +847,42 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                 DramaStarring = "Gong Yoo, Jung Yu-mi, Ma Dong-seok, Kim Su-an";
                 DramaCreators = "Yeon Sang-ho";
             }
+            else if (title.Contains("The Childe", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2023";
+                DramaGenres = "Action, Crime, Thriller";
+                DramaAgeRating = "18+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Kim Seon-ho, Kang Tae-ju, Kim Kang-woo, Go Ara";
+                DramaCreators = "Park Hoon-jung";
+            }
+            else if (title.Contains("Bad Genius", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2017";
+                DramaGenres = "Thriller, Crime, Drama";
+                DramaAgeRating = "15+";
+                DramaLanguage = "Thai";
+                DramaStarring = "Chutimon Chuengcharoensukying, Chanon Santinatornkul, Teeradon Supapunpinyo";
+                DramaCreators = "Nattawut Poonpiriya";
+            }
+            else if (title.Contains("Along with the Gods", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2017";
+                DramaGenres = "Fantasy, Action, Drama";
+                DramaAgeRating = "13+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Ha Jung-woo, Cha Tae-hyun, Ju Ji-hoon, Kim Hyang-gi";
+                DramaCreators = "Kim Yong-hwa";
+            }
+            else if (title.Contains("Decibel", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2022";
+                DramaGenres = "Action, Thriller, Drama";
+                DramaAgeRating = "15+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Kim Rae-won, Lee Jong-suk, Cha Eun-woo, Jung Sang-hoon";
+                DramaCreators = "Hwang In-ho";
+            }
             else
             {
                 DramaAgeRating = "15+";
@@ -865,6 +901,14 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                 return "https://www.youtube.com/watch?v=pyWuHv2-Abk";
             if (seriesTitle.Contains("Parasite", StringComparison.OrdinalIgnoreCase))
                 return "https://www.youtube.com/watch?v=5xH0RwpEbSU";
+            if (seriesTitle.Contains("The Childe", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=SRJgKBFwZyw";
+            if (seriesTitle.Contains("Bad Genius", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=CLdhN4oMxCQ";
+            if (seriesTitle.Contains("Along with the Gods", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=Y3xcJor-hyQ";
+            if (seriesTitle.Contains("Decibel", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=UmgVsK6cQuc";
             if (seriesTitle.Contains("KinnPorsche", StringComparison.OrdinalIgnoreCase))
                 return "https://www.youtube.com/watch?v=1F_U3mN8rJ0";
             if (seriesTitle.Contains("Bad Buddy", StringComparison.OrdinalIgnoreCase))

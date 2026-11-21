@@ -348,14 +348,14 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
             catch { }
 
             // Ensure top movies are present
-            AddSeedIfMissing(10002, false, "Your Name", "https://upload.wikimedia.org/wikipedia/en/0/0b/Your_Name_poster.png", "2016", "Movie", 9.5, 1, "Two teenagers share a profound, magical connection upon discovering they are swapping bodies.");
-            AddSeedIfMissing(10003, false, "Spirited Away", "https://upload.wikimedia.org/wikipedia/en/d/db/Spirited_Away_Japanese_poster.png", "2001", "Movie", 9.6, 1, "A sullen ten-year-old girl wanders into a world ruled by gods, witches, and spirits.");
-            AddSeedIfMissing(10004, false, "Train to Busan", "https://upload.wikimedia.org/wikipedia/en/9/95/Train_to_Busan.jpg", "2016", "Movie", 9.4, 1, "While a zombie virus breaks out in South Korea, passengers struggle to survive on a high-speed train.");
-            AddSeedIfMissing(30001, false, "Parasite", "https://upload.wikimedia.org/wikipedia/en/5/53/Parasite_%282019_film%29.png", "2019", "Movie", 9.6, 1, "Greed and class discrimination threaten the newly formed symbiotic relationship between two families.");
-            AddSeedIfMissing(30003, false, "The Childe", "/images/the_childe.jpg", "2023", "Movie", 9.0, 1, "A young boxer of Korean-Filipino descent is relentlessly pursued by various underground forces.");
-            AddSeedIfMissing(30004, false, "Bad Genius", "/images/bad_genius.jpg", "2017", "Movie", 9.2, 1, "A straight-A student invents an intricate exam-cheating scheme that escalates to international levels.");
-            AddSeedIfMissing(30005, false, "Along with the Gods", "/images/along_with_the_gods.jpg", "2017", "Movie", 9.1, 1, "A firefighter passes away unexpectedly and is escorted through seven trials in the afterlife.");
-            AddSeedIfMissing(30006, false, "Decibel", "/images/decibel.jpg", "2022", "Movie", 8.9, 1, "A former naval submarine commander races to stop a sound-activated explosive terrorism plot in the city.");
+            AddSeedIfMissing(10002, true, "Your Name", "https://upload.wikimedia.org/wikipedia/en/0/0b/Your_Name_poster.png", "2016", "Movie", 9.5, 1, "Two teenagers share a profound, magical connection upon discovering they are swapping bodies.");
+            AddSeedIfMissing(10003, true, "Spirited Away", "https://upload.wikimedia.org/wikipedia/en/d/db/Spirited_Away_Japanese_poster.png", "2001", "Movie", 9.6, 1, "A sullen ten-year-old girl wanders into a world ruled by gods, witches, and spirits.");
+            AddSeedIfMissing(10004, true, "Train to Busan", "https://upload.wikimedia.org/wikipedia/en/9/95/Train_to_Busan.jpg", "2016", "Movie", 9.4, 1, "While a zombie virus breaks out in South Korea, passengers struggle to survive on a high-speed train.");
+            AddSeedIfMissing(30001, true, "Parasite", "https://upload.wikimedia.org/wikipedia/en/5/53/Parasite_%282019_film%29.png", "2019", "Movie", 9.6, 1, "Greed and class discrimination threaten the newly formed symbiotic relationship between two families.");
+            AddSeedIfMissing(30003, true, "The Childe", "/images/the_childe.jpg", "2023", "Movie", 9.0, 1, "A young boxer of Korean-Filipino descent is relentlessly pursued by various underground forces.");
+            AddSeedIfMissing(30004, true, "Bad Genius", "/images/bad_genius.jpg", "2017", "Movie", 9.2, 1, "A straight-A student invents an intricate exam-cheating scheme that escalates to international levels.");
+            AddSeedIfMissing(30005, true, "Along with the Gods", "/images/along_with_the_gods.jpg", "2017", "Movie", 9.1, 1, "A firefighter passes away unexpectedly and is escorted through seven trials in the afterlife.");
+            AddSeedIfMissing(30006, true, "Decibel", "/images/decibel.jpg", "2022", "Movie", 8.9, 1, "A former naval submarine commander races to stop a sound-activated explosive terrorism plot in the city.");
         }
 
         private async Task LoadNewReleasesAsync()
