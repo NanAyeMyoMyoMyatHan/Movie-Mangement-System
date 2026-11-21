@@ -772,14 +772,7 @@ namespace DotNetProject.Balzor.Components.Pages.Home
 
         public void ResumePlayback(WatchHistoryItem item)
         {
-            if (item.IsContent)
-            {
-                Nav.NavigateTo($"/drama/{item.ContentId}?ep={item.EpisodeNumber}&autoplay=true");
-            }
-            else
-            {
-                Nav.NavigateTo($"/movie/{item.ContentId}");
-            }
+            Nav.NavigateTo($"/drama/{item.ContentId}?ep={item.EpisodeNumber}&autoplay=true");
         }
 
         public void Dispose()

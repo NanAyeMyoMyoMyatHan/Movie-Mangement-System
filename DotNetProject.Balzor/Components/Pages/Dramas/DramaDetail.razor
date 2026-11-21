@@ -1,4 +1,5 @@
 @page "/drama/{Id:long}"
+@page "/movie/{Id:long}"
 @rendermode InteractiveServer
 
 <PageTitle>@(Drama?.Title ?? "Drama Details") - NangWorld</PageTitle>
@@ -53,8 +54,8 @@ else if (Drama != null)
         {
             <div id="videoPlayerBox" class="drama-theater-player">
                 <div class="drama-player-bar">
-                    <div class="drama-player-title">
-                        <span>@ActiveVideoTitle</span>
+                    <div class="drama-player-title" style="color: #2E1065 !important; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                        <span style="color: #2E1065 !important; font-weight: 800; font-size: 15px;">@ActiveVideoTitle</span>
                         <span class="drama-ep-badge">EP @ActiveEpisodeNumber</span>
                         @if (!string.IsNullOrWhiteSpace(ResumeToast))
                         {

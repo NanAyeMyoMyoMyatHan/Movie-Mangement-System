@@ -312,6 +312,10 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
             ActiveVideoTitle = !string.IsNullOrWhiteSpace(ep.Title) ? ep.Title : $"{Drama?.Title} - Episode {ep.EpisodeNumber}";
             ActiveVideoDescription = !string.IsNullOrWhiteSpace(ep.Description) ? ep.Description : Drama?.Description ?? "";
             ActiveVideoUrl = ep.VideoUrl ?? "";
+            if (string.IsNullOrWhiteSpace(ActiveVideoUrl))
+            {
+                ActiveVideoUrl = GetFallbackYoutubeUrl(Drama?.Title ?? "");
+            }
             ActiveVideoPoster = !string.IsNullOrWhiteSpace(ep.ThumbnailUrl) ? ep.ThumbnailUrl : Drama?.PosterUrl;
             IsPlayingVideo = true;
             UseDemoStream = false;
@@ -679,8 +683,26 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                 return "https://www.youtube.com/watch?v=_J8tYxSB_LQ";
             if (seriesTitle.Contains("The Glory", StringComparison.OrdinalIgnoreCase))
                 return "https://www.youtube.com/watch?v=tqVVddp_G9Y";
+            if (seriesTitle.Contains("Itaewon", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=NN7zE_aI7B4";
+            if (seriesTitle.Contains("True Beauty", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=2Tz8YmQ-N0s";
+            if (seriesTitle.Contains("Twenty-Five", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=gYp4cKumTwU";
+            if (seriesTitle.Contains("Business", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=M-PHcxPJUS8";
+            if (seriesTitle.Contains("SOTUS", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=t9-X2wXm6u0";
+            if (seriesTitle.Contains("Sunset", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=zJg4hZ5Fw7A";
+            if (seriesTitle.Contains("President", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=3gVq6vO8VzE";
+            if (seriesTitle.Contains("Moonlight", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=9gR9vM8ZqT8";
+            if (seriesTitle.Contains("Not Me", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=1F_U3mN8rJ0";
 
-            return "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+            return "https://www.youtube.com/watch?v=1F_U3mN8rJ0";
         }
 
         private List<EpisodeDto> GenerateFallbackEpisodes(string seriesTitle, int count)
