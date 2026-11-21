@@ -4,7 +4,7 @@
 
 <PageTitle>@(Drama?.Title ?? "Drama Details") - NangWorld</PageTitle>
 
-<link rel="stylesheet" href="drama-detail.css?v=pastel-2.5" />
+<link rel="stylesheet" href="drama-detail.css?v=pastel-3.0" />
 @if (IsLoading)
 {
     <div class="drama-loading-state">
@@ -236,15 +236,15 @@ else if (Drama != null)
                             @if (AuthService.IsAuthenticated())
                             {
                                 <button type="button" class="drama-ep-circle-play-btn" @onclick="() => PlayEpisode(currentEp)" title="Play Episode @currentEp.EpisodeNumber">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                                         <polygon points="6 4 19 12 6 20 6 4"></polygon>
                                     </svg>
                                 </button>
                             }
                             else
                             {
-                                <button type="button" class="drama-ep-circle-play-btn" @onclick="() => PlayEpisode(currentEp)" title="Sign in to stream Episode @currentEp.EpisodeNumber" style="border-color: rgba(236, 72, 153, 0.4); color: #F472B6;">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                <button type="button" class="drama-ep-circle-play-btn" @onclick="() => PlayEpisode(currentEp)" title="Sign in to stream Episode @currentEp.EpisodeNumber">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                     </svg>

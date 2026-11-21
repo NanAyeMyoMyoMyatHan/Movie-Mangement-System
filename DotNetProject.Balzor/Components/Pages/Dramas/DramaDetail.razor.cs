@@ -643,6 +643,177 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                 DramaStarring = "Hyun Bin, Son Ye-jin, Seo Ji-hye, Kim Jung-hyun";
                 DramaCreators = "Park Ji-eun, Lee Jeong-hyo";
             }
+            else if (title.Contains("Queen", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2024";
+                DramaGenres = "Romance, Comedy, Drama";
+                DramaAgeRating = "15+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Kim Soo-hyun, Kim Ji-won, Park Sung-hoon, Kwak Dong-yeon, Lee Joo-bin";
+                DramaCreators = "Park Ji-eun, Jang Young-woo, Kim Hee-won";
+            }
+            else if (title.Contains("Goblin", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2016";
+                DramaGenres = "Fantasy, Romance, Drama";
+                DramaAgeRating = "15+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Gong Yoo, Kim Go-eun, Lee Dong-wook, Yoo In-na, Yook Sung-jae";
+                DramaCreators = "Kim Eun-sook, Lee Eung-bok";
+            }
+            else if (title.Contains("Itaewon", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2020";
+                DramaGenres = "Drama, Romance";
+                DramaAgeRating = "15+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Park Seo-joon, Kim Da-mi, Yoo Jae-myung, Kwon Nara";
+                DramaCreators = "Jo Gwang-jin, Kim Sung-yoon";
+            }
+            else if (title.Contains("True Beauty", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2020";
+                DramaGenres = "Romance, Comedy, Coming-of-Age";
+                DramaAgeRating = "13+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Moon Ga-young, Cha Eun-woo, Hwang In-youp, Park Yoo-na";
+                DramaCreators = "Kim Sang-hyeop, Lee Si-eun";
+            }
+            else if (title.Contains("Twenty-Five", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2022";
+                DramaGenres = "Romance, Youth, Coming-of-Age";
+                DramaAgeRating = "15+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Kim Tae-ri, Nam Joo-hyuk, Bona, Choi Hyun-wook, Lee Joo-myung";
+                DramaCreators = "Jung Ji-hyun, Kwon Do-eun";
+            }
+            else if (title.Contains("Vincenzo", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2021";
+                DramaGenres = "Crime, Comedy, Action";
+                DramaAgeRating = "18+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Song Joong-ki, Jeon Yeo-been, Ok Taec-yeon, Kim Yeo-jin, Kwak Dong-yeon";
+                DramaCreators = "Park Jae-bum, Kim Hee-won";
+            }
+            else if (title.Contains("The Glory", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2022";
+                DramaGenres = "Thriller, Revenge, Psychological";
+                DramaAgeRating = "18+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Song Hye-kyo, Lee Do-hyun, Lim Ji-yeon, Yeom Hye-ran, Park Sung-hoon";
+                DramaCreators = "Kim Eun-sook, Ahn Gil-ho";
+            }
+            else if (title.Contains("Lovely Runner", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2024";
+                DramaGenres = "Romance, Fantasy, Time-Travel";
+                DramaAgeRating = "15+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Byeon Woo-seok, Kim Hye-yoon, Song Geon-hee, Lee Seung-hyub";
+                DramaCreators = "Lee Si-eun, Yoon Jong-ho, Kim Tae-yeop";
+            }
+            else if (title.Contains("Business", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2022";
+                DramaGenres = "Romance, Comedy, Workplace";
+                DramaAgeRating = "15+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Ahn Hyo-seop, Kim Se-jeong, Kim Min-kyu, Seol In-ah";
+                DramaCreators = "Han Sul-hee, Hong Bo-hee, Park Seon-ho";
+            }
+            else if (title.Contains("TharnType", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2019";
+                DramaGenres = "Romance, Drama, Youth";
+                DramaAgeRating = "18+";
+                DramaLanguage = "Thai";
+                DramaStarring = "Mew Suppasit, Gulf Kanawut";
+                DramaCreators = "Tee Sintanaparadee, MAME";
+            }
+            else if (title.Contains("SOTUS", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2016";
+                DramaGenres = "Romance, University, Drama";
+                DramaAgeRating = "15+";
+                DramaLanguage = "Thai";
+                DramaStarring = "Singto Prachaya, Krist Perawat";
+                DramaCreators = "Lit Samajarn, BitterSweet";
+            }
+            else if (title.Contains("Thousand Stars", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2021";
+                DramaGenres = "Romance, Rural, Drama";
+                DramaAgeRating = "13+";
+                DramaLanguage = "Thai";
+                DramaStarring = "Earth Pirapat, Mix Sahaphap";
+                DramaCreators = "Backaof Noppharnach";
+            }
+            else if (title.Contains("Sunset", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2020";
+                DramaGenres = "Romance, Coming-of-Age, Drama";
+                DramaAgeRating = "15+";
+                DramaLanguage = "Thai";
+                DramaStarring = "Billkin Putthipong, PP Krit";
+                DramaCreators = "Boss Naruebet Kuno";
+            }
+            else if (title.Contains("President", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2022";
+                DramaGenres = "Romance, Music, School";
+                DramaAgeRating = "13+";
+                DramaLanguage = "Thai";
+                DramaStarring = "Gemini Norawit, Fourth Nattawat";
+                DramaCreators = "Au Kornprom Niyomsil";
+            }
+            else if (title.Contains("Not Me", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2021";
+                DramaGenres = "Action, Mystery, Political";
+                DramaAgeRating = "18+";
+                DramaLanguage = "Thai";
+                DramaStarring = "Off Jumpol, Gun Atthaphan";
+                DramaCreators = "Anucha Boonyawatana";
+            }
+            else if (title.Contains("Parasite", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2019";
+                DramaGenres = "Thriller, Black Comedy, Drama";
+                DramaAgeRating = "18+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Song Kang-ho, Lee Sun-kyun, Cho Yeo-jeong, Choi Woo-shik, Park So-dam";
+                DramaCreators = "Bong Joon-ho, Han Jin-won";
+            }
+            else if (title.Contains("Your Name", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2016";
+                DramaGenres = "Animation, Romance, Fantasy";
+                DramaAgeRating = "PG";
+                DramaLanguage = "Japanese";
+                DramaStarring = "Ryunosuke Kamiki, Mone Kamishiraishi";
+                DramaCreators = "Makoto Shinkai";
+            }
+            else if (title.Contains("Spirited", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2001";
+                DramaGenres = "Animation, Fantasy, Adventure";
+                DramaAgeRating = "PG";
+                DramaLanguage = "Japanese";
+                DramaStarring = "Rumi Hiiragi, Miyu Irino, Mari Natsuki";
+                DramaCreators = "Hayao Miyazaki";
+            }
+            else if (title.Contains("Busan", StringComparison.OrdinalIgnoreCase))
+            {
+                DramaYear = "2016";
+                DramaGenres = "Horror, Action, Thriller";
+                DramaAgeRating = "18+";
+                DramaLanguage = "Korean";
+                DramaStarring = "Gong Yoo, Jung Yu-mi, Ma Dong-seok, Kim Su-an";
+                DramaCreators = "Yeon Sang-ho";
+            }
             else
             {
                 DramaAgeRating = "15+";
