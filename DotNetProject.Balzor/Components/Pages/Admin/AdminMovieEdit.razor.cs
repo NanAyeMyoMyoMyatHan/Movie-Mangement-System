@@ -9,6 +9,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
         [Parameter] public int Id { get; set; }
         [Inject] private HttpClientService ApiClient { get; set; } = default!;
         [Inject] private NavigationManager Nav { get; set; } = default!;
+        [Inject] private AuditLogService AuditLog { get; set; } = default!;
 
         private readonly UpdateMovieRequest _form = new();
         private bool _loading = true;
@@ -58,6 +59,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
 
             if (result?.IsSuccess == true)
             {
+                await AuditLog.LogActionAsync("UPDATE_MOVIE", "Movie", _form.Id.ToString(), $"Updated movie '{_form.Title}' (ID: {_form.Id})");
                 _success = $"Movie \"{_form.Title}\" updated successfully!";
                 await Task.Delay(1200);
                 Nav.NavigateTo("/admin/movies");

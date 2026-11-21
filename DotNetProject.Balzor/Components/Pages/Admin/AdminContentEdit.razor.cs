@@ -9,6 +9,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
         [Parameter] public long Id { get; set; }
         [Inject] private HttpClientService ApiClient { get; set; } = default!;
         [Inject] private NavigationManager Nav { get; set; } = default!;
+        [Inject] private AuditLogService AuditLog { get; set; } = default!;
 
         private UpdateContentRequest _form = new();
         private string? _releaseDateStr;
@@ -70,6 +71,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
 
             if (result?.IsSuccess == true)
             {
+                await AuditLog.LogActionAsync("UPDATE_CONTENT", "Content", _form.ContentId.ToString(), $"Updated content '{_form.Title}' (ID: {_form.ContentId})");
                 _success = $"\"{_form.Title}\" updated successfully!";
                 await Task.Delay(1200);
                 Nav.NavigateTo("/admin/contents");

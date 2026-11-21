@@ -45,6 +45,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<UserContinueWatching> UserContinueWatchings { get; set; }
 
+    public virtual DbSet<AuditLog> AuditLogs { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -282,6 +284,18 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.ToTable("UserContinueWatching");
+        });
+
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.ToTable("AuditLog");
+            entity.Property(e => e.Action).HasMaxLength(50);
+            entity.Property(e => e.TargetEntity).HasMaxLength(50);
+            entity.Property(e => e.TargetId).HasMaxLength(100);
+            entity.Property(e => e.UserName).HasMaxLength(100);
+            entity.Property(e => e.IpAddress).HasMaxLength(50);
+            entity.Property(e => e.Timestamp).HasDefaultValueSql("(sysutcdatetime())");
         });
 
         OnModelCreatingPartial(modelBuilder);

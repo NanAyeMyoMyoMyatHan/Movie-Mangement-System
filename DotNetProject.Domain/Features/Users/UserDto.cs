@@ -7,6 +7,8 @@ namespace DotNetProject.Domain.Features.Users
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string? DisplayName { get; set; }
+        public string? AvatarUrl { get; set; }
+        public string? Bio { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; } = false;
         public DateTime? DeletedAt { get; set; }
@@ -54,7 +56,50 @@ namespace DotNetProject.Domain.Features.Users
         public int Id { get; set; }
         public string UserName { get; set; } = string.Empty;
         public string? DisplayName { get; set; }
+        public string? AvatarUrl { get; set; }
+        public string? Bio { get; set; }
         public string Email { get; set; } = string.Empty;
         public string Role { get; set; } = "User"; // "Admin" or "User"
+    }
+
+    public class UserProfileDto
+    {
+        public int Id { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string? DisplayName { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string? AvatarUrl { get; set; }
+        public string? Bio { get; set; }
+        public string Role { get; set; } = "User";
+        public List<string> Roles { get; set; } = new();
+        public DateTime CreatedDate { get; set; }
+    }
+
+    public class UserProfileUpdateRequestModel
+    {
+        public int UserId { get; set; }
+        public string? DisplayName { get; set; }
+        public string? Bio { get; set; }
+    }
+
+    public class UserProfileUpdateResponseModel
+    {
+        public bool IsSuccess { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public UserProfileDto? User { get; set; }
+    }
+
+    public class ChangePasswordRequestModel
+    {
+        public int UserId { get; set; }
+        public string CurrentPassword { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
+        public string ConfirmNewPassword { get; set; } = string.Empty;
+    }
+
+    public class ChangePasswordResponseModel
+    {
+        public bool IsSuccess { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
 }

@@ -11,6 +11,10 @@ public partial class User
 
     public string? DisplayName { get; set; }
 
+    public string? AvatarUrl { get; set; }
+
+    public string? Bio { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public bool IsDeleted { get; set; }

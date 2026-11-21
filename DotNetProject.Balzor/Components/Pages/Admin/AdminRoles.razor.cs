@@ -19,6 +19,9 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
         [Inject]
         public NavigationManager Nav { get; set; } = default!;
 
+        [Inject]
+        public AuditLogService AuditLog { get; set; } = default!;
+
         protected List<RoleDto> RolesList { get; set; } = new();
         protected List<PermissionDto> AllPermissions { get; set; } = new();
         protected bool IsLoading { get; set; } = true;
@@ -152,6 +155,8 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
                 if (result != null && result.IsSuccess)
                 {
                     SuccessMessage = result.Message;
+                    var action = CurrentRoleRequest.RoleId.HasValue ? "UPDATE_ROLE" : "CREATE_ROLE";
+                    await AuditLog.LogActionAsync(action, "Role", CurrentRoleRequest.RoleId?.ToString() ?? CurrentRoleRequest.RoleName, $"{action} '{CurrentRoleRequest.RoleName}' with {SelectedPermissionIds.Count} permissions.");
                     ShowEditModal = false;
                     await LoadDataAsync();
                     await AuthService.RefreshPermissionsAsync();
@@ -188,6 +193,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
                 if (result != null && result.IsSuccess)
                 {
                     SuccessMessage = result.Message;
+                    await AuditLog.LogActionAsync("DELETE_ROLE", "Role", role.RoleId.ToString(), $"Deleted role '{role.RoleName}' (ID: {role.RoleId})");
                     await LoadDataAsync();
                     await AuthService.RefreshPermissionsAsync();
                 }

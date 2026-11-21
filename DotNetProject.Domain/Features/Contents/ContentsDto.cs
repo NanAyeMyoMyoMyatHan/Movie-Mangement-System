@@ -43,6 +43,8 @@ namespace DotNetProject.Domain.Features.Contents
         public string? Description { get; set; }
         public string? ThumbnailUrl { get; set; }
         public string? VideoUrl { get; set; }
+        public string? SubtitleUrl { get; set; }
+        public string? SubtitleTracksJson { get; set; }
         public int? Duration { get; set; }
         public DateOnly? ReleaseDate { get; set; }
         public string Status { get; set; } = string.Empty;

@@ -21,6 +21,8 @@ namespace DotNetProject.Balzor.Components.Shared
         public int TotalEpisodes { get; set; } = 16;
         public string? VideoUrl { get; set; }
         public int ProgressPercentage { get; set; } = 45;
+        public int ProgressSeconds { get; set; } = 0;
+        public int DurationSeconds { get; set; } = 0;
         public DateTime LastWatchedAt { get; set; } = DateTime.UtcNow;
     }
 
@@ -281,6 +283,80 @@ namespace DotNetProject.Balzor.Components.Shared
             catch { }
 
             OnChange?.Invoke();
+        }
+
+        public async Task RecordWatchProgressAsync(long contentId, int episodeNumber, int currentSeconds, int durationSeconds, bool isContent = true)
+        {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0) return;
+
+            int progressPct = durationSeconds > 0 ? (int)((double)currentSeconds / durationSeconds * 100) : 0;
+            int savedSeconds = (durationSeconds > 0 && currentSeconds >= (durationSeconds * 0.90)) ? 0 : currentSeconds;
+
+            var existing = _history.FirstOrDefault(h => h.ContentId == contentId && h.IsContent == isContent);
+            if (existing != null)
+            {
+                existing.EpisodeNumber = episodeNumber;
+                existing.ProgressSeconds = savedSeconds;
+                existing.DurationSeconds = durationSeconds;
+                existing.ProgressPercentage = progressPct;
+                existing.LastWatchedAt = DateTime.UtcNow;
+                SaveToFile();
+            }
+
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetService<AppDbContext>();
+                if (db != null)
+                {
+                    var dbItem = await db.UserContinueWatchings.FirstOrDefaultAsync(w =>
+                        w.UserId == _activeUserId &&
+                        w.ContentId == contentId &&
+                        w.IsContent == isContent &&
+                        !w.IsDeleted);
+
+                    if (dbItem != null)
+                    {
+                        dbItem.EpisodeNumber = episodeNumber;
+                        dbItem.ProgressSeconds = savedSeconds;
+                        dbItem.DurationSeconds = durationSeconds;
+                        dbItem.LastWatchedAt = DateTime.UtcNow;
+                        await db.SaveChangesAsync();
+                    }
+                }
+            }
+            catch { }
+        }
+
+        public async Task<int> GetSavedTimestampAsync(long contentId, int episodeNumber, bool isContent = true)
+        {
+            var inMem = _history.FirstOrDefault(h => h.ContentId == contentId && h.IsContent == isContent);
+            if (inMem != null && inMem.EpisodeNumber == episodeNumber && inMem.ProgressSeconds > 0)
+            {
+                return inMem.ProgressSeconds;
+            }
+
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var db = scope.ServiceProvider.GetService<AppDbContext>();
+                if (db != null && _activeUserId > 0)
+                {
+                    var dbItem = await db.UserContinueWatchings.AsNoTracking().FirstOrDefaultAsync(w =>
+                        w.UserId == _activeUserId &&
+                        w.ContentId == contentId &&
+                        w.IsContent == isContent &&
+                        !w.IsDeleted);
+
+                    if (dbItem != null && dbItem.EpisodeNumber == episodeNumber)
+                    {
+                        return dbItem.ProgressSeconds;
+                    }
+                }
+            }
+            catch { }
+
+            return 0;
         }
 
         public async Task RemoveFromHistoryAsync(long contentId, bool isContent = true)

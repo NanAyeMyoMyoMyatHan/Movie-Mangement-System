@@ -76,13 +76,49 @@ namespace DotNetProject.Balzor.Components.Shared
             return JsonConvert.DeserializeObject<T>(result);
         }
 
-        // --- User Authentication API client methods ---
+        // --- User Authentication & Profile API client methods ---
 
         public Task<UserLoginResponseModel?> LoginUserAsync(UserLoginRequestModel request) =>
             PostAsync<UserLoginResponseModel>("api/User/login", request);
 
         public Task<UserCreateResponseModel?> RegisterUserAsync(UserCreateRequestModel request) =>
             PostAsync<UserCreateResponseModel>("api/User", request);
+
+        public Task<UserProfileDto?> GetUserProfileAsync(int userId) =>
+            ExecuteAsync<UserProfileDto>($"api/User/profile/{userId}", EnumHttpMethod.Get);
+
+        public Task<UserProfileUpdateResponseModel?> UpdateUserProfileAsync(UserProfileUpdateRequestModel request) =>
+            ExecuteAsync<UserProfileUpdateResponseModel>("api/User/profile", EnumHttpMethod.Put, request);
+
+        public Task<ChangePasswordResponseModel?> ChangeUserPasswordAsync(ChangePasswordRequestModel request) =>
+            PostAsync<ChangePasswordResponseModel>("api/User/change-password", request);
+
+        public async Task<string?> UploadAvatarAsync(int userId, Stream fileStream, string fileName)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient("Api");
+                using var content = new MultipartFormDataContent();
+                var streamContent = new StreamContent(fileStream);
+                content.Add(streamContent, "avatarFile", fileName);
+
+                var response = await client.PostAsync($"api/User/profile/avatar?userId={userId}", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                    if (dict != null && dict.TryGetValue("avatarUrl", out var urlObj) && urlObj != null)
+                    {
+                        return urlObj.ToString();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[HttpClientService] UploadAvatarAsync error: {ex.Message}");
+            }
+            return null;
+        }
 
         // --- Movie API client methods 
 

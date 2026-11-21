@@ -161,5 +161,144 @@ namespace DotNetProject.WebApi.Features.Users
                 Role = isAdmin ? "Admin" : "User"
             };
         }
+
+        public async Task<UserProfileDto> GetProfileAsync(int id)
+        {
+            var user = await _db.Users
+                .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
+
+            if (user == null)
+            {
+                throw new Exception("User not found for the given ID.");
+            }
+
+            var roles = user.UserRoles
+                .Where(ur => ur.Role != null && !string.IsNullOrWhiteSpace(ur.Role.RoleName))
+                .Select(ur => ur.Role.RoleName)
+                .Distinct()
+                .ToList();
+
+            if (!roles.Any())
+            {
+                bool isAdmin = user.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase) ||
+                               user.Email.Equals("admin@nangworld.com", StringComparison.OrdinalIgnoreCase);
+                roles.Add(isAdmin ? "Admin" : "User");
+            }
+
+            return new UserProfileDto
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                DisplayName = user.DisplayName ?? user.UserName,
+                Email = user.Email,
+                AvatarUrl = user.AvatarUrl,
+                Bio = user.Bio,
+                Role = roles.FirstOrDefault() ?? "User",
+                Roles = roles,
+                CreatedDate = user.CreatedAt
+            };
+        }
+
+        public async Task<UserProfileUpdateResponseModel> UpdateProfileAsync(UserProfileUpdateRequestModel model)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == model.UserId && !u.IsDeleted);
+            if (user == null)
+            {
+                return new UserProfileUpdateResponseModel
+                {
+                    IsSuccess = false,
+                    Message = "User not found."
+                };
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.DisplayName))
+            {
+                user.DisplayName = model.DisplayName.Trim();
+            }
+            user.Bio = model.Bio?.Trim();
+
+            await _db.SaveChangesAsync();
+
+            var profile = await GetProfileAsync(user.Id);
+            return new UserProfileUpdateResponseModel
+            {
+                IsSuccess = true,
+                Message = "Profile updated successfully.",
+                User = profile
+            };
+        }
+
+        public async Task<string> UpdateAvatarAsync(int userId, string avatarUrl)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId && !u.IsDeleted);
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            user.AvatarUrl = avatarUrl;
+            await _db.SaveChangesAsync();
+            return avatarUrl;
+        }
+
+        public async Task<ChangePasswordResponseModel> ChangePasswordAsync(ChangePasswordRequestModel model)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == model.UserId && !u.IsDeleted);
+            if (user == null)
+            {
+                return new ChangePasswordResponseModel
+                {
+                    IsSuccess = false,
+                    Message = "User not found."
+                };
+            }
+
+            if (user.Password != model.CurrentPassword.Trim())
+            {
+                return new ChangePasswordResponseModel
+                {
+                    IsSuccess = false,
+                    Message = "Current password is incorrect."
+                };
+            }
+
+            if (string.IsNullOrWhiteSpace(model.NewPassword) || model.NewPassword.Length < 6)
+            {
+                return new ChangePasswordResponseModel
+                {
+                    IsSuccess = false,
+                    Message = "New password must be at least 6 characters long."
+                };
+            }
+
+            if (model.NewPassword != model.ConfirmNewPassword)
+            {
+                return new ChangePasswordResponseModel
+                {
+                    IsSuccess = false,
+                    Message = "New password and confirmation do not match."
+                };
+            }
+
+            if (user.Password == model.NewPassword.Trim())
+            {
+                return new ChangePasswordResponseModel
+                {
+                    IsSuccess = false,
+                    Message = "New password cannot be the same as your current password."
+                };
+            }
+
+            user.Password = model.NewPassword.Trim();
+            await _db.SaveChangesAsync();
+
+            return new ChangePasswordResponseModel
+            {
+                IsSuccess = true,
+                Message = "Password changed successfully."
+            };
+        }
     }
 }

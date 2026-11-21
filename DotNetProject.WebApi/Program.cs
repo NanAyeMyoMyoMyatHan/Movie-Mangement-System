@@ -39,6 +39,7 @@ builder.Services.AddScoped<IRatingInterface, RatingServices>();
 builder.Services.AddScoped<IContent, ContentsServices>();
 builder.Services.AddScoped<IThaiInterface, ThaiServices>();
 builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
+builder.Services.AddScoped<DotNetProject.Domain.Features.Audit.IAuditInterface, DotNetProject.WebApi.Features.Audit.AuditServices>();
 
 // File storage service (singleton — stateless, holds only the configured root path)
 builder.Services.AddSingleton<FileStorageService>();

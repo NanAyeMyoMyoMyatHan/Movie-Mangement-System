@@ -26,6 +26,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<WatchLaterService>();
 builder.Services.AddScoped<FavoriteService>();
 builder.Services.AddScoped<WatchHistoryService>();
+builder.Services.AddScoped<AuditLogService>();
 builder.Services.AddScoped<TmdbService>();
 
 // Clean startup: delete any leftover session file on server boot so fresh runs always start clean as Guest!
@@ -60,7 +61,13 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
+var contentTypeProvider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+contentTypeProvider.Mappings[".vtt"] = "text/vtt; charset=utf-8";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = contentTypeProvider
+});
 
 var videoProviders = new List<Microsoft.Extensions.FileProviders.IFileProvider>();
 var dramaFolders = new[]

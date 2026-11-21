@@ -1,0 +1,326 @@
+@page "/admin/audit-logs"
+@layout AdminLayout
+@using DotNetProject.Balzor.Components.Layout
+@using DotNetProject.Balzor.Components.Shared
+@using DotNetProject.Domain.Features.Audit
+@rendermode InteractiveServer
+
+<PageTitle>Audit Logs &amp; Activity Trail — NangWorld Admin</PageTitle>
+
+<div class="admin-page-header">
+    <div>
+        <h1>Activity Log &amp; Audit Trail</h1>
+        <p>Immutable audit trail tracking administrative mutations, content changes, and dynamic RBAC role assignments.</p>
+    </div>
+    <div class="admin-header-actions">
+        <button type="button" class="btn-admin btn-admin-secondary" @onclick="LoadLogsAsync">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Refresh Log
+        </button>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="user-alert error" style="margin-bottom: 20px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>@ErrorMessage</span>
+    </div>
+}
+
+<!-- Claymorphic Pastel Stats Grid -->
+<div class="admin-stat-grid" style="margin-bottom: 24px;">
+    <div class="admin-stat-card">
+        <div class="admin-stat-top">
+            <div class="admin-stat-icon blush">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <span class="admin-stat-chip blush">Total Events</span>
+        </div>
+        <div class="admin-stat-value">@TotalEntries</div>
+        <div class="admin-stat-label">Total Recorded Audit Events</div>
+    </div>
+
+    <div class="admin-stat-card">
+        <div class="admin-stat-top">
+            <div class="admin-stat-icon honey">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <span class="admin-stat-chip honey">Security &amp; Roles</span>
+        </div>
+        <div class="admin-stat-value">@SecurityMutationsCount</div>
+        <div class="admin-stat-label">Role, User &amp; Access Changes</div>
+    </div>
+
+    <div class="admin-stat-card">
+        <div class="admin-stat-top">
+            <div class="admin-stat-icon sage">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <span class="admin-stat-chip sage">Content Operations</span>
+        </div>
+        <div class="admin-stat-value">@ContentMutationsCount</div>
+        <div class="admin-stat-label">Dramas, Movies &amp; Episodes</div>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="admin-card" style="margin-bottom: 24px; padding: 18px 24px;">
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+        <!-- Top Row: Search & Selects -->
+        <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+            <div style="display: flex; gap: 12px; align-items: center; flex: 1; min-width: 260px;">
+                <div class="search-input-wrap" style="flex: 1;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" placeholder="Filter by username..." @bind="Filter.UserName" @bind:event="oninput" class="search-box-input" />
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <select class="admin-select" @bind="Filter.TargetEntity" style="padding: 8px 12px; border-radius: 12px; border: 1.5px solid rgba(167,139,250,0.3); background: #FAF5FF; font-weight: 600; color: #4C1D95; font-size: 0.85rem;">
+                    <option value="All">All Entities</option>
+                    <option value="Movie">Movie</option>
+                    <option value="Content">Drama Content</option>
+                    <option value="Episode">Episode</option>
+                    <option value="Role">Role</option>
+                    <option value="User">User</option>
+                </select>
+
+                <select class="admin-select" @onchange="OnPageSizeChange" style="padding: 8px 12px; border-radius: 12px; border: 1.5px solid rgba(167,139,250,0.3); background: #FAF5FF; font-weight: 600; color: #4C1D95; font-size: 0.85rem;">
+                    <option value="10">10 / page</option>
+                    <option value="20" selected>20 / page</option>
+                    <option value="50">50 / page</option>
+                </select>
+
+                <button type="button" class="btn-admin btn-admin-primary" style="padding: 8px 18px; font-size: 0.85rem;" @onclick="ApplyFilter">
+                    Search
+                </button>
+                <button type="button" class="btn-admin btn-admin-secondary" style="padding: 8px 14px; font-size: 0.85rem;" @onclick="ResetFilters">
+                    Reset
+                </button>
+            </div>
+        </div>
+
+        <!-- Action Quick-Filter Chips -->
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <span style="font-size: 0.78rem; font-weight: 700; color: #7C3AED; text-transform: uppercase; margin-right: 4px;">Quick Action:</span>
+            <button type="button" class="filter-chip @(Filter.Action == "All" ? "active" : "")" @onclick='() => SetActionFilter("All")'>All Actions</button>
+            <button type="button" class="filter-chip @(Filter.Action == "DELETE_MOVIE" ? "active" : "")" @onclick='() => SetActionFilter("DELETE_MOVIE")'>Delete Movie</button>
+            <button type="button" class="filter-chip @(Filter.Action == "DELETE_CONTENT" ? "active" : "")" @onclick='() => SetActionFilter("DELETE_CONTENT")'>Delete Content</button>
+            <button type="button" class="filter-chip @(Filter.Action == "ASSIGN_ROLE" ? "active" : "")" @onclick='() => SetActionFilter("ASSIGN_ROLE")'>Assign Role</button>
+            <button type="button" class="filter-chip @(Filter.Action == "CREATE_ROLE" ? "active" : "")" @onclick='() => SetActionFilter("CREATE_ROLE")'>Create Role</button>
+            <button type="button" class="filter-chip @(Filter.Action == "CREATE_CONTENT" ? "active" : "")" @onclick='() => SetActionFilter("CREATE_CONTENT")'>Create Drama</button>
+            <button type="button" class="filter-chip @(Filter.Action == "UPDATE_CONTENT" ? "active" : "")" @onclick='() => SetActionFilter("UPDATE_CONTENT")'>Update Drama</button>
+            <button type="button" class="filter-chip @(Filter.Action == "CREATE_MOVIE" ? "active" : "")" @onclick='() => SetActionFilter("CREATE_MOVIE")'>Create Movie</button>
+        </div>
+    </div>
+</div>
+
+<!-- Audit Log Table -->
+<div class="admin-card">
+    <div class="admin-card-header" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1.5px solid rgba(167, 139, 250, 0.15);">
+        <div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: #2E1065; margin: 0 0 4px 0;">Audit Events Stream</h2>
+            <p style="margin: 0; font-size: 0.85rem; color: #6D28D9;">Showing @LogResult.Items.Count of @LogResult.TotalCount recorded operations</p>
+        </div>
+        <span style="font-size: 0.82rem; font-weight: 700; color: #7C3AED; background: #FAF5FF; padding: 6px 14px; border-radius: 9999px; border: 1px solid rgba(167,139,250,0.3);">
+            Page @Filter.PageNumber of @(LogResult.TotalPages == 0 ? 1 : LogResult.TotalPages)
+        </span>
+    </div>
+
+    @if (IsLoading)
+    {
+        <div style="text-align: center; padding: 50px; color: #7C3AED;">
+            <div style="display: inline-block; width: 36px; height: 36px; border: 3px solid rgba(167,139,250,0.3); border-top-color: #7C3AED; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 12px;"></div>
+            <p style="margin: 0; font-weight: 600;">Loading audit logs from SQL database...</p>
+        </div>
+    }
+    else if (!LogResult.Items.Any())
+    {
+        <div style="text-align: center; padding: 60px 20px;">
+            <div style="font-size: 2.5rem; margin-bottom: 12px;">🔍</div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #2E1065; margin-bottom: 6px;">No Audit Events Found</h3>
+            <p style="color: #6D28D9; font-size: 0.9rem; margin-bottom: 18px;">No audit records match the current filter criteria.</p>
+            <button type="button" class="btn-admin btn-admin-secondary" @onclick="ResetFilters">
+                Reset All Filters
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="admin-table-wrap">
+            <table class="admin-table" style="width: 100%; border-collapse: separate; border-spacing: 0;">
+                <thead>
+                    <tr style="background: rgba(245, 238, 253, 0.6);">
+                        <th style="padding: 12px 18px; text-align: left; font-size: 0.78rem; font-weight: 800; color: #5B21B6; text-transform: uppercase; letter-spacing: 0.04em;">Timestamp (UTC)</th>
+                        <th style="padding: 12px 18px; text-align: left; font-size: 0.78rem; font-weight: 800; color: #5B21B6; text-transform: uppercase; letter-spacing: 0.04em;">Actor / Admin</th>
+                        <th style="padding: 12px 18px; text-align: left; font-size: 0.78rem; font-weight: 800; color: #5B21B6; text-transform: uppercase; letter-spacing: 0.04em;">Action Code</th>
+                        <th style="padding: 12px 18px; text-align: left; font-size: 0.78rem; font-weight: 800; color: #5B21B6; text-transform: uppercase; letter-spacing: 0.04em;">Target</th>
+                        <th style="padding: 12px 18px; text-align: left; font-size: 0.78rem; font-weight: 800; color: #5B21B6; text-transform: uppercase; letter-spacing: 0.04em;">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in LogResult.Items)
+                    {
+                        var badgeClass = GetActionBadgeClass(log.Action);
+                        <tr style="border-bottom: 1px solid rgba(167, 139, 250, 0.12); transition: background 0.15s ease;">
+                            <!-- Timestamp -->
+                            <td style="padding: 14px 18px; font-size: 0.82rem; color: #6D28D9; white-space: nowrap; font-family: monospace;">
+                                @log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")
+                            </td>
+
+                            <!-- Actor -->
+                            <td style="padding: 14px 18px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #DDD6FE, #FBCFE8); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; color: #5B21B6;">
+                                        @(string.IsNullOrWhiteSpace(log.UserName) ? "A" : log.UserName.Substring(0, 1).ToUpper())
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 700; font-size: 0.88rem; color: #2E1065;">@log.UserName</div>
+                                        <div style="font-size: 0.72rem; color: #8B5CF6;">UID: @log.UserId</div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Action Code -->
+                            <td style="padding: 14px 18px;">
+                                <span class="audit-action-badge @badgeClass">
+                                    @log.Action
+                                </span>
+                            </td>
+
+                            <!-- Target Entity & ID -->
+                            <td style="padding: 14px 18px;">
+                                <div style="font-weight: 700; font-size: 0.85rem; color: #4C1D95;">@log.TargetEntity</div>
+                                @if (!string.IsNullOrEmpty(log.TargetId))
+                                {
+                                    <span style="font-size: 0.75rem; color: #7C3AED; background: #EDE9FE; padding: 2px 8px; border-radius: 6px; font-family: monospace;">
+                                        ID: @log.TargetId
+                                    </span>
+                                }
+                            </td>
+
+                            <!-- Details & IP -->
+                            <td style="padding: 14px 18px; max-width: 380px;">
+                                <div style="font-size: 0.85rem; color: #2E1065; line-height: 1.4; word-break: break-word;">
+                                    @log.Details
+                                </div>
+                                @if (!string.IsNullOrEmpty(log.IpAddress))
+                                {
+                                    <div style="font-size: 0.72rem; color: #8B5CF6; margin-top: 4px;">IP: @log.IpAddress</div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        @if (LogResult.TotalPages > 1)
+        {
+            <div class="admin-pagination-bar" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-top: 1.5px solid rgba(167, 139, 250, 0.15);">
+                <div style="font-size: 0.82rem; color: #6D28D9;">
+                    Showing @(((Filter.PageNumber - 1) * Filter.PageSize) + 1) to @(Math.Min(Filter.PageNumber * Filter.PageSize, LogResult.TotalCount)) of @LogResult.TotalCount entries
+                </div>
+
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <button type="button" class="btn-admin btn-admin-secondary" style="padding: 6px 14px; font-size: 0.8rem;" disabled="@(Filter.PageNumber <= 1)" @onclick="() => GoToPage(Filter.PageNumber - 1)">
+                        ← Previous
+                    </button>
+
+                    @for (int p = Math.Max(1, Filter.PageNumber - 2); p <= Math.Min(LogResult.TotalPages, Filter.PageNumber + 2); p++)
+                    {
+                        var pageNum = p;
+                        <button type="button" class="btn-admin @(Filter.PageNumber == pageNum ? "btn-admin-primary" : "btn-admin-secondary")" style="padding: 6px 12px; font-size: 0.8rem; min-width: 32px;" @onclick="() => GoToPage(pageNum)">
+                            @pageNum
+                        </button>
+                    }
+
+                    <button type="button" class="btn-admin btn-admin-secondary" style="padding: 6px 14px; font-size: 0.8rem;" disabled="@(Filter.PageNumber >= LogResult.TotalPages)" @onclick="() => GoToPage(Filter.PageNumber + 1)">
+                        Next →
+                    </button>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<style>
+    .audit-action-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+    .audit-action-badge.badge-danger {
+        background: #FEE2E2;
+        color: #991B1B;
+        border: 1px solid #FCA5A5;
+    }
+    .audit-action-badge.badge-success {
+        background: #D1FAE5;
+        color: #065F46;
+        border: 1px solid #6EE7B7;
+    }
+    .audit-action-badge.badge-info {
+        background: #E0F2FE;
+        color: #0369A1;
+        border: 1px solid #7DD3FC;
+    }
+    .audit-action-badge.badge-warning {
+        background: #EDE9FE;
+        color: #5B21B6;
+        border: 1px solid #C4B5FD;
+    }
+    .audit-action-badge.badge-default {
+        background: #F3F4F6;
+        color: #374151;
+        border: 1px solid #D1D5DB;
+    }
+    .filter-chip {
+        padding: 6px 14px;
+        border-radius: 9999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: 1.5px solid rgba(167, 139, 250, 0.3);
+        background: #FAF5FF;
+        color: #5B21B6;
+        cursor: pointer;
+        transition: all 0.18s ease;
+    }
+    .filter-chip:hover {
+        background: #EDE9FE;
+        border-color: #A78BFA;
+    }
+    .filter-chip.active {
+        background: linear-gradient(135deg, #8B5CF6, #EC4899);
+        color: #FFFFFF;
+        border-color: transparent;
+        box-shadow: 0 3px 10px rgba(139, 92, 246, 0.25);
+    }
+    .search-input-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        background: #FAF5FF;
+        border: 1.5px solid rgba(167, 139, 250, 0.3);
+        border-radius: 12px;
+    }
+    .search-box-input {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 0.85rem;
+        color: #2E1065;
+        width: 100%;
+    }
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>

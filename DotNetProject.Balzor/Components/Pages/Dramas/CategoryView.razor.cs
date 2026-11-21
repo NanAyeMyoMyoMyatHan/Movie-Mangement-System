@@ -22,6 +22,7 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
         public string Category { get; set; } = "Korean Drama";
         public double Rating { get; set; } = 9.2;
         public int TotalEpisodes { get; set; } = 16;
+        public string Status { get; set; } = "Completed"; // "Ongoing" or "Completed"
     }
 
     public partial class CategoryView : ComponentBase, IDisposable
@@ -56,6 +57,16 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
         protected HashSet<long> WatchLaterIds { get; set; } = new();
         protected string SearchQuery { get; set; } = "";
         protected string SortBy { get; set; } = "year";
+        protected string SelectedYear { get; set; } = "All";
+        protected string SelectedStatus { get; set; } = "All";
+        protected string SelectedRating { get; set; } = "All";
+
+        // Pagination
+        protected int CurrentPage { get; set; } = 1;
+        protected int PageSize { get; set; } = 12;
+        protected int TotalPages => Math.Max(1, (int)Math.Ceiling((double)FilteredItems.Count / PageSize));
+        protected IEnumerable<CategoryItemDto> PagedItems => FilteredItems.Skip((CurrentPage - 1) * PageSize).Take(PageSize);
+
         protected bool IsLoading { get; set; } = true;
         protected string? ToastMessage { get; set; }
 
@@ -415,7 +426,8 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                     Category = category,
                     Rating = rating,
                     TotalEpisodes = eps,
-                    Description = desc
+                    Description = desc,
+                    Status = (year == "2026" || eps > 20) ? "Ongoing" : "Completed"
                 });
             }
         }
@@ -423,12 +435,58 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
         protected void OnSearchChanged(ChangeEventArgs e)
         {
             SearchQuery = e.Value?.ToString() ?? "";
+            CurrentPage = 1;
             ApplyFilters();
         }
 
         protected void OnSortChanged(ChangeEventArgs e)
         {
             SortBy = e.Value?.ToString() ?? "year";
+            CurrentPage = 1;
+            ApplyFilters();
+        }
+
+        protected void SetYearFilter(string year)
+        {
+            SelectedYear = year;
+            CurrentPage = 1;
+            ApplyFilters();
+        }
+
+        protected void SetStatusFilter(string status)
+        {
+            SelectedStatus = status;
+            CurrentPage = 1;
+            ApplyFilters();
+        }
+
+        protected void OnRatingChanged(ChangeEventArgs e)
+        {
+            SelectedRating = e.Value?.ToString() ?? "All";
+            CurrentPage = 1;
+            ApplyFilters();
+        }
+
+        protected void GoToPage(int page)
+        {
+            if (page >= 1 && page <= TotalPages)
+            {
+                CurrentPage = page;
+                StateHasChanged();
+            }
+        }
+
+        protected void NextPage() => GoToPage(CurrentPage + 1);
+        protected void PreviousPage() => GoToPage(CurrentPage - 1);
+
+        protected void ResetFilters()
+        {
+            SearchQuery = "";
+            SelectedYear = "All";
+            SelectedStatus = "All";
+            SelectedRating = "All";
+            SortBy = "year";
+            CurrentPage = 1;
             ApplyFilters();
         }
 
@@ -436,6 +494,7 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
         {
             var query = AllItems.AsEnumerable();
 
+            // Search query filter
             if (!string.IsNullOrWhiteSpace(SearchQuery))
             {
                 var q = SearchQuery.Trim().ToLower();
@@ -444,6 +503,37 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                                          (i.Category != null && i.Category.ToLower().Contains(q)));
             }
 
+            // Year facet filter
+            if (SelectedYear == "Older")
+            {
+                query = query.Where(i => int.TryParse(i.Year, out var yr) && yr <= 2021);
+            }
+            else if (SelectedYear != "All")
+            {
+                query = query.Where(i => i.Year == SelectedYear);
+            }
+
+            // Status facet filter
+            if (SelectedStatus != "All")
+            {
+                query = query.Where(i => string.Equals(i.Status, SelectedStatus, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // Rating facet filter
+            if (SelectedRating == "9+")
+            {
+                query = query.Where(i => i.Rating >= 9.0);
+            }
+            else if (SelectedRating == "8+")
+            {
+                query = query.Where(i => i.Rating >= 8.0);
+            }
+            else if (SelectedRating == "7+")
+            {
+                query = query.Where(i => i.Rating >= 7.0);
+            }
+
+            // Sorting
             if (SortBy == "title")
             {
                 query = query.OrderBy(i => i.Title);
@@ -452,7 +542,7 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
             {
                 query = query.OrderByDescending(i => i.Rating).ThenByDescending(i => i.Year);
             }
-            else // "year" (default for New Releases)
+            else // "year" (default)
             {
                 query = query.OrderByDescending(i => i.Year).ThenByDescending(i => i.Rating);
             }

@@ -6,7 +6,7 @@ using Microsoft.JSInterop;
 
 namespace DotNetProject.Balzor.Components.Pages.Dramas
 {
-    public partial class DramaDetail
+    public partial class DramaDetail : IAsyncDisposable
     {
         [Inject]
         private HttpClientService ApiClient { get; set; } = default!;
@@ -77,6 +77,10 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
         protected string ActiveVideoUrl { get; set; } = "";
         protected string? ActiveVideoPoster { get; set; }
         protected int ActiveEpisodeNumber { get; set; } = 1;
+        protected string? ActiveSubtitleUrl { get; set; }
+        protected bool IsSubtitleEnabled { get; set; } = true;
+        protected string? ResumeToast { get; set; }
+        private DotNetObjectReference<DramaDetail>? _dotNetHelper;
 
         protected string DramaYear { get; set; } = "2022";
         protected string DramaTotalEpisodesText { get; set; } = "30 Episodes";
@@ -311,11 +315,33 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
             ActiveVideoPoster = !string.IsNullOrWhiteSpace(ep.ThumbnailUrl) ? ep.ThumbnailUrl : Drama?.PosterUrl;
             IsPlayingVideo = true;
             UseDemoStream = false;
+
+            // Resolve subtitle track
+            ActiveSubtitleUrl = ResolveSubtitleTrack(ep);
+            IsSubtitleEnabled = !string.IsNullOrWhiteSpace(ActiveSubtitleUrl);
+
+            // Fetch saved timestamp for auto-seek
+            int savedSeconds = 0;
+            if (Drama != null)
+            {
+                savedSeconds = await WatchHistoryService.GetSavedTimestampAsync(Drama.ContentId, ep.EpisodeNumber);
+                if (savedSeconds > 5)
+                {
+                    ResumeToast = $"Resumed from {FormatTime(savedSeconds)}";
+                }
+                else
+                {
+                    ResumeToast = null;
+                }
+            }
+
             StateHasChanged();
 
             // Record into Continue Watching history
             if (Drama != null)
             {
+                int durationTotal = ep.Duration.HasValue && ep.Duration.Value > 0 ? ep.Duration.Value : 3600;
+                int initialProgress = savedSeconds > 0 ? (int)((double)savedSeconds / durationTotal * 100) : 5;
                 await WatchHistoryService.RecordWatchAsync(
                     Drama.ContentId,
                     Drama.Title,
@@ -325,12 +351,12 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                     Episodes.Count > 0 ? Episodes.Count : 16,
                     ep.VideoUrl,
                     isContent: true,
-                    progressPercentage: 45
+                    progressPercentage: initialProgress
                 );
             }
 
-            // Smoothly auto-scroll up to the video player so user immediately sees it playing
-            await Task.Delay(50);
+            // Smoothly auto-scroll up to the video player and initialize JSInterop
+            await Task.Delay(100);
             try
             {
                 await JS.InvokeVoidAsync("eval", @"
@@ -339,8 +365,67 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                 ");
+
+                if (!IsYoutubeUrl(ActiveVideoUrl))
+                {
+                    _dotNetHelper ??= DotNetObjectReference.Create(this);
+                    await JS.InvokeVoidAsync("mediaPlayer.initPlayer", "mainVideoPlayer", _dotNetHelper, savedSeconds);
+                }
             }
             catch { }
+        }
+
+        protected string? ResolveSubtitleTrack(EpisodeDto ep)
+        {
+            if (!string.IsNullOrWhiteSpace(ep.SubtitleUrl))
+            {
+                return ep.SubtitleUrl;
+            }
+
+            if (Drama?.Title != null && Drama.Title.Contains("Alchemy", StringComparison.OrdinalIgnoreCase))
+            {
+                return "/subtitles/alchemy_ep1_my.vtt";
+            }
+
+            return "/subtitles/sample_my.vtt";
+        }
+
+        [JSInvokable]
+        public async Task OnPlaybackProgress(int currentSeconds, int durationSeconds)
+        {
+            if (Drama != null && ActiveEpisodeNumber > 0)
+            {
+                await WatchHistoryService.RecordWatchProgressAsync(
+                    Drama.ContentId,
+                    ActiveEpisodeNumber,
+                    currentSeconds,
+                    durationSeconds,
+                    isContent: true
+                );
+            }
+        }
+
+        protected async Task ToggleSubtitles()
+        {
+            IsSubtitleEnabled = !IsSubtitleEnabled;
+            await JS.InvokeVoidAsync("mediaPlayer.setSubtitleTrack", "mainVideoPlayer", IsSubtitleEnabled ? "my" : "off");
+            StateHasChanged();
+        }
+
+        protected static string FormatTime(int seconds)
+        {
+            var ts = TimeSpan.FromSeconds(seconds);
+            return ts.TotalHours >= 1 ? ts.ToString(@"h\:mm\:ss") : ts.ToString(@"mm\:ss");
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("mediaPlayer.disposePlayer", "mainVideoPlayer");
+            }
+            catch { }
+            _dotNetHelper?.Dispose();
         }
 
         protected async Task StartPlayingFirstEpisode()

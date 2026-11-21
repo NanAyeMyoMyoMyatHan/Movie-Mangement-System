@@ -8,6 +8,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
     {
         [Inject] private HttpClientService ApiClient { get; set; } = default!;
         [Inject] private NavigationManager Nav { get; set; } = default!;
+        [Inject] private AuditLogService AuditLog { get; set; } = default!;
 
         private readonly CreateMovieRequest _form = new();
         private string? _titleError;
@@ -33,6 +34,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
 
             if (result?.IsSuccess == true)
             {
+                await AuditLog.LogActionAsync("CREATE_MOVIE", "Movie", null, $"Created movie '{_form.Title}'");
                 _success = $"Movie \"{_form.Title}\" created successfully!";
                 await Task.Delay(1200);
                 Nav.NavigateTo("/admin/movies");

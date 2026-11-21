@@ -125,6 +125,58 @@
     </div>
 </div>
 
+<!-- Multi-Facet Filters Bar (Year, Status, Rating) -->
+<div class="cat-facet-bar">
+    <!-- Year Facet Pills -->
+    <div class="cat-facet-group">
+        <span class="cat-facet-title">Year:</span>
+        <div class="cat-facet-pills">
+            @foreach (var yr in new[] { "All", "2026", "2025", "2024", "2023", "2022", "Older" })
+            {
+                <button type="button" 
+                        class="cat-facet-btn @(SelectedYear == yr ? "active" : "")" 
+                        @onclick="() => SetYearFilter(yr)">
+                    @yr
+                </button>
+            }
+        </div>
+    </div>
+
+    <!-- Status Facet Pills -->
+    <div class="cat-facet-group">
+        <span class="cat-facet-title">Status:</span>
+        <div class="cat-facet-pills">
+            @foreach (var st in new[] { "All", "Ongoing", "Completed" })
+            {
+                <button type="button" 
+                        class="cat-facet-btn @(SelectedStatus == st ? "active" : "")" 
+                        @onclick="() => SetStatusFilter(st)">
+                    @st
+                </button>
+            }
+        </div>
+    </div>
+
+    <!-- Rating Dropdown Filter -->
+    <div class="cat-facet-group">
+        <span class="cat-facet-title">Rating:</span>
+        <select class="cat-facet-select" value="@SelectedRating" @onchange="OnRatingChanged">
+            <option value="All">All Ratings</option>
+            <option value="9+">⭐ 9.0+ Top Rated</option>
+            <option value="8+">⭐ 8.0+ Great</option>
+            <option value="7+">⭐ 7.0+ Good</option>
+        </select>
+    </div>
+
+    @if (SelectedYear != "All" || SelectedStatus != "All" || SelectedRating != "All" || !string.IsNullOrWhiteSpace(SearchQuery))
+    {
+        <button type="button" class="cat-reset-btn" @onclick="ResetFilters" title="Reset all active filters">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            <span>Reset</span>
+        </button>
+    }
+</div>
+
 <!-- Main Category Grid -->
 @if (IsLoading)
 {
@@ -156,7 +208,7 @@ else if (FilteredItems.Count == 0)
 else
 {
     <div class="cat-poster-grid">
-        @foreach (var item in FilteredItems)
+        @foreach (var item in PagedItems)
         {
             <article class="cat-poster-card" @onclick="() => NavigateToItem(item)">
                 <div class="cat-poster-thumb-wrap">
@@ -220,4 +272,42 @@ else
             </article>
         }
     </div>
+
+    <!-- Pagination Bar -->
+    @if (TotalPages > 1)
+    {
+        <div class="cat-pagination-bar">
+            <button type="button" 
+                    class="cat-page-btn" 
+                    disabled="@(CurrentPage <= 1)" 
+                    @onclick="PreviousPage" 
+                    title="Previous Page">
+                ← Prev
+            </button>
+
+            <div class="cat-page-numbers">
+                @for (int p = 1; p <= TotalPages; p++)
+                {
+                    var pageNum = p;
+                    <button type="button" 
+                            class="cat-page-num @(CurrentPage == pageNum ? "active" : "")" 
+                            @onclick="() => GoToPage(pageNum)">
+                        @pageNum
+                    </button>
+                }
+            </div>
+
+            <button type="button" 
+                    class="cat-page-btn" 
+                    disabled="@(CurrentPage >= TotalPages)" 
+                    @onclick="NextPage" 
+                    title="Next Page">
+                Next →
+            </button>
+
+            <span class="cat-page-info">
+                Page @CurrentPage of @TotalPages (@FilteredItems.Count total titles)
+            </span>
+        </div>
+    }
 }

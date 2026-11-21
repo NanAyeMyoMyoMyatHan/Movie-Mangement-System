@@ -8,6 +8,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
         [Parameter] public long Id { get; set; }
         [Inject] private HttpClientService ApiClient { get; set; } = default!;
         [Inject] private NavigationManager Nav { get; set; } = default!;
+        [Inject] private AuditLogService AuditLog { get; set; } = default!;
 
         private bool _loading = true;
         private string? _loadError;
@@ -37,6 +38,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
 
             if (result?.IsSuccess == true)
             {
+                await AuditLog.LogActionAsync("DELETE_CONTENT", "Content", Id.ToString(), $"Deleted content '{_title}' (ID: {Id})");
                 Nav.NavigateTo("/admin/contents");
             }
             else

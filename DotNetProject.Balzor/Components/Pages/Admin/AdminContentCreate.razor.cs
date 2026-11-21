@@ -8,6 +8,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
     {
         [Inject] private HttpClientService ApiClient { get; set; } = default!;
         [Inject] private NavigationManager Nav { get; set; } = default!;
+        [Inject] private AuditLogService AuditLog { get; set; } = default!;
 
         private readonly CreateContentRequest _form = new();
         private string? _releaseDateStr;
@@ -34,6 +35,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
 
             if (result?.IsSuccess == true)
             {
+                await AuditLog.LogActionAsync("CREATE_CONTENT", "Content", null, $"Created content '{_form.Title}'");
                 _success = $"\"{_form.Title}\" created successfully!";
                 await Task.Delay(1200);
                 Nav.NavigateTo("/admin/contents");

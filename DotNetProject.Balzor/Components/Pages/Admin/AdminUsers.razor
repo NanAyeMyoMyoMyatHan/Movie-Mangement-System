@@ -6,6 +6,7 @@
 @using DotNetProject.Domain.Features.Users
 @inject AuthService AuthService
 @inject HttpClientService ApiClient
+@inject AuditLogService AuditLog
 @rendermode InteractiveServer
 
 <PageTitle>Users &amp; Roles — NangWorld Admin</PageTitle>
@@ -962,6 +963,8 @@
             if (res != null && res.IsSuccess)
             {
                 SuccessMessage = $"Updated role assignments for '{SelectedUserForRoles.DisplayName ?? SelectedUserForRoles.UserName}'.";
+                var roleNames = AvailableRoles.Where(r => SelectedRoleIdsForUser.Contains(r.RoleId)).Select(r => r.RoleName);
+                await AuditLog.LogActionAsync("ASSIGN_ROLE", "User", SelectedUserForRoles.UserId.ToString(), $"Assigned roles [{string.Join(", ", roleNames)}] to user '{SelectedUserForRoles.UserName}'");
                 CloseRoleModal();
 
                 // If updated active user, refresh their permissions cache in AuthService
@@ -999,6 +1002,8 @@
             SuccessMessage = user.IsDeleted
                 ? $"Deactivated user {user.DisplayName ?? user.UserName}."
                 : $"Restored user {user.DisplayName ?? user.UserName}.";
+            var act = user.IsDeleted ? "DEACTIVATE_USER" : "RESTORE_USER";
+            await AuditLog.LogActionAsync(act, "User", user.UserId.ToString(), $"{act} for '{user.UserName}'");
         }
         else
         {
@@ -1033,6 +1038,7 @@
             if (res != null && res.IsSuccess)
             {
                 SuccessMessage = $"User '{NewDisplayName}' created successfully!";
+                await AuditLog.LogActionAsync("CREATE_USER", "User", NewUsername, $"Created new user '{NewUsername}' with role '{NewRole}'");
                 CloseCreateModal();
                 await LoadDataAsync();
             }
