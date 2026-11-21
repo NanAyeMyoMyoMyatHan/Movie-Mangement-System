@@ -232,7 +232,7 @@ else if (Drama != null)
                         </div>
 
                         <div class="drama-ep-right-wrap">
-                            <span class="drama-ep-duration">@(currentEp.Duration.HasValue && currentEp.Duration.Value > 0 ? $"{currentEp.Duration.Value} min" : "70 min")</span>
+                            <span class="drama-ep-duration">@FormatEpisodeDuration(currentEp.Duration)</span>
                             @if (AuthService.IsAuthenticated())
                             {
                                 <button type="button" class="drama-ep-circle-play-btn" @onclick="() => PlayEpisode(currentEp)" title="Play Episode @currentEp.EpisodeNumber">

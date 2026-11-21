@@ -115,7 +115,15 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                         Episodes = GenerateFallbackEpisodes(Drama.Title, 16);
                     }
 
-                    DramaTotalEpisodesText = $"{Episodes.Count} Episodes";
+                    if (Drama.ContentType?.Equals("Movie", StringComparison.OrdinalIgnoreCase) == true)
+                    {
+                        var movieEp = Episodes.FirstOrDefault();
+                        DramaTotalEpisodesText = movieEp?.Duration.HasValue == true ? FormatEpisodeDuration(movieEp.Duration) : "Full Movie";
+                    }
+                    else
+                    {
+                        DramaTotalEpisodesText = $"{Episodes.Count} Episodes";
+                    }
                     ConfigureDramaCredits(Drama.Title);
 
                     EpisodeDto? selectedEp = null;
@@ -420,6 +428,23 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
         {
             var ts = TimeSpan.FromSeconds(seconds);
             return ts.TotalHours >= 1 ? ts.ToString(@"h\:mm\:ss") : ts.ToString(@"mm\:ss");
+        }
+
+        protected string FormatEpisodeDuration(int? durationMinutes)
+        {
+            if (!durationMinutes.HasValue || durationMinutes.Value <= 0)
+            {
+                return "60 min";
+            }
+
+            int m = durationMinutes.Value;
+            if (m >= 60)
+            {
+                int hours = m / 60;
+                int remainingMinutes = m % 60;
+                return remainingMinutes > 0 ? $"{hours}h {remainingMinutes}m" : $"{hours}h";
+            }
+            return $"{m} min";
         }
 
         public async ValueTask DisposeAsync()
