@@ -77,8 +77,7 @@ namespace DotNetProject.WebApi.Features.Users
         }
 
         [HttpPost("profile/avatar")]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadAvatar([FromForm] IFormFile avatarFile, [FromQuery] int userId)
+        public async Task<IActionResult> UploadAvatar(IFormFile avatarFile, [FromQuery] int userId)
         {
             if (avatarFile == null || avatarFile.Length == 0)
             {
