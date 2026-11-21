@@ -3,11 +3,12 @@
    ======================================================== */
 
 /* Top bar above the theater card */
+.drama-theater-top-bar,
 .drama-top-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .drama-back-pill {
@@ -17,7 +18,7 @@
     padding: 9px 18px;
     border-radius: 9999px;
     background: #FFFFFF;
-    border: 1.5px solid rgba(167, 139, 250, 0.32);
+    border: 1.5px solid rgba(167, 139, 250, 0.35);
     color: #4C1D95;
     font-size: 13.5px;
     font-weight: 700;
@@ -33,34 +34,48 @@
     transform: translateX(-3px);
 }
 
+.drama-top-right-group,
 .drama-top-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .drama-top-icon-btn,
 .drama-top-circle-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: #FFFFFF;
-    border: 1.5px solid rgba(167, 139, 250, 0.32);
-    color: #4C1D95;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid rgba(167, 139, 250, 0.35) !important;
+    color: #4C1D95 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.12) !important;
+    padding: 0 !important;
+}
+
+.drama-top-icon-btn svg,
+.drama-top-circle-btn svg {
+    stroke: #4C1D95 !important;
+    color: #4C1D95 !important;
 }
 
 .drama-top-icon-btn:hover,
 .drama-top-circle-btn:hover {
-    background: #F3E8FF;
-    color: #2E1065;
-    border-color: #8B5CF6;
-    transform: scale(1.08);
+    background: #F3E8FF !important;
+    color: #2E1065 !important;
+    border-color: #8B5CF6 !important;
+    transform: scale(1.08) !important;
+}
+
+.drama-top-icon-btn:hover svg,
+.drama-top-circle-btn:hover svg {
+    stroke: #2E1065 !important;
+    color: #2E1065 !important;
 }
 
 /* Main Theater Card (Dreamy Pastel Theme) */
@@ -86,50 +101,131 @@
 }
 
 .drama-player-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%) !important;
-    border-bottom: 1.5px solid rgba(167, 139, 250, 0.25) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 12px 20px !important;
+    background: linear-gradient(135deg, #F3E8FF 0%, #FCE7F3 100%) !important;
+    border-bottom: 1.5px solid rgba(167, 139, 250, 0.3) !important;
 }
 
 .drama-player-title {
-    font-size: 14.5px;
-    font-weight: 700;
-    color: #2E1065;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #2E1065 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.drama-player-title span {
+    color: #2E1065 !important;
 }
 
 .drama-ep-badge {
-    background: #EC4899;
-    color: #FFFFFF;
-    font-size: 11px;
-    padding: 2px 10px;
-    border-radius: 9999px;
-    font-weight: 700;
+    background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%) !important;
+    color: #FFFFFF !important;
+    font-size: 11px !important;
+    padding: 3px 10px !important;
+    border-radius: 9999px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px;
+}
+
+/* Resume Toast */
+.drama-resume-toast {
+    background: #D1FAE5 !important;
+    border: 1px solid #6EE7B7 !important;
+    color: #065F46 !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    padding: 3px 10px !important;
+    border-radius: 6px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+}
+
+/* High-Contrast Action Buttons inside Player Bar */
+.btn-toggle-stream {
+    border-radius: 8px !important;
+    padding: 5px 12px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    transition: all 0.2s ease !important;
+    border: 1.5px solid transparent !important;
+}
+
+.btn-toggle-stream.btn-stream-mode {
+    background: #EDE9FE !important;
+    border-color: #C4B5FD !important;
+    color: #6D28D9 !important;
+}
+
+.btn-toggle-stream.btn-stream-mode:hover {
+    background: #DDD6FE !important;
+    color: #4C1D95 !important;
+    transform: translateY(-1px);
+}
+
+.btn-toggle-stream.btn-subtitles {
+    background: #FEF3C7 !important;
+    border-color: #FCD34D !important;
+    color: #92400E !important;
+}
+
+.btn-toggle-stream.btn-subtitles:hover {
+    background: #FDE68A !important;
+    color: #78350F !important;
+    transform: translateY(-1px);
+}
+
+.btn-toggle-stream.btn-telegram {
+    background: #E0F2FE !important;
+    border-color: #7DD3FC !important;
+    color: #0369A1 !important;
+    border-radius: 9999px !important;
+}
+
+.btn-toggle-stream.btn-telegram:hover {
+    background: #BAE6FD !important;
+    color: #075985 !important;
+    transform: translateY(-1px);
 }
 
 .drama-player-close {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: rgba(139, 92, 246, 0.12);
-    border: 1px solid rgba(167, 139, 250, 0.3);
-    color: #4C1D95;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid rgba(167, 139, 250, 0.35) !important;
+    color: #4C1D95 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    padding: 0 !important;
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.08) !important;
+}
+
+.drama-player-close svg {
+    stroke: #4C1D95 !important;
 }
 
 .drama-player-close:hover {
-    background: #EC4899;
-    border-color: #EC4899;
-    color: #FFFFFF;
+    background: #EC4899 !important;
+    border-color: #EC4899 !important;
+    color: #FFFFFF !important;
+    transform: scale(1.08) !important;
+}
+
+.drama-player-close:hover svg {
+    stroke: #FFFFFF !important;
 }
 
 .drama-video {
@@ -138,6 +234,18 @@
     max-height: 540px;
     display: block;
     background: #000000;
+}
+
+.drama-video::cue {
+    background-color: rgba(46, 16, 101, 0.88) !important;
+    color: #FFFFFF !important;
+    font-family: 'Pyidaungsu', 'Padauk', 'Noto Sans Myanmar', -apple-system, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9) !important;
+    border-radius: 6px !important;
+    padding: 4px 10px !important;
+}
 }
 
 /* Hero Section - 2 Columns */

@@ -3,513 +3,7 @@
 
 <PageTitle>@(Drama?.Title ?? "Drama Details") - NangWorld</PageTitle>
 
-<style>
-    /* Dark Theater Modal/Card Layout matching Reference Photo */
-    .drama-theater-container {
-        background: #0B1310;
-        border-radius: 20px;
-        padding: 24px 32px 48px;
-        color: #F4EFEA;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-sizing: border-box;
-        margin-bottom: 40px;
-    }
-
-    /* Top Action Bar (Inside the dark theater card) */
-    .drama-theater-top-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 24px;
-    }
-
-    .drama-top-circle-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        color: #FFFFFF;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        padding: 0;
-    }
-
-    .drama-top-circle-btn:hover {
-        background: rgba(255, 255, 255, 0.22);
-        color: #FFFFFF;
-        transform: scale(1.08);
-    }
-
-    .drama-top-right-group {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    /* Video Player inside Theater Card */
-    .drama-theater-player {
-        margin-bottom: 30px;
-        background: #000000;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-    }
-
-    .drama-player-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 20px;
-        background: #14221D;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .drama-player-title {
-        font-size: 14.5px;
-        font-weight: 700;
-        color: #F4EFEA;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .drama-ep-badge {
-        background: #5E5CE6;
-        color: #FFFFFF;
-        font-size: 11.5px;
-        font-weight: 800;
-        padding: 2px 8px;
-        border-radius: 4px;
-        letter-spacing: 0.5px;
-    }
-
-    .drama-player-close {
-        background: transparent;
-        border: none;
-        color: #8FA9AA;
-        cursor: pointer;
-        padding: 4px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.15s ease;
-    }
-
-    .drama-player-close:hover {
-        color: #FFFFFF;
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    .drama-video {
-        width: 100%;
-        max-height: 520px;
-        display: block;
-        background: #000000;
-    }
-
-    .drama-video::cue {
-        background-color: rgba(11, 19, 16, 0.85);
-        color: #FDFBF7;
-        font-family: 'Pyidaungsu', 'Padauk', 'Noto Sans Myanmar', -apple-system, sans-serif;
-        font-size: 16px;
-        line-height: 1.5;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
-        border-radius: 4px;
-        padding: 4px 8px;
-    }
-
-    /* Hero Section: Cover on Left, Info on Right */
-    .drama-hero-row {
-        display: flex;
-        gap: 36px;
-        align-items: flex-start;
-        margin-bottom: 40px;
-    }
-
-    .drama-poster-wrap {
-        width: 260px;
-        min-width: 260px;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
-        background: #14221D;
-    }
-
-    .drama-poster-img {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 2/3;
-        object-fit: cover;
-        display: block;
-    }
-
-    .drama-info-col {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .drama-heading-title {
-        font-family: 'Playfair Display', Georgia, serif;
-        font-size: 38px;
-        font-weight: 700;
-        color: #FFFFFF;
-        line-height: 1.15;
-        margin: 0 0 12px 0;
-        letter-spacing: -0.5px;
-    }
-
-    .drama-metadata-line {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px;
-        font-size: 13.5px;
-        color: #A0B2AC;
-        margin-bottom: 16px;
-    }
-
-    .badge-gold-hd {
-        background: #E5A93C;
-        color: #0B1310;
-        font-weight: 800;
-        font-size: 11px;
-        padding: 2px 6px;
-        border-radius: 4px;
-        letter-spacing: 0.5px;
-        line-height: 1;
-    }
-
-    .badge-meta-pill {
-        background: rgba(255, 255, 255, 0.12);
-        color: #FFFFFF;
-        font-size: 11.5px;
-        font-weight: 600;
-        padding: 2px 8px;
-        border-radius: 4px;
-        line-height: 1;
-    }
-
-    .drama-synopsis {
-        color: #A0B2AC;
-        font-size: 14.5px;
-        line-height: 1.6;
-        margin: 0 0 24px 0;
-        max-width: 760px;
-    }
-
-    /* Action Buttons Row */
-    .drama-hero-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 28px;
-    }
-
-    .drama-btn-play-hero {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: #5E5CE6;
-        color: #FFFFFF;
-        border: none;
-        border-radius: 8px;
-        padding: 11px 28px;
-        font-size: 14.5px;
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 0 6px 18px rgba(94, 92, 230, 0.4);
-        transition: all 0.2s ease;
-    }
-
-    .drama-btn-play-hero:hover {
-        background: #4F4CD8;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 22px rgba(94, 92, 230, 0.5);
-    }
-
-    .drama-btn-action-hero {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: #FFFFFF;
-        border-radius: 8px;
-        padding: 11px 22px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .drama-btn-action-hero:hover {
-        background: rgba(255, 255, 255, 0.16);
-        border-color: rgba(255, 255, 255, 0.35);
-        color: #FFFFFF;
-    }
-
-    /* Starring & Creators */
-    .drama-credits-box {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        font-size: 13.5px;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-        padding-top: 20px;
-        max-width: 760px;
-    }
-
-    .drama-credit-row {
-        display: flex;
-        gap: 16px;
-    }
-
-    .drama-credit-label {
-        width: 75px;
-        color: #7A908A;
-        font-weight: 500;
-        flex-shrink: 0;
-    }
-
-    .drama-credit-names {
-        color: #CFDBD7;
-        font-weight: 400;
-    }
-
-    /* Episodes Section Header */
-    .drama-episodes-header-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-bottom: 16px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        margin-bottom: 18px;
-    }
-
-    .drama-episodes-h2 {
-        font-size: 22px;
-        font-weight: 800;
-        color: #FFFFFF;
-        margin: 0;
-    }
-
-    .drama-episodes-total-count {
-        font-size: 14px;
-        color: #7A908A;
-        font-weight: 600;
-    }
-
-    /* Episodes Rows List */
-    .drama-episodes-list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .drama-ep-row-card {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 18px;
-        padding: 14px 18px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.07);
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .drama-ep-row-card:hover {
-        background: rgba(255, 255, 255, 0.07);
-        border-color: rgba(255, 255, 255, 0.16);
-        transform: translateX(4px);
-    }
-
-    .drama-ep-row-card.active {
-        background: rgba(94, 92, 230, 0.12);
-        border: 1px solid rgba(94, 92, 230, 0.4);
-        border-left: 4px solid #5E5CE6;
-    }
-
-    .drama-ep-left-wrap {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        flex: 1;
-        min-width: 0;
-    }
-
-    .drama-ep-thumb {
-        position: relative;
-        width: 140px;
-        height: 80px;
-        flex-shrink: 0;
-        border-radius: 8px;
-        overflow: hidden;
-        background: #14221D;
-    }
-
-    .drama-ep-thumb-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
-    .drama-ep-thumb-disc {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0, 0, 0, 0.35);
-        opacity: 0.9;
-        transition: opacity 0.2s ease;
-    }
-
-    .drama-ep-disc-icon {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: rgba(0, 0, 0, 0.65);
-        color: #FFFFFF;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .drama-ep-text-col {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .drama-ep-title-h4 {
-        font-size: 15px;
-        font-weight: 700;
-        color: #FFFFFF;
-        margin: 0 0 4px 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .drama-ep-row-card:hover .drama-ep-title-h4 {
-        color: #5E5CE6;
-    }
-
-    .drama-ep-desc-p {
-        font-size: 13px;
-        color: #8FA9AA;
-        margin: 0;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        line-height: 1.45;
-    }
-
-    .drama-ep-right-wrap {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        flex-shrink: 0;
-    }
-
-    .drama-ep-duration {
-        font-size: 13.5px;
-        color: #8FA9AA;
-        font-weight: 500;
-        min-width: 52px;
-        text-align: right;
-    }
-
-    .drama-ep-circle-play-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        border: 1.5px solid rgba(255, 255, 255, 0.35);
-        background: transparent;
-        color: #FFFFFF;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        padding: 0;
-        transition: all 0.2s ease;
-    }
-
-    .drama-ep-row-card:hover .drama-ep-circle-play-btn {
-        background: #5E5CE6;
-        border-color: #5E5CE6;
-        color: #FFFFFF;
-        transform: scale(1.1);
-    }
-
-    .drama-ep-dots-menu-btn {
-        background: transparent;
-        border: none;
-        color: #7A908A;
-        cursor: pointer;
-        padding: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 4px;
-        transition: color 0.15s ease;
-    }
-
-    .drama-ep-dots-menu-btn:hover {
-        color: #FFFFFF;
-    }
-
-    .drama-loading-state {
-        padding: 60px 20px;
-        text-align: center;
-        color: #183B36;
-    }
-
-    .drama-spinner {
-        width: 44px;
-        height: 44px;
-        border: 3.5px solid rgba(167, 139, 250, 0.2);
-        border-top-color: #8B5CF6;
-        border-radius: 50%;
-        animation: dSpin 0.8s linear infinite;
-        margin: 0 auto 16px;
-    }
-
-    @@keyframes dSpin {
-        to { transform: rotate(360deg); }
-    }
-
-    @@media (max-width: 992px) {
-        .drama-hero-row {
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .drama-metadata-line, .drama-hero-buttons, .drama-credit-row {
-            justify-content: center;
-        }
-        .drama-poster-wrap {
-            width: 200px;
-            min-width: 200px;
-        }
-        .drama-ep-desc-p {
-            display: none;
-        }
-    }
-</style>
-
+<link rel="stylesheet" href="drama-detail.css?v=pastel-2.5" />
 @if (IsLoading)
 {
     <div class="drama-loading-state">
@@ -564,7 +58,7 @@ else if (Drama != null)
                         <span class="drama-ep-badge">EP @ActiveEpisodeNumber</span>
                         @if (!string.IsNullOrWhiteSpace(ResumeToast))
                         {
-                            <span class="drama-resume-toast" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.45); color: #34D399; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;">
+                            <span class="drama-resume-toast">
                                 ⏱️ @ResumeToast
                             </span>
                         }
@@ -572,19 +66,19 @@ else if (Drama != null)
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                         @if (!IsYoutubeUrl(ActiveVideoUrl) && !string.IsNullOrWhiteSpace(ActiveSubtitleUrl))
                         {
-                            <button type="button" class="btn-toggle-stream" @onclick="ToggleSubtitles" title="Toggle Myanmar Subtitles" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #FBBF24; border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <button type="button" class="btn-toggle-stream btn-subtitles" @onclick="ToggleSubtitles" title="Toggle Myanmar Subtitles">
                                 💬 Subtitles: @(IsSubtitleEnabled ? "မြန်မာ (ON)" : "OFF")
                             </button>
                         }
                         @if (!string.IsNullOrWhiteSpace(GetTelegramLink()))
                         {
-                            <button type="button" class="btn-toggle-stream" @onclick="OpenTelegramQrModal" title="Watch on Telegram Channel" style="background: rgba(42, 171, 238, 0.18); border: 1px solid rgba(42, 171, 238, 0.45); color: #7BD2FF; border-radius: 9999px; padding: 4px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <button type="button" class="btn-toggle-stream btn-telegram" @onclick="OpenTelegramQrModal" title="Watch on Telegram Channel">
                                 📲 Telegram (Scan QR)
                             </button>
                         }
                         @if (IsYoutubeUrl(ActiveVideoUrl))
                         {
-                            <button type="button" class="btn-toggle-stream" @onclick="TogglePlayerMode" title="Toggle between YouTube & Direct Video Stream" style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(167, 139, 250, 0.3); color: #C4B5FD; border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <button type="button" class="btn-toggle-stream btn-stream-mode" @onclick="TogglePlayerMode" title="Toggle between YouTube & Direct Video Stream">
                                 @(UseDirectStream ? "📺 Switch to YouTube" : "⚡ Switch to Direct Stream")
                             </button>
                         }
@@ -775,43 +269,43 @@ else if (Drama != null)
         </div>
     </div>
 
-    <!-- Telegram QR Code & Channel Modal (Claymorphic) -->
+    <!-- Telegram QR Code & Channel Modal (Pastel Theme) -->
     @if (ShowTelegramQrModal)
     {
-        <div style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(8px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 16px;">
-            <div style="background: linear-gradient(155deg, #16362F 0%, #0D221D 100%); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 28px; width: 100%; max-width: 440px; padding: 28px 24px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), inset 3px 3px 8px rgba(255, 255, 255, 0.2), inset -4px -5px 12px rgba(0, 0, 0, 0.6); color: #F4EFEA; text-align: center; position: relative;">
+        <div style="position: fixed; inset: 0; background: rgba(46, 16, 101, 0.4); backdrop-filter: blur(8px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 16px;">
+            <div style="background: #FFFFFF; border: 1.5px solid rgba(167, 139, 250, 0.35); border-radius: 28px; width: 100%; max-width: 440px; padding: 32px 28px; box-shadow: 0 24px 60px rgba(139, 92, 246, 0.22); color: #2E1065; text-align: center; position: relative;">
                 
-                <button type="button" @onclick="CloseTelegramQrModal" style="position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #FFFFFF; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
+                <button type="button" @onclick="CloseTelegramQrModal" style="position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; background: #F3E8FF; border: 1px solid rgba(167, 139, 250, 0.3); color: #4C1D95; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
                     &times;
                 </button>
 
-                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; box-shadow: 0 8px 20px rgba(42, 171, 238, 0.4), inset 2px 2px 4px rgba(255, 255, 255, 0.4);">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #0284C7 0%, #38BDF8 100%); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px; box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="#FFFFFF">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.52 2.77-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
                     </svg>
                 </div>
 
-                <h3 style="font-size: 1.3rem; font-weight: 800; color: #FFFFFF; margin: 0 0 6px 0;">
-                    Queen of Tears
+                <h3 style="font-size: 1.3rem; font-weight: 800; color: #2E1065; margin: 0 0 6px 0;">
+                    @(Drama?.Title ?? "Asian Drama")
                 </h3>
-                <p style="font-size: 0.95rem; color: #40C4FF; font-weight: 700; margin: 0 0 16px 0;">
+                <p style="font-size: 0.95rem; color: #0284C7; font-weight: 700; margin: 0 0 16px 0;">
                     @@WEAREALLTRYINGHEREMM
                 </p>
 
                 <!-- Clay QR Code Frame -->
-                <div style="background: #FFFFFF; padding: 12px; border-radius: 20px; display: inline-block; box-shadow: 0 12px 30px rgba(0,0,0,0.4), inset 2px 2px 5px rgba(255,255,255,0.8), inset -2px -3px 6px rgba(0,0,0,0.1); margin-bottom: 16px;">
+                <div style="background: #FFFFFF; padding: 12px; border-radius: 20px; display: inline-block; box-shadow: 0 12px 30px rgba(139, 92, 246, 0.15), inset 0 0 0 1px rgba(167, 139, 250, 0.2); margin-bottom: 16px;">
                     <img src="/images/telegram_channel_qr.jpg" alt="Telegram Channel QR" style="width: 200px; height: 200px; object-fit: contain; display: block; border-radius: 12px;" />
                 </div>
 
-                <p style="font-size: 0.85rem; color: #A0B2AC; line-height: 1.5; margin: 0 0 20px 0; padding: 0 10px;">
+                <p style="font-size: 0.85rem; color: #6B5B95; line-height: 1.5; margin: 0 0 20px 0; padding: 0 10px;">
                     ဖုန်း Camera (သို့မဟုတ်) Telegram App မှ ဤ QR Code ကို Scan ဖတ်၍ ဇာတ်လမ်းတွဲ အပိုင်းအားလုံးကို မြန်မာစာတန်းထိုးဖြင့် တိုက်ရိုက် ကြည့်ရှုနိုင်ပါသည်။
                 </p>
 
                 <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                    <a href="https://t.me/WEAREALLTRYINGHEREMM" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%); color: #FFF; border: none; padding: 10px 24px; border-radius: 9999px; font-weight: 700; text-decoration: none; font-size: 0.9rem; box-shadow: 0 6px 16px rgba(42, 171, 238, 0.4), inset 2px 2px 4px rgba(255,255,255,0.4); display: inline-flex; align-items: center; gap: 8px;">
+                    <a href="https://t.me/WEAREALLTRYINGHEREMM" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #0284C7 0%, #38BDF8 100%); color: #FFF; border: none; padding: 10px 24px; border-radius: 9999px; font-weight: 700; text-decoration: none; font-size: 0.9rem; box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35); display: inline-flex; align-items: center; gap: 8px;">
                         <span>Open in Telegram ↗</span>
                     </a>
-                    <button type="button" @onclick="CloseTelegramQrModal" style="background: rgba(255, 255, 255, 0.08); border: 1.5px solid rgba(255, 255, 255, 0.2); color: #FFF; padding: 10px 20px; border-radius: 9999px; font-weight: 600; cursor: pointer; font-size: 0.9rem;">
+                    <button type="button" @onclick="CloseTelegramQrModal" style="background: #F3E8FF; border: 1.5px solid rgba(167, 139, 250, 0.35); color: #4C1D95; padding: 10px 20px; border-radius: 9999px; font-weight: 700; cursor: pointer; font-size: 0.9rem;">
                         Close
                     </button>
                 </div>
