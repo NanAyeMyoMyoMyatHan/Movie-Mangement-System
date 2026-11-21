@@ -127,7 +127,7 @@
                 @foreach (var item in SearchResults)
                 {
                     <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => NavigateToDrama(item.Id)">
-                        <img src="@item.PosterUrl" alt="@item.Title" class="myflix-poster-img" />
+                        <img src="@(string.IsNullOrWhiteSpace(item.PosterUrl) ? "/images/poster_fallback.svg" : item.PosterUrl)" alt="@item.Title" class="myflix-poster-img" onerror="this.onerror=null;this.src='/images/poster_fallback.svg';" />
                         <div class="myflix-card-badge-top">
                             <span class="badge-cat">@item.Category</span>
                             <span class="badge-rating">★ @item.Rating</span>
@@ -243,7 +243,7 @@
             {
                 <article class="myflix-continue-card" @onclick="() => ResumePlayback(item)" title="Resume @item.Title (Episode @item.EpisodeNumber)">
                     <div class="myflix-continue-thumb">
-                        <img src="@item.PosterUrl" alt="@item.Title" loading="lazy" />
+                        <img src="@(string.IsNullOrWhiteSpace(item.PosterUrl) ? "/images/poster_fallback.svg" : item.PosterUrl)" alt="@item.Title" loading="lazy" onerror="this.onerror=null;this.src='/images/poster_fallback.svg';" />
                         <div class="myflix-thumb-overlay">
                             <button type="button" class="myflix-play-icon-btn" aria-label="Play @item.Title">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -296,7 +296,7 @@
                 @foreach (var thai in Thais)
                 {
                     <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => NavigateToDrama(thai.Id)">
-                        <img src="@thai.PosterUrl" alt="@thai.Title" class="myflix-poster-img" loading="lazy" />
+                        <img src="@(string.IsNullOrWhiteSpace(thai.PosterUrl) ? "/images/poster_fallback.svg" : thai.PosterUrl)" alt="@thai.Title" class="myflix-poster-img" loading="lazy" onerror="this.onerror=null;this.src='/images/poster_fallback.svg';" />
                         <div class="myflix-card-badge-top">
                             <span class="badge-cat">BL</span>
                             <span class="badge-rating">★ 9.2</span>
@@ -368,7 +368,7 @@
                 @foreach (var drama in Dramas)
                 {
                     <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => PlayDramaAsync(drama.ContentId, drama.Title, drama.Description, drama.PosterUrl)">
-                        <img src="@drama.PosterUrl" alt="@drama.Title" class="myflix-poster-img" loading="lazy" />
+                        <img src="@(string.IsNullOrWhiteSpace(drama.PosterUrl) ? "/images/poster_fallback.svg" : drama.PosterUrl)" alt="@drama.Title" class="myflix-poster-img" loading="lazy" onerror="this.onerror=null;this.src='/images/poster_fallback.svg';" />
                         <div class="myflix-card-badge-top">
                             <span class="badge-cat">HD</span>
                             <span class="badge-rating">★ 9.4</span>
@@ -440,7 +440,7 @@
                 @foreach (var movie in Movies)
                 {
                     <article class="myflix-poster-card" style="cursor:pointer;" @onclick="() => NavigateToDrama(movie.Id)">
-                        <img src="@movie.PosterUrl" alt="@movie.Title" class="myflix-poster-img" loading="lazy" />
+                        <img src="@(string.IsNullOrWhiteSpace(movie.PosterUrl) ? "/images/poster_fallback.svg" : movie.PosterUrl)" alt="@movie.Title" class="myflix-poster-img" loading="lazy" onerror="this.onerror=null;this.src='/images/poster_fallback.svg';" />
                         <div class="myflix-card-badge-top">
                             <span class="badge-cat">4K</span>
                             <span class="badge-rating">★ 9.1</span>

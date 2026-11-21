@@ -111,7 +111,7 @@ else if (Drama != null)
         <!-- Hero Section: Cover on Left, Information on Right -->
         <div class="drama-hero-row">
             <div class="drama-poster-wrap">
-                <img src="@CleanPoster(Drama.PosterUrl, Drama.Title)" alt="@Drama.Title" class="drama-poster-img" />
+                <img src="@CleanPoster(Drama.PosterUrl, Drama.Title)" alt="@Drama.Title" class="drama-poster-img" onerror="this.onerror=null;this.src='/images/poster_fallback.svg';" />
             </div>
 
             <div class="drama-info-col">
@@ -216,7 +216,7 @@ else if (Drama != null)
                     <div class="drama-ep-row-card @(isCurrentPlaying ? "active" : "")" @onclick="() => PlayEpisode(currentEp)">
                         <div class="drama-ep-left-wrap">
                             <div class="drama-ep-thumb">
-                                <img src="@GetEpisodeThumbnail(currentEp)" alt="Episode @currentEp.EpisodeNumber" class="drama-ep-thumb-img" />
+                                <img src="@GetEpisodeThumbnail(currentEp)" alt="Episode @currentEp.EpisodeNumber" class="drama-ep-thumb-img" onerror="this.onerror=null;this.src='/images/poster_fallback.svg';" />
                                 <div class="drama-ep-thumb-disc">
                                     <div class="drama-ep-disc-icon">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">

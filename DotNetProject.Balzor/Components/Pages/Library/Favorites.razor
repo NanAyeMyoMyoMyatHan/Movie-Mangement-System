@@ -176,7 +176,7 @@ else
             <article class="fav-card">
                 <!-- Thumbnail & Overlay -->
                 <div class="fav-card-poster-wrap" @onclick="() => NavigateToItem(item)">
-                    <img src="@item.PosterUrl" alt="@item.Title" class="fav-card-poster" loading="lazy" />
+                    <img src="@(string.IsNullOrWhiteSpace(item.PosterUrl) ? "/images/poster_fallback.svg" : item.PosterUrl)" alt="@item.Title" class="fav-card-poster" loading="lazy" onerror="this.onerror=null;this.src='/images/poster_fallback.svg';" />
 
                     <div class="fav-poster-overlay">
                         <button type="button" class="fav-play-disc" title="Play Now">

@@ -352,10 +352,10 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
             AddSeedIfMissing(10003, false, "Spirited Away", "https://upload.wikimedia.org/wikipedia/en/d/db/Spirited_Away_Japanese_poster.png", "2001", "Movie", 9.6, 1, "A sullen ten-year-old girl wanders into a world ruled by gods, witches, and spirits.");
             AddSeedIfMissing(10004, false, "Train to Busan", "https://upload.wikimedia.org/wikipedia/en/9/95/Train_to_Busan.jpg", "2016", "Movie", 9.4, 1, "While a zombie virus breaks out in South Korea, passengers struggle to survive on a high-speed train.");
             AddSeedIfMissing(30001, false, "Parasite", "https://upload.wikimedia.org/wikipedia/en/5/53/Parasite_%282019_film%29.png", "2019", "Movie", 9.6, 1, "Greed and class discrimination threaten the newly formed symbiotic relationship between two families.");
-            AddSeedIfMissing(30003, false, "The Childe", "https://upload.wikimedia.org/wikipedia/en/9/90/The_Childe.jpg", "2023", "Movie", 9.0, 1, "A young boxer of Korean-Filipino descent is relentlessly pursued by various underground forces.");
-            AddSeedIfMissing(30004, false, "Bad Genius", "https://upload.wikimedia.org/wikipedia/en/0/0e/Bad_Genius_poster.jpg", "2017", "Movie", 9.2, 1, "A straight-A student invents an intricate exam-cheating scheme that escalates to international levels.");
-            AddSeedIfMissing(30005, false, "Along with the Gods", "https://upload.wikimedia.org/wikipedia/en/b/b5/Along_With_the_Gods_The_Two_Worlds.jpg", "2017", "Movie", 9.1, 1, "A firefighter passes away unexpectedly and is escorted through seven trials in the afterlife.");
-            AddSeedIfMissing(30006, false, "Decibel", "https://upload.wikimedia.org/wikipedia/en/5/52/Decibel_film_poster.jpg", "2022", "Movie", 8.9, 1, "A former naval submarine commander races to stop a sound-activated explosive terrorism plot in the city.");
+            AddSeedIfMissing(30003, false, "The Childe", "/images/the_childe.jpg", "2023", "Movie", 9.0, 1, "A young boxer of Korean-Filipino descent is relentlessly pursued by various underground forces.");
+            AddSeedIfMissing(30004, false, "Bad Genius", "/images/bad_genius.jpg", "2017", "Movie", 9.2, 1, "A straight-A student invents an intricate exam-cheating scheme that escalates to international levels.");
+            AddSeedIfMissing(30005, false, "Along with the Gods", "/images/along_with_the_gods.jpg", "2017", "Movie", 9.1, 1, "A firefighter passes away unexpectedly and is escorted through seven trials in the afterlife.");
+            AddSeedIfMissing(30006, false, "Decibel", "/images/decibel.jpg", "2022", "Movie", 8.9, 1, "A former naval submarine commander races to stop a sound-activated explosive terrorism plot in the city.");
         }
 
         private async Task LoadNewReleasesAsync()
@@ -375,14 +375,25 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
 
         private static string? CleanPosterUrl(string? url, string? title = null)
         {
-            if (title != null && title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase))
-                return "/images/kingdom.jpg";
-            if (title != null && title.Contains("Daung", StringComparison.OrdinalIgnoreCase))
-                return "/images/daung_with_you.jpg";
-            if (title != null && title.Contains("Khem", StringComparison.OrdinalIgnoreCase))
-                return "/images/khemjira.jpg";
+            if (title != null)
+            {
+                if (title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase))
+                    return "/images/kingdom.jpg";
+                if (title.Contains("Daung", StringComparison.OrdinalIgnoreCase))
+                    return "/images/daung_with_you.jpg";
+                if (title.Contains("Khem", StringComparison.OrdinalIgnoreCase))
+                    return "/images/khemjira.jpg";
+                if (title.Contains("Bad Genius", StringComparison.OrdinalIgnoreCase))
+                    return "/images/bad_genius.jpg";
+                if (title.Contains("Along with the Gods", StringComparison.OrdinalIgnoreCase))
+                    return "/images/along_with_the_gods.jpg";
+                if (title.Contains("The Childe", StringComparison.OrdinalIgnoreCase))
+                    return "/images/the_childe.jpg";
+                if (title.Contains("Decibel", StringComparison.OrdinalIgnoreCase))
+                    return "/images/decibel.jpg";
+            }
 
-            if (string.IsNullOrWhiteSpace(url)) return null;
+            if (string.IsNullOrWhiteSpace(url)) return "/images/poster_fallback.svg";
             if (url.Contains("static.tvmaze.com") && url.Contains("1245252"))
                 return "/images/kingdom.jpg";
             if (url.Contains("static.tvmaze.com") && url.Contains("1528703"))

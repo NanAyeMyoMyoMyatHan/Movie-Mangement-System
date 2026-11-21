@@ -520,14 +520,25 @@ namespace DotNetProject.Balzor.Components.Pages.Home
 
         private static string? CleanPoster(string? url, string? title)
         {
-            if (title != null && title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase))
-                return "/images/kingdom.jpg";
-            if (title != null && title.Contains("Daung", StringComparison.OrdinalIgnoreCase))
-                return "/images/daung_with_you.jpg";
-            if (title != null && title.Contains("Khem", StringComparison.OrdinalIgnoreCase))
-                return "/images/khemjira.jpg";
+            if (title != null)
+            {
+                if (title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase))
+                    return "/images/kingdom.jpg";
+                if (title.Contains("Daung", StringComparison.OrdinalIgnoreCase))
+                    return "/images/daung_with_you.jpg";
+                if (title.Contains("Khem", StringComparison.OrdinalIgnoreCase))
+                    return "/images/khemjira.jpg";
+                if (title.Contains("Bad Genius", StringComparison.OrdinalIgnoreCase))
+                    return "/images/bad_genius.jpg";
+                if (title.Contains("Along with the Gods", StringComparison.OrdinalIgnoreCase))
+                    return "/images/along_with_the_gods.jpg";
+                if (title.Contains("The Childe", StringComparison.OrdinalIgnoreCase))
+                    return "/images/the_childe.jpg";
+                if (title.Contains("Decibel", StringComparison.OrdinalIgnoreCase))
+                    return "/images/decibel.jpg";
+            }
 
-            if (string.IsNullOrWhiteSpace(url)) return null;
+            if (string.IsNullOrWhiteSpace(url)) return "/images/poster_fallback.svg";
             if (url.Contains("static.tvmaze.com") && url.Contains("1245252"))
                 return "/images/kingdom.jpg";
             if (url.Contains("static.tvmaze.com") && url.Contains("1528703"))

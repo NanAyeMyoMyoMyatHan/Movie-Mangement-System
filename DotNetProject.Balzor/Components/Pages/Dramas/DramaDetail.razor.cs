@@ -185,6 +185,14 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                 return "/images/daung_with_you.jpg";
             if (title != null && title.Contains("Khem", StringComparison.OrdinalIgnoreCase))
                 return "/images/khemjira.jpg";
+            if (title != null && title.Contains("Bad Genius", StringComparison.OrdinalIgnoreCase))
+                return "/images/bad_genius.jpg";
+            if (title != null && title.Contains("Along with the Gods", StringComparison.OrdinalIgnoreCase))
+                return "/images/along_with_the_gods.jpg";
+            if (title != null && title.Contains("The Childe", StringComparison.OrdinalIgnoreCase))
+                return "/images/the_childe.jpg";
+            if (title != null && title.Contains("Decibel", StringComparison.OrdinalIgnoreCase))
+                return "/images/decibel.jpg";
 
             if (string.IsNullOrWhiteSpace(url)) return null;
             if (url.Contains("static.tvmaze.com") && url.Contains("1245252"))
