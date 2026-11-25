@@ -520,15 +520,21 @@
     {
         LoginUsername = "";
         LoginPassword = "";
+    }
 
-        // If already logged in with admin privileges via Dynamic RBAC, directly go to admin
-        if (AuthService.CanAccessAdmin())
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
         {
-            Nav.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? "/admin" : ReturnUrl);
-        }
-        else if (AuthService.IsAuthenticated())
-        {
-            Nav.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl);
+            // If already logged in with admin privileges via Dynamic RBAC, directly go to admin
+            if (AuthService.CanAccessAdmin())
+            {
+                Nav.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? "/admin" : ReturnUrl);
+            }
+            else if (AuthService.IsAuthenticated())
+            {
+                Nav.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl);
+            }
         }
     }
 
@@ -547,36 +553,39 @@
         SuccessMessage = null;
         IsSubmitting = true;
 
+        bool loginSuccess = false;
+        bool canAccessAdmin = false;
+        string? targetUrl = null;
+
         try
         {
             var res = await AuthService.LoginAsync(LoginUsername, LoginPassword);
             if (res != null && res.IsSuccess)
             {
                 // Dynamic RBAC Evaluation: Check if user has admin/management capabilities
-                bool canAccessAdmin = AuthService.CanAccessAdmin();
+                loginSuccess = true;
+                canAccessAdmin = AuthService.CanAccessAdmin();
 
                 if (canAccessAdmin)
                 {
                     SuccessMessage = $"Admin access verified! Welcome, {AuthService.CurrentUser.DisplayName}. Redirecting to Admin Dashboard...";
-                    StateHasChanged();
-                    await Task.Delay(300);
-                    Nav.NavigateTo("/admin", forceLoad: true);
                 }
                 else
                 {
                     SuccessMessage = $"Welcome back, {AuthService.CurrentUser.DisplayName}! Redirecting...";
-                    StateHasChanged();
-                    await Task.Delay(300);
-                    var target = (!string.IsNullOrWhiteSpace(ReturnUrl) && !ReturnUrl.Contains("admin", StringComparison.OrdinalIgnoreCase))
+                    targetUrl = (!string.IsNullOrWhiteSpace(ReturnUrl) && !ReturnUrl.Contains("admin", StringComparison.OrdinalIgnoreCase))
                         ? ReturnUrl
                         : "/";
-                    Nav.NavigateTo(target, forceLoad: true);
                 }
             }
             else
             {
                 ErrorMessage = res?.Message ?? "Invalid username or password.";
             }
+        }
+        catch (NavigationException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -585,6 +594,20 @@
         finally
         {
             IsSubmitting = false;
+        }
+
+        if (loginSuccess)
+        {
+            StateHasChanged();
+            await Task.Delay(300);
+            if (canAccessAdmin)
+            {
+                Nav.NavigateTo("/admin", forceLoad: true);
+            }
+            else
+            {
+                Nav.NavigateTo(targetUrl ?? "/", forceLoad: true);
+            }
         }
     }
 

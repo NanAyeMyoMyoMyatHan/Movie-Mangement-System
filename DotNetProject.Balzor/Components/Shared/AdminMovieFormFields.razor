@@ -1,0 +1,149 @@
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="admin-form-card">
+    <div class="admin-form-group">
+        <div class="admin-label-row">
+            <label class="admin-label" style="margin-bottom:0;">Title <span class="required">*</span></label>
+            <label class="admin-autofill-toggle">
+                <input type="checkbox" @bind="_autoFillOnTitle" />
+                <span>Auto-fill from TMDB when typing</span>
+            </label>
+        </div>
+        <div class="admin-input-action-row">
+            <input class="admin-input @(string.IsNullOrWhiteSpace(TitleError) ? "" : "input-error")"
+                   style="flex:1;"
+                   value="@Model.Title"
+                   @oninput="HandleTitleInputAsync"
+                   @onkeydown="HandleTitleKeyDownAsync"
+                   placeholder="Type movie title to auto-fill details & TMDB ID…" />
+            <button type="button"
+                    class="btn-admin btn-admin-tmdb"
+                    @onclick="LookupByTitleNowAsync"
+                    disabled="@(_searchingTitle || string.IsNullOrWhiteSpace(Model.Title))">
+                @(_searchingTitle ? "Searching…" : "Lookup TMDB")
+            </button>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(TitleError))
+        {
+            <span class="admin-field-error">@TitleError</span>
+        }
+
+        @if (_searchingTitle)
+        {
+            <div class="admin-tmdb-status">Searching TMDB for "@Model.Title?.Trim()"…</div>
+        }
+        else if (!string.IsNullOrWhiteSpace(_tmdbStatus))
+        {
+            <div class="admin-tmdb-status @(_tmdbStatusIsError ? "error" : "success")">
+                <span>@_tmdbStatus</span>
+                <div class="admin-tmdb-status-actions">
+                    @if (!string.IsNullOrWhiteSpace(_matchedOfficialTitle) &&
+                         !string.Equals(Model.Title?.Trim(), _matchedOfficialTitle, StringComparison.Ordinal))
+                    {
+                        <button type="button" class="admin-tmdb-link-btn" @onclick="ApplyOfficialTitle">
+                            Use exact title "@_matchedOfficialTitle"
+                        </button>
+                    }
+                    @if (Model.TmdbId.HasValue)
+                    {
+                        <button type="button" class="admin-tmdb-link-btn muted" @onclick="ClearTmdbMatch">
+                            Clear TMDB
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (_suggestions.Count > 1)
+        {
+            <div class="admin-tmdb-suggestions">
+                <div class="admin-tmdb-suggestions-label">Other TMDB matches (click to switch):</div>
+                <div class="admin-tmdb-suggestions-list">
+                    @foreach (var item in _suggestions)
+                    {
+                        var isSelected = Model.TmdbId == item.Id;
+                        <button type="button"
+                                class="admin-tmdb-chip @(isSelected ? "active" : "")"
+                                @onclick="() => SelectSuggestionAsync(item)">
+                            <img src="@item.PosterUrl"
+                                 alt="@item.Title"
+                                 onerror="this.onerror=null;this.src='/images/poster_fallback.svg';" />
+                            <div class="admin-tmdb-chip-text">
+                                <span class="admin-tmdb-chip-title">@item.Title</span>
+                                <span class="admin-tmdb-chip-meta">
+                                    @(item.ReleaseYear?.ToString() ?? "—") · #@item.Id
+                                </span>
+                            </div>
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="admin-form-row">
+        <div class="admin-form-group">
+            <label class="admin-label">Genre</label>
+            <input class="admin-input" @bind="Model.Genre" placeholder="e.g. Romance, Action" />
+        </div>
+        <div class="admin-form-group">
+            <label class="admin-label">Release Year</label>
+            <input class="admin-input" type="number" @bind="Model.ReleaseYear" placeholder="e.g. 2024" />
+        </div>
+    </div>
+
+    <div class="admin-form-group">
+        <label class="admin-label">Description</label>
+        <textarea class="admin-input admin-textarea" @bind="Model.Description" rows="4" placeholder="Short synopsis…"></textarea>
+    </div>
+
+    <AdminImagePicker Label="Movie Poster"
+                      PreviewShape="poster"
+                      @bind-UrlValue="Model.PosterUrl"
+                      @bind-SelectedFile="Model.PosterFile" />
+
+    <div class="admin-optional-details">
+        <div class="admin-tmdb-header">TMDB Metadata (Auto-filled or Fetch by ID)</div>
+        <p class="admin-optional-note">
+            Filled automatically when you type a title above, or enter a TMDB movie ID directly and click Fetch.
+        </p>
+        <div class="admin-form-row">
+            <div class="admin-form-group" style="margin-bottom:0;">
+                <label class="admin-label">TMDB ID</label>
+                <div class="admin-input-action-row">
+                    <input class="admin-input"
+                           style="flex:1;"
+                           type="number"
+                           @bind="Model.TmdbId"
+                           @bind:event="oninput"
+                           @onkeydown="HandleTmdbIdKeyDownAsync"
+                           placeholder="Auto-filled or enter ID" />
+                    <button type="button"
+                            class="btn-admin btn-admin-edit"
+                            @onclick="FetchByTmdbIdAsync"
+                            disabled="@(_fetchingById || !Model.TmdbId.HasValue || Model.TmdbId.Value <= 0)">
+                        @(_fetchingById ? "Fetching…" : "Fetch by ID")
+                    </button>
+                </div>
+            </div>
+            <div class="admin-form-group" style="justify-content:flex-end;padding-bottom:.2rem;margin-bottom:0;">
+                <label style="display:flex;align-items:center;gap:.5rem;font-size:.84rem;color:#485C4A;cursor:pointer;">
+                    <input type="checkbox" checked="@Model.IsManual" @onchange="HandleManualEntryChanged" />
+                    Manual entry (skip TMDB auto-fill)
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-form-actions">
+        <button class="btn-admin btn-admin-primary" @onclick="OnSubmit" disabled="@Submitting">
+            @(Submitting ? "Saving…" : SubmitLabel)
+        </button>
+        <a href="/admin/movies" class="btn-admin btn-admin-edit">Cancel</a>
+        @if (!string.IsNullOrWhiteSpace(DeleteHref))
+        {
+            <a href="@DeleteHref" class="btn-admin btn-admin-delete" style="margin-left:auto;">Delete</a>
+        }
+    </div>
+</div>

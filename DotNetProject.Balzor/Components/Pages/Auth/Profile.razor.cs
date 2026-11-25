@@ -41,13 +41,18 @@ namespace DotNetProject.Balzor.Components.Pages.Auth
 
         protected override async Task OnInitializedAsync()
         {
-            if (!AuthService.IsAuthenticated())
+            if (AuthService.IsAuthenticated())
+            {
+                await LoadProfileAsync();
+            }
+        }
+
+        protected override void OnAfterRender(bool firstRender)
+        {
+            if (firstRender && !AuthService.IsAuthenticated())
             {
                 Nav.NavigateTo("/login?returnUrl=/profile");
-                return;
             }
-
-            await LoadProfileAsync();
         }
 
         private async Task LoadProfileAsync()

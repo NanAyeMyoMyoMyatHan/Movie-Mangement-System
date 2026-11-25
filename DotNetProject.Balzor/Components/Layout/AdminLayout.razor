@@ -201,9 +201,9 @@ else
 @code {
     private bool CanAccessAdminPanel => AuthService.CanAccessAdmin();
 
-    protected override void OnInitialized()
+    protected override void OnAfterRender(bool firstRender)
     {
-        if (!CanAccessAdminPanel)
+        if (firstRender && !CanAccessAdminPanel)
         {
             Nav.NavigateTo("/login?returnUrl=/admin");
         }
@@ -212,6 +212,6 @@ else
     private async Task HandleLogout()
     {
         await AuthService.LogoutAsync();
-        Nav.NavigateTo("/login");
+        Nav.NavigateTo("/login", forceLoad: true);
     }
 }

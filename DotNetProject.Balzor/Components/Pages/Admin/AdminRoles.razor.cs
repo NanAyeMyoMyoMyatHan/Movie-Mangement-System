@@ -42,13 +42,18 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
 
         protected override async Task OnInitializedAsync()
         {
-            if (!AuthService.IsAuthenticated() || !AuthService.HasPermission("Role.View"))
+            if (AuthService.IsAuthenticated() && AuthService.HasPermission("Role.View"))
+            {
+                await LoadDataAsync();
+            }
+        }
+
+        protected override void OnAfterRender(bool firstRender)
+        {
+            if (firstRender && (!AuthService.IsAuthenticated() || !AuthService.HasPermission("Role.View")))
             {
                 Nav.NavigateTo("/login?returnUrl=/admin/roles");
-                return;
             }
-
-            await LoadDataAsync();
         }
 
         protected async Task LoadDataAsync()

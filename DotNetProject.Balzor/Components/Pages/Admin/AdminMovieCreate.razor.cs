@@ -1,5 +1,4 @@
 using DotNetProject.Balzor.Components.Shared;
-using DotNetProject.Domain.Features.Movies;
 using Microsoft.AspNetCore.Components;
 
 namespace DotNetProject.Balzor.Components.Pages.Admin
@@ -10,8 +9,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
         [Inject] private NavigationManager Nav { get; set; } = default!;
         [Inject] private AuditLogService AuditLog { get; set; } = default!;
 
-        private readonly CreateMovieRequest _form = new() { IsManual = true };
-        private UploadedFilePayload? _posterFile;
+        private readonly MovieFormModel _form = new() { IsManual = false };
         private string? _titleError;
         private string? _success;
         private string? _error;
@@ -29,20 +27,34 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
                 return;
             }
 
-            _submitting = true;
-            var result = await ApiClient.CreateMovieAsync(_form, _posterFile);
-            _submitting = false;
+            if (!_form.TmdbId.HasValue)
+                _form.IsManual = true;
 
-            if (result?.IsSuccess == true)
+            _submitting = true;
+            try
             {
-                await AuditLog.LogActionAsync("CREATE_MOVIE", "Movie", null, $"Created movie '{_form.Title}'");
-                _success = $"Movie \"{_form.Title}\" created successfully!";
-                await Task.Delay(1200);
-                Nav.NavigateTo("/admin/movies");
+                var result = await ApiClient.CreateMovieAsync(_form.ToCreateRequest(), _form.PosterFile);
+                if (result?.IsSuccess == true)
+                {
+                    await AuditLog.LogActionAsync("CREATE_MOVIE", "Movie", null, $"Created movie '{_form.Title}'");
+                    _success = $"Movie \"{_form.Title}\" created successfully!";
+                    StateHasChanged();
+                    await Task.Delay(1000);
+                    Nav.NavigateTo("/admin/movies");
+                }
+                else
+                {
+                    _error = result?.Message ?? "Failed to create movie.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _error = result?.Message ?? "Failed to create movie.";
+                _error = $"An unexpected error occurred: {ex.Message}";
+            }
+            finally
+            {
+                _submitting = false;
+                StateHasChanged();
             }
         }
     }

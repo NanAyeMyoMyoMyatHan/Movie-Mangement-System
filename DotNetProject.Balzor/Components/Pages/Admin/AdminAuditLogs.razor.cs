@@ -41,13 +41,18 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
 
         protected override async Task OnInitializedAsync()
         {
-            if (!AuthService.IsAuthenticated() || !AuthService.CanAccessAdmin())
+            if (AuthService.IsAuthenticated() && AuthService.CanAccessAdmin())
+            {
+                await LoadLogsAsync();
+            }
+        }
+
+        protected override void OnAfterRender(bool firstRender)
+        {
+            if (firstRender && (!AuthService.IsAuthenticated() || !AuthService.CanAccessAdmin()))
             {
                 Nav.NavigateTo("/login?returnUrl=/admin/audit-logs");
-                return;
             }
-
-            await LoadLogsAsync();
         }
 
         protected async Task LoadLogsAsync()

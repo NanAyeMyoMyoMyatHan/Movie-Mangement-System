@@ -152,6 +152,8 @@ namespace DotNetProject.WebApi.Features.Movies
                 PosterUrl = string.IsNullOrWhiteSpace(request.PosterUrl) ? null : request.PosterUrl.Trim(),
                 ReleaseDate = ToReleaseDate(request.ReleaseYear),
                 Status = "Completed",
+                TmdbId = request.TmdbId,
+                IsManual = request.IsManual,
                 CreatedAt = DateTime.UtcNow,
                 IsDeleted = false
             };
@@ -211,6 +213,8 @@ namespace DotNetProject.WebApi.Features.Movies
             content.Description = request.Description?.Trim();
             content.PosterUrl = string.IsNullOrWhiteSpace(request.PosterUrl) ? null : request.PosterUrl.Trim();
             content.ReleaseDate = ToReleaseDate(request.ReleaseYear);
+            content.TmdbId = request.TmdbId;
+            content.IsManual = request.IsManual;
             content.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync(cancellationToken);
@@ -312,8 +316,8 @@ namespace DotNetProject.WebApi.Features.Movies
                 c.ReleaseDate?.Year,
                 c.Description,
                 c.PosterUrl,
-                null,
-                true,
+                c.TmdbId,
+                c.IsManual,
                 new DateTimeOffset(c.CreatedAt, TimeSpan.Zero));
         }
 

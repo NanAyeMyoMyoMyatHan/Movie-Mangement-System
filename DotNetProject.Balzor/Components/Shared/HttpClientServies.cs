@@ -140,17 +140,17 @@ namespace DotNetProject.Balzor.Components.Shared
         public Task<Result<GetMovieDetailResponse>?> GetMovieDetailAsync(int id) =>
             PostAsync<Result<GetMovieDetailResponse>>("api/movie/detail", new GetMovieDetailRequest { Id = id });
 
-        public Task<Result<CreateMovieResponse>?> CreateMovieAsync(CreateMovieRequest request, UploadedFilePayload? posterFile = null)
+        public async Task<Result<CreateMovieResponse>?> CreateMovieAsync(CreateMovieRequest request, UploadedFilePayload? posterFile = null)
         {
             using var form = BuildMovieForm(request.Title, request.Genre, request.ReleaseYear, request.Description, request.PosterUrl, request.TmdbId, request.IsManual, posterFile);
-            return PostMultipartAsync<Result<CreateMovieResponse>>("api/movie/create", form);
+            return await PostMultipartAsync<Result<CreateMovieResponse>>("api/movie/create", form);
         }
 
-        public Task<Result<UpdateMovieResponse>?> UpdateMovieAsync(UpdateMovieRequest request, UploadedFilePayload? posterFile = null)
+        public async Task<Result<UpdateMovieResponse>?> UpdateMovieAsync(UpdateMovieRequest request, UploadedFilePayload? posterFile = null)
         {
             using var form = BuildMovieForm(request.Title, request.Genre, request.ReleaseYear, request.Description, request.PosterUrl, request.TmdbId, request.IsManual, posterFile);
             AddFormField(form, "Id", request.Id.ToString(CultureInfo.InvariantCulture));
-            return PostMultipartAsync<Result<UpdateMovieResponse>>("api/movie/update", form);
+            return await PostMultipartAsync<Result<UpdateMovieResponse>>("api/movie/update", form);
         }
 
         public Task<Result<DeleteMovieResponse>?> DeleteMovieAsync(int id) =>
@@ -167,23 +167,23 @@ namespace DotNetProject.Balzor.Components.Shared
         public Task<Result<GetContentDetailResponse>?> GetContentDetailAsync(long id) =>
             PostAsync<Result<GetContentDetailResponse>>("api/contents/detail", new GetContentDetailRequest { ContentId = id });
 
-        public Task<Result<CreateContentResponse>?> CreateContentAsync(
+        public async Task<Result<CreateContentResponse>?> CreateContentAsync(
             CreateContentRequest request,
             UploadedFilePayload? posterFile = null,
             UploadedFilePayload? bannerFile = null)
         {
             using var form = BuildContentForm(request.ContentTypeId, request.Title, request.Description, request.PosterUrl, request.BannerUrl, request.ReleaseDate, request.Country, request.Language, request.Status, posterFile, bannerFile);
-            return PostMultipartAsync<Result<CreateContentResponse>>("api/contents/create", form);
+            return await PostMultipartAsync<Result<CreateContentResponse>>("api/contents/create", form);
         }
 
-        public Task<Result<UpdateContentResponse>?> UpdateContentAsync(
+        public async Task<Result<UpdateContentResponse>?> UpdateContentAsync(
             UpdateContentRequest request,
             UploadedFilePayload? posterFile = null,
             UploadedFilePayload? bannerFile = null)
         {
             using var form = BuildContentForm(request.ContentTypeId, request.Title, request.Description, request.PosterUrl, request.BannerUrl, request.ReleaseDate, request.Country, request.Language, request.Status, posterFile, bannerFile);
             AddFormField(form, "ContentId", request.ContentId.ToString(CultureInfo.InvariantCulture));
-            return PostMultipartAsync<Result<UpdateContentResponse>>("api/contents/update", form);
+            return await PostMultipartAsync<Result<UpdateContentResponse>>("api/contents/update", form);
         }
 
         public Task<Result<DeleteContentResponse>?> DeleteContentAsync(long id) =>

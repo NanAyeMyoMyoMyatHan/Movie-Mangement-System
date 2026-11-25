@@ -80,6 +80,7 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(30)
                 .IsUnicode(false)
                 .HasDefaultValue("Active");
+            entity.Property(e => e.IsManual).HasDefaultValue(true);
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
                 .IsUnicode(false);

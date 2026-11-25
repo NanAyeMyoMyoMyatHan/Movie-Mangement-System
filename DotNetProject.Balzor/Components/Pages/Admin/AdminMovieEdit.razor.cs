@@ -1,5 +1,4 @@
 using DotNetProject.Balzor.Components.Shared;
-using DotNetProject.Domain.Features.Movies;
 using Microsoft.AspNetCore.Components;
 
 namespace DotNetProject.Balzor.Components.Pages.Admin
@@ -11,8 +10,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
         [Inject] private NavigationManager Nav { get; set; } = default!;
         [Inject] private AuditLogService AuditLog { get; set; } = default!;
 
-        private readonly UpdateMovieRequest _form = new();
-        private UploadedFilePayload? _posterFile;
+        private MovieFormModel _form = new();
         private bool _loading = true;
         private string? _loadError;
         private string? _titleError;
@@ -31,15 +29,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
                 return;
             }
 
-            var d = result.Data.Movie;
-            _form.Id          = d.Id;
-            _form.Title       = d.Title;
-            _form.Genre       = d.Genre;
-            _form.ReleaseYear = d.ReleaseYear;
-            _form.Description = d.Description;
-            _form.PosterUrl   = d.PosterUrl;
-            _form.TmdbId      = d.TmdbId;
-            _form.IsManual    = d.IsManual;
+            _form = MovieFormModel.FromDetail(result.Data.Movie);
         }
 
         private async Task SubmitAsync()
@@ -54,20 +44,34 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
                 return;
             }
 
-            _submitting = true;
-            var result = await ApiClient.UpdateMovieAsync(_form, _posterFile);
-            _submitting = false;
+            if (!_form.TmdbId.HasValue)
+                _form.IsManual = true;
 
-            if (result?.IsSuccess == true)
+            _submitting = true;
+            try
             {
-                await AuditLog.LogActionAsync("UPDATE_MOVIE", "Movie", _form.Id.ToString(), $"Updated movie '{_form.Title}' (ID: {_form.Id})");
-                _success = $"Movie \"{_form.Title}\" updated successfully!";
-                await Task.Delay(1200);
-                Nav.NavigateTo("/admin/movies");
+                var result = await ApiClient.UpdateMovieAsync(_form.ToUpdateRequest(Id), _form.PosterFile);
+                if (result?.IsSuccess == true)
+                {
+                    await AuditLog.LogActionAsync("UPDATE_MOVIE", "Movie", Id.ToString(), $"Updated movie '{_form.Title}' (ID: {Id})");
+                    _success = $"Movie \"{_form.Title}\" updated successfully!";
+                    StateHasChanged();
+                    await Task.Delay(1000);
+                    Nav.NavigateTo("/admin/movies");
+                }
+                else
+                {
+                    _error = result?.Message ?? "Failed to update movie.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _error = result?.Message ?? "Failed to update movie.";
+                _error = $"An unexpected error occurred: {ex.Message}";
+            }
+            finally
+            {
+                _submitting = false;
+                StateHasChanged();
             }
         }
     }

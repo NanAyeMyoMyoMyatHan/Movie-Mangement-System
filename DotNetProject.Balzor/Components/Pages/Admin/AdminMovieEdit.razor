@@ -33,63 +33,11 @@
             <div class="admin-alert admin-alert-error">@_error</div>
         }
 
-        <div class="admin-form-card">
-            <div class="admin-form-group">
-                <label class="admin-label">Title <span class="required">*</span></label>
-                <input class="admin-input @(string.IsNullOrWhiteSpace(_titleError) ? "" : "input-error")"
-                       @bind="_form.Title" placeholder="Movie title" />
-                @if (!string.IsNullOrWhiteSpace(_titleError))
-                {
-                    <span class="admin-field-error">@_titleError</span>
-                }
-            </div>
-
-            <div class="admin-form-row">
-                <div class="admin-form-group">
-                    <label class="admin-label">Genre</label>
-                    <input class="admin-input" @bind="_form.Genre" placeholder="e.g. Romance, Action" />
-                </div>
-                <div class="admin-form-group">
-                    <label class="admin-label">Release Year</label>
-                    <input class="admin-input" type="number" @bind="_form.ReleaseYear" placeholder="e.g. 2024" />
-                </div>
-            </div>
-
-            <div class="admin-form-group">
-                <label class="admin-label">Description</label>
-                <textarea class="admin-input admin-textarea" @bind="_form.Description" rows="4" placeholder="Short synopsis…"></textarea>
-            </div>
-
-            <AdminImagePicker Label="Movie Poster"
-                              PreviewShape="poster"
-                              @bind-UrlValue="_form.PosterUrl"
-                              @bind-SelectedFile="_posterFile" />
-
-            <details class="admin-optional-details">
-                <summary>Optional: External Metadata (TMDB ID)</summary>
-                <p class="admin-optional-note">
-                    Only fill this in if you are linking an entry from The Movie Database (TMDB). Leave blank when managing manually.
-                </p>
-                <div class="admin-form-row">
-                    <div class="admin-form-group" style="margin-bottom:0;">
-                        <label class="admin-label">TMDB ID</label>
-                        <input class="admin-input" type="number" @bind="_form.TmdbId" placeholder="Optional" />
-                    </div>
-                    <div class="admin-form-group" style="justify-content:flex-end;padding-bottom:.2rem;margin-bottom:0;">
-                        <label style="display:flex;align-items:center;gap:.5rem;font-size:.84rem;color:#485C4A;cursor:pointer;">
-                            <input type="checkbox" @bind="_form.IsManual" /> Manual entry
-                        </label>
-                    </div>
-                </div>
-            </details>
-
-            <div class="admin-form-actions">
-                <button class="btn-admin btn-admin-primary" @onclick="SubmitAsync" disabled="@_submitting">
-                    @(_submitting ? "Saving…" : "Update Movie")
-                </button>
-                <a href="/admin/movies" class="btn-admin btn-admin-edit">Cancel</a>
-                <a href="/admin/movies/delete/@Id" class="btn-admin btn-admin-delete" style="margin-left:auto;">Delete</a>
-            </div>
-        </div>
+        <AdminMovieFormFields Model="_form"
+                              TitleError="@_titleError"
+                              SubmitLabel="Update Movie"
+                              Submitting="@_submitting"
+                              OnSubmit="SubmitAsync"
+                              DeleteHref="@($"/admin/movies/delete/{Id}")" />
     }
 </div>

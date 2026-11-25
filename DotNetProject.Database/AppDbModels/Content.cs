@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace DotNetProject.Database.AppDbModels;
@@ -24,6 +24,10 @@ public partial class Content
     public string? Language { get; set; }
 
     public string Status { get; set; } = null!;
+
+    public int? TmdbId { get; set; }
+
+    public bool IsManual { get; set; } = true;
 
     public DateTime CreatedAt { get; set; }
 

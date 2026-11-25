@@ -205,7 +205,7 @@
     private async Task HandleLogout()
     {
         await AuthService.LogoutAsync();
-        Nav.NavigateTo("/login");
+        Nav.NavigateTo("/login", forceLoad: true);
     }
 
     public void Dispose()
