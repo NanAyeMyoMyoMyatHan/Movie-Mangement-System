@@ -64,13 +64,13 @@ namespace DotNetProject.WebApi.Features.Movies
             try
             {
                 if (PosterFile is { Length: > 0 })
-                    request = request with { PosterUrl = await _fileStorage.SaveImageAsync(PosterFile, cancellationToken) };
+                    request = request with { PosterUrl = $"/images/{await _fileStorage.SaveImageAsync(PosterFile, cancellationToken)}" };
 
                 return ToActionResult(await _movieService.CreateAsync(request, cancellationToken));
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return BadRequest(new { isSuccess = false, isError = true, isValidationError = true, message = ex.Message });
             }
         }
 
@@ -98,7 +98,7 @@ namespace DotNetProject.WebApi.Features.Movies
                     if (detailResult.IsSuccess)
                         oldPoster = detailResult.Data?.Movie.PosterUrl;
 
-                    request = request with { PosterUrl = await _fileStorage.SaveImageAsync(PosterFile, cancellationToken) };
+                    request = request with { PosterUrl = $"/images/{await _fileStorage.SaveImageAsync(PosterFile, cancellationToken)}" };
                 }
 
                 var result = await _movieService.UpdateAsync(request, cancellationToken);
@@ -111,7 +111,7 @@ namespace DotNetProject.WebApi.Features.Movies
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return BadRequest(new { isSuccess = false, isError = true, isValidationError = true, message = ex.Message });
             }
         }
 

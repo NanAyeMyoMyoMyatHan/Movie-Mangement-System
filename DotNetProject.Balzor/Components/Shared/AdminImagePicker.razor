@@ -1,0 +1,182 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using System.IO
+
+<div class="admin-form-group">
+    <label class="admin-label">@Label</label>
+    <div class="admin-image-picker">
+        <div class="admin-picker-preview @(PreviewShape == "banner" ? "banner" : "poster")">
+            @if (SelectedFile != null)
+            {
+                <img src="@SelectedFile.PreviewDataUrl" alt="@Label preview" class="admin-picker-img" />
+            }
+            else if (!string.IsNullOrWhiteSpace(UrlValue))
+            {
+                <img src="@UrlValue" alt="@Label preview" class="admin-picker-img"
+                     onerror="this.onerror=null;this.src='/images/poster_fallback.svg';" />
+            }
+            else
+            {
+                <div class="admin-picker-empty">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="3" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <span>Preview</span>
+                </div>
+            }
+        </div>
+
+        <div class="admin-picker-controls">
+            <div class="admin-picker-upload-row">
+                <label class="btn-admin btn-admin-edit admin-upload-btn" style="cursor:pointer;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <span>@(_reading ? "Reading…" : "Choose Image from PC")</span>
+                    <InputFile @key="_inputKey"
+                               OnChange="HandleFileSelectedAsync"
+                               accept=".jpg,.jpeg,.png,.webp,.gif"
+                               style="display:none;" />
+                </label>
+
+                @if (SelectedFile != null)
+                {
+                    <span class="admin-file-chip" title="@SelectedFile.FileName">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        <span class="admin-file-chip-name">@SelectedFile.FileName</span>
+                        <span class="admin-file-chip-size">(@FormatBytes(SelectedFile.Data.Length))</span>
+                    </span>
+                    <button type="button" class="btn-admin btn-admin-delete admin-clear-file-btn" @onclick="ClearSelectedFileAsync">
+                        Clear
+                    </button>
+                }
+            </div>
+
+            <div class="admin-picker-hint">
+                Pick a photo from your computer (JPG, PNG, WEBP, GIF — max 10 MB) or paste an image link below.
+            </div>
+
+            @if (SelectedFile == null)
+            {
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <input class="admin-input" style="flex:1;"
+                           value="@UrlValue"
+                           @oninput="HandleUrlInputAsync"
+                           placeholder="Or paste image URL (optional): https://…" />
+                    @if (!string.IsNullOrWhiteSpace(UrlValue))
+                    {
+                        <button type="button" class="btn-admin btn-admin-delete admin-clear-file-btn" @onclick="ClearUrlAsync" title="Remove URL">
+                            Clear
+                        </button>
+                    }
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(_error))
+            {
+                <span class="admin-field-error">@_error</span>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private const long MaxImageBytes = 10L * 1024 * 1024;
+    private static readonly HashSet<string> AllowedExtensions =
+        new(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
+
+    [Parameter] public string Label { get; set; } = "Poster";
+    [Parameter] public string PreviewShape { get; set; } = "poster";
+
+    [Parameter] public string? UrlValue { get; set; }
+    [Parameter] public EventCallback<string?> UrlValueChanged { get; set; }
+
+    [Parameter] public UploadedFilePayload? SelectedFile { get; set; }
+    [Parameter] public EventCallback<UploadedFilePayload?> SelectedFileChanged { get; set; }
+
+    private int _inputKey;
+    private bool _reading;
+    private string? _error;
+
+    private async Task HandleFileSelectedAsync(InputFileChangeEventArgs e)
+    {
+        _error = null;
+        var file = e.File;
+        if (file == null) return;
+
+        var ext = Path.GetExtension(file.Name);
+        if (!AllowedExtensions.Contains(ext))
+        {
+            _error = $"Unsupported file type '{ext}'. Please select JPG, PNG, WEBP, or GIF.";
+            return;
+        }
+
+        if (file.Size > MaxImageBytes)
+        {
+            _error = "Image is too large. Please select an image under 10 MB.";
+            return;
+        }
+
+        _reading = true;
+        StateHasChanged();
+
+        try
+        {
+            await using var stream = file.OpenReadStream(MaxImageBytes);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+
+            var bytes = ms.ToArray();
+            var contentType = string.IsNullOrWhiteSpace(file.ContentType) ? "image/jpeg" : file.ContentType;
+            var previewUrl = $"data:{contentType};base64,{Convert.ToBase64String(bytes)}";
+
+            var payload = new UploadedFilePayload(file.Name, contentType, bytes, previewUrl);
+            SelectedFile = payload;
+            await SelectedFileChanged.InvokeAsync(payload);
+        }
+        catch (Exception ex)
+        {
+            _error = $"Could not read file: {ex.Message}";
+        }
+        finally
+        {
+            _reading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ClearSelectedFileAsync()
+    {
+        _error = null;
+        _inputKey++;
+        SelectedFile = null;
+        await SelectedFileChanged.InvokeAsync(null);
+    }
+
+    private async Task HandleUrlInputAsync(ChangeEventArgs e)
+    {
+        _error = null;
+        var val = e.Value?.ToString();
+        UrlValue = val;
+        await UrlValueChanged.InvokeAsync(val);
+    }
+
+    private async Task ClearUrlAsync()
+    {
+        _error = null;
+        UrlValue = null;
+        await UrlValueChanged.InvokeAsync(null);
+    }
+
+    private static string FormatBytes(long bytes)
+    {
+        if (bytes >= 1024 * 1024)
+            return $"{bytes / (1024.0 * 1024.0):0.0} MB";
+        return $"{Math.Max(1, bytes / 1024)} KB";
+    }
+}

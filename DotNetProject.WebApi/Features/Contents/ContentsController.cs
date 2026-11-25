@@ -76,18 +76,18 @@ namespace DotNetProject.WebApi.Features.Contents
         {
             try
             {
-                // Save uploaded files and override the URL fields with local filenames
+                // Save uploaded files and store public relative /images/ URLs
                 if (PosterFile is { Length: > 0 })
-                    request = request with { PosterUrl = await _fileStorage.SaveImageAsync(PosterFile, cancellationToken) };
+                    request = request with { PosterUrl = $"/images/{await _fileStorage.SaveImageAsync(PosterFile, cancellationToken)}" };
 
                 if (BannerFile is { Length: > 0 })
-                    request = request with { BannerUrl = await _fileStorage.SaveImageAsync(BannerFile, cancellationToken) };
+                    request = request with { BannerUrl = $"/images/{await _fileStorage.SaveImageAsync(BannerFile, cancellationToken)}" };
 
                 return ToActionResult(await _contentInterface.CreateAsync(request, cancellationToken));
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return BadRequest(new { isSuccess = false, isError = true, isValidationError = true, message = ex.Message });
             }
         }
 
@@ -125,10 +125,10 @@ namespace DotNetProject.WebApi.Features.Contents
 
                 // Save new files
                 if (PosterFile is { Length: > 0 })
-                    request = request with { PosterUrl = await _fileStorage.SaveImageAsync(PosterFile, cancellationToken) };
+                    request = request with { PosterUrl = $"/images/{await _fileStorage.SaveImageAsync(PosterFile, cancellationToken)}" };
 
                 if (BannerFile is { Length: > 0 })
-                    request = request with { BannerUrl = await _fileStorage.SaveImageAsync(BannerFile, cancellationToken) };
+                    request = request with { BannerUrl = $"/images/{await _fileStorage.SaveImageAsync(BannerFile, cancellationToken)}" };
 
                 var result = await _contentInterface.UpdateAsync(request, cancellationToken);
 
@@ -146,7 +146,7 @@ namespace DotNetProject.WebApi.Features.Contents
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return BadRequest(new { isSuccess = false, isError = true, isValidationError = true, message = ex.Message });
             }
         }
 

@@ -60,22 +60,28 @@
                 <textarea class="admin-input admin-textarea" @bind="_form.Description" rows="4" placeholder="Short synopsis…"></textarea>
             </div>
 
-            <div class="admin-form-group">
-                <label class="admin-label">Poster URL</label>
-                <input class="admin-input" @bind="_form.PosterUrl" placeholder="https://…" />
-            </div>
+            <AdminImagePicker Label="Movie Poster"
+                              PreviewShape="poster"
+                              @bind-UrlValue="_form.PosterUrl"
+                              @bind-SelectedFile="_posterFile" />
 
-            <div class="admin-form-row">
-                <div class="admin-form-group">
-                    <label class="admin-label">TMDB ID</label>
-                    <input class="admin-input" type="number" @bind="_form.TmdbId" placeholder="Optional" />
+            <details class="admin-optional-details">
+                <summary>Optional: External Metadata (TMDB ID)</summary>
+                <p class="admin-optional-note">
+                    Only fill this in if you are linking an entry from The Movie Database (TMDB). Leave blank when managing manually.
+                </p>
+                <div class="admin-form-row">
+                    <div class="admin-form-group" style="margin-bottom:0;">
+                        <label class="admin-label">TMDB ID</label>
+                        <input class="admin-input" type="number" @bind="_form.TmdbId" placeholder="Optional" />
+                    </div>
+                    <div class="admin-form-group" style="justify-content:flex-end;padding-bottom:.2rem;margin-bottom:0;">
+                        <label style="display:flex;align-items:center;gap:.5rem;font-size:.84rem;color:#485C4A;cursor:pointer;">
+                            <input type="checkbox" @bind="_form.IsManual" /> Manual entry
+                        </label>
+                    </div>
                 </div>
-                <div class="admin-form-group" style="justify-content:flex-end;padding-bottom:.2rem;">
-                    <label style="display:flex;align-items:center;gap:.5rem;font-size:.84rem;color:#485C4A;cursor:pointer;">
-                        <input type="checkbox" @bind="_form.IsManual" /> Manual entry
-                    </label>
-                </div>
-            </div>
+            </details>
 
             <div class="admin-form-actions">
                 <button class="btn-admin btn-admin-primary" @onclick="SubmitAsync" disabled="@_submitting">

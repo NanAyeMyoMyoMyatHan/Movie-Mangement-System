@@ -12,7 +12,8 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
         [Inject] private AuditLogService AuditLog { get; set; } = default!;
 
         private UpdateContentRequest _form = new();
-        private string? _releaseDateStr;
+        private UploadedFilePayload? _posterFile;
+        private UploadedFilePayload? _bannerFile;
         private bool _loading = true;
         private string? _loadError;
         private string? _success;
@@ -23,6 +24,8 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
         {
             _loading = true;
             _loadError = null;
+            _posterFile = null;
+            _bannerFile = null;
 
             var res = await ApiClient.GetContentDetailAsync(Id);
 
@@ -42,7 +45,6 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
                     ReleaseDate   = c.ReleaseDate,
                     Status        = c.Status
                 };
-                _releaseDateStr = c.ReleaseDate?.ToString("yyyy-MM-dd");
             }
             else
             {
@@ -63,10 +65,8 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
                 return;
             }
 
-            _form.ReleaseDate = DateOnly.TryParse(_releaseDateStr, out var d) ? d : null;
-
             _submitting = true;
-            var result = await ApiClient.UpdateContentAsync(_form);
+            var result = await ApiClient.UpdateContentAsync(_form, _posterFile, _bannerFile);
             _submitting = false;
 
             if (result?.IsSuccess == true)

@@ -5,10 +5,22 @@ using DotNetProject.Domain.Features.Rbac;
 using DotNetProject.Domain.Features.Thai;
 using DotNetProject.Domain.Features.Users;
 using Newtonsoft.Json;
+using System.Globalization;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace DotNetProject.Balzor.Components.Shared
 {
+    /// <summary>
+    /// In-memory payload for an image/media file chosen by the user via InputFile,
+    /// ready to stream reliably over multipart/form-data.
+    /// </summary>
+    public sealed record UploadedFilePayload(
+        string FileName,
+        string ContentType,
+        byte[] Data,
+        string PreviewDataUrl);
+
     public class HttpClientService
     {
         private readonly IHttpClientFactory _httpClientFactory;
@@ -128,11 +140,18 @@ namespace DotNetProject.Balzor.Components.Shared
         public Task<Result<GetMovieDetailResponse>?> GetMovieDetailAsync(int id) =>
             PostAsync<Result<GetMovieDetailResponse>>("api/movie/detail", new GetMovieDetailRequest { Id = id });
 
-        public Task<Result<CreateMovieResponse>?> CreateMovieAsync(CreateMovieRequest request) =>
-            PostAsync<Result<CreateMovieResponse>>("api/movie/create", request);
+        public Task<Result<CreateMovieResponse>?> CreateMovieAsync(CreateMovieRequest request, UploadedFilePayload? posterFile = null)
+        {
+            using var form = BuildMovieForm(request.Title, request.Genre, request.ReleaseYear, request.Description, request.PosterUrl, request.TmdbId, request.IsManual, posterFile);
+            return PostMultipartAsync<Result<CreateMovieResponse>>("api/movie/create", form);
+        }
 
-        public Task<Result<UpdateMovieResponse>?> UpdateMovieAsync(UpdateMovieRequest request) =>
-            PostAsync<Result<UpdateMovieResponse>>("api/movie/update", request);
+        public Task<Result<UpdateMovieResponse>?> UpdateMovieAsync(UpdateMovieRequest request, UploadedFilePayload? posterFile = null)
+        {
+            using var form = BuildMovieForm(request.Title, request.Genre, request.ReleaseYear, request.Description, request.PosterUrl, request.TmdbId, request.IsManual, posterFile);
+            AddFormField(form, "Id", request.Id.ToString(CultureInfo.InvariantCulture));
+            return PostMultipartAsync<Result<UpdateMovieResponse>>("api/movie/update", form);
+        }
 
         public Task<Result<DeleteMovieResponse>?> DeleteMovieAsync(int id) =>
             PostAsync<Result<DeleteMovieResponse>>("api/movie/delete", new DeleteMovieRequest { Id = id });
@@ -148,17 +167,96 @@ namespace DotNetProject.Balzor.Components.Shared
         public Task<Result<GetContentDetailResponse>?> GetContentDetailAsync(long id) =>
             PostAsync<Result<GetContentDetailResponse>>("api/contents/detail", new GetContentDetailRequest { ContentId = id });
 
-        public Task<Result<CreateContentResponse>?> CreateContentAsync(CreateContentRequest request) =>
-            PostAsync<Result<CreateContentResponse>>("api/contents/create", request);
+        public Task<Result<CreateContentResponse>?> CreateContentAsync(
+            CreateContentRequest request,
+            UploadedFilePayload? posterFile = null,
+            UploadedFilePayload? bannerFile = null)
+        {
+            using var form = BuildContentForm(request.ContentTypeId, request.Title, request.Description, request.PosterUrl, request.BannerUrl, request.ReleaseDate, request.Country, request.Language, request.Status, posterFile, bannerFile);
+            return PostMultipartAsync<Result<CreateContentResponse>>("api/contents/create", form);
+        }
 
-        public Task<Result<UpdateContentResponse>?> UpdateContentAsync(UpdateContentRequest request) =>
-            PostAsync<Result<UpdateContentResponse>>("api/contents/update", request);
+        public Task<Result<UpdateContentResponse>?> UpdateContentAsync(
+            UpdateContentRequest request,
+            UploadedFilePayload? posterFile = null,
+            UploadedFilePayload? bannerFile = null)
+        {
+            using var form = BuildContentForm(request.ContentTypeId, request.Title, request.Description, request.PosterUrl, request.BannerUrl, request.ReleaseDate, request.Country, request.Language, request.Status, posterFile, bannerFile);
+            AddFormField(form, "ContentId", request.ContentId.ToString(CultureInfo.InvariantCulture));
+            return PostMultipartAsync<Result<UpdateContentResponse>>("api/contents/update", form);
+        }
 
         public Task<Result<DeleteContentResponse>?> DeleteContentAsync(long id) =>
             PostAsync<Result<DeleteContentResponse>>("api/contents/delete", new DeleteContentRequest { ContentId = id });
 
         public Task<Result<GetThaiPagedListResponse>?> GetThaiPagedAsync(GetThaiPagedListRequest request) =>
             PostAsync<Result<GetThaiPagedListResponse>>("api/Thai/GetPagedList", request);
+
+        private async Task<T?> PostMultipartAsync<T>(string url, MultipartFormDataContent form)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient("Api");
+                var response = await client.PostAsync(url, form);
+                var jsonStr = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(jsonStr);
+            }
+            catch
+            {
+                return default;
+            }
+        }
+
+        private static MultipartFormDataContent BuildMovieForm(
+            string? title, string? genre, int? releaseYear, string? description,
+            string? posterUrl, int? tmdbId, bool isManual, UploadedFilePayload? posterFile)
+        {
+            var form = new MultipartFormDataContent();
+            AddFormField(form, "Title", title);
+            AddFormField(form, "Genre", genre);
+            if (releaseYear.HasValue) AddFormField(form, "ReleaseYear", releaseYear.Value.ToString(CultureInfo.InvariantCulture));
+            AddFormField(form, "Description", description);
+            AddFormField(form, "PosterUrl", posterUrl);
+            if (tmdbId.HasValue) AddFormField(form, "TmdbId", tmdbId.Value.ToString(CultureInfo.InvariantCulture));
+            AddFormField(form, "IsManual", isManual ? "true" : "false");
+            AddFormFile(form, "PosterFile", posterFile);
+            return form;
+        }
+
+        private static MultipartFormDataContent BuildContentForm(
+            int contentTypeId, string? title, string? description, string? posterUrl, string? bannerUrl,
+            DateOnly? releaseDate, string? country, string? language, string status,
+            UploadedFilePayload? posterFile, UploadedFilePayload? bannerFile)
+        {
+            var form = new MultipartFormDataContent();
+            AddFormField(form, "ContentTypeId", contentTypeId.ToString(CultureInfo.InvariantCulture));
+            AddFormField(form, "Title", title);
+            AddFormField(form, "Description", description);
+            AddFormField(form, "PosterUrl", posterUrl);
+            AddFormField(form, "BannerUrl", bannerUrl);
+            if (releaseDate.HasValue) AddFormField(form, "ReleaseDate", releaseDate.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+            AddFormField(form, "Country", country);
+            AddFormField(form, "Language", language);
+            AddFormField(form, "Status", status);
+            AddFormFile(form, "PosterFile", posterFile);
+            AddFormFile(form, "BannerFile", bannerFile);
+            return form;
+        }
+
+        private static void AddFormField(MultipartFormDataContent form, string name, string? value)
+        {
+            if (value != null)
+                form.Add(new StringContent(value, Encoding.UTF8), name);
+        }
+
+        private static void AddFormFile(MultipartFormDataContent form, string name, UploadedFilePayload? file)
+        {
+            if (file == null || file.Data.Length == 0) return;
+            var content = new ByteArrayContent(file.Data);
+            content.Headers.ContentType = new MediaTypeHeaderValue(
+                string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType);
+            form.Add(content, name, file.FileName);
+        }
 
         // --- RBAC API client methods ---
 

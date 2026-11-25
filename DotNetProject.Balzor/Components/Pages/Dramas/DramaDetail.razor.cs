@@ -110,12 +110,13 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                     DramaLanguage = !string.IsNullOrWhiteSpace(Drama.Language) ? Drama.Language : "Korean";
                     DramaGenres = (Drama.Genres != null && Drama.Genres.Any()) ? string.Join(", ", Drama.Genres) : "Romance, Fantasy, Action";
 
+                    bool isMovie = Drama.ContentType?.Equals("Movie", StringComparison.OrdinalIgnoreCase) == true;
                     if (Episodes.Count == 0)
                     {
-                        Episodes = GenerateFallbackEpisodes(Drama.Title, 16);
+                        Episodes = GenerateFallbackEpisodes(Drama.Title, isMovie ? 1 : 16);
                     }
 
-                    if (Drama.ContentType?.Equals("Movie", StringComparison.OrdinalIgnoreCase) == true)
+                    if (isMovie)
                     {
                         var movieEp = Episodes.FirstOrDefault();
                         DramaTotalEpisodesText = movieEp?.Duration.HasValue == true ? FormatEpisodeDuration(movieEp.Duration) : "Full Movie";

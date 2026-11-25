@@ -10,8 +10,10 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
         [Inject] private NavigationManager Nav { get; set; } = default!;
         [Inject] private AuditLogService AuditLog { get; set; } = default!;
 
-        private readonly CreateContentRequest _form = new();
-        private string? _releaseDateStr;
+        private readonly CreateContentRequest _form = new() { ContentTypeId = 2, Status = "Ongoing" };
+        private DateOnly? _releaseDateValue;
+        private UploadedFilePayload? _posterFile;
+        private UploadedFilePayload? _bannerFile;
         private string? _success;
         private string? _error;
         private bool _submitting;
@@ -27,10 +29,10 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
                 return;
             }
 
-            _form.ReleaseDate = DateOnly.TryParse(_releaseDateStr, out var d) ? d : null;
+            _form.ReleaseDate = _releaseDateValue;
 
             _submitting = true;
-            var result = await ApiClient.CreateContentAsync(_form);
+            var result = await ApiClient.CreateContentAsync(_form, _posterFile, _bannerFile);
             _submitting = false;
 
             if (result?.IsSuccess == true)

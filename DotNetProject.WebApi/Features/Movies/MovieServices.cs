@@ -56,8 +56,8 @@ namespace DotNetProject.WebApi.Features.Movies
                 Status = movie.Status
             };
         }
- 
-       
+
+
         // -- New: Result-pattern + pagination ----------------------------------
 
         public async Task<Result<GetMoviePagedListResponse>> GetPagedListAsync(
@@ -89,7 +89,6 @@ namespace DotNetProject.WebApi.Features.Movies
                 .Select(m => new MovieListItemResponse(
                     m.ContentId,
                     m.Title,
-                    
                     m.ReleaseDate.HasValue ? m.ReleaseDate.Value.Year : (int?)null,
                     m.PosterUrl))
                 .ToListAsync(cancellationToken);
@@ -105,15 +104,27 @@ namespace DotNetProject.WebApi.Features.Movies
             if (request.Id <= 0)
                 return Result<GetMovieDetailResponse>.ValidationError("Invalid movie ID.");
 
-            var movie = await _context.Movies
+            var content = await _context.Contents
+                .AsNoTracking()
+                .Include(c => c.ContentGenres)
+                    .ThenInclude(cg => cg.Genre)
+                .FirstOrDefaultAsync(c => c.ContentId == request.Id && c.ContentTypeId == 1 && !c.IsDeleted, cancellationToken);
+
+            if (content != null)
+            {
+                return Result<GetMovieDetailResponse>.Success(
+                    new GetMovieDetailResponse(ToDetailResponse(content)));
+            }
+
+            var legacyMovie = await _context.Movies
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == request.Id && !m.IsDeleted, cancellationToken);
 
-            if (movie == null)
+            if (legacyMovie == null)
                 return Result<GetMovieDetailResponse>.NotFoundError($"Movie with ID {request.Id} was not found.");
 
             return Result<GetMovieDetailResponse>.Success(
-                new GetMovieDetailResponse(ToDetailResponse(movie)));
+                new GetMovieDetailResponse(ToDetailResponse(legacyMovie)));
         }
 
         public async Task<Result<CreateMovieResponse>> CreateAsync(
@@ -127,30 +138,44 @@ namespace DotNetProject.WebApi.Features.Movies
             if (title.Length > 255)
                 return Result<CreateMovieResponse>.ValidationError("Title must not exceed 255 characters.");
 
-            var duplicate = await _context.Movies
-                .AnyAsync(m => m.Title.ToLower() == title.ToLower() && !m.IsDeleted, cancellationToken);
+            var duplicate = await _context.Contents
+                .AnyAsync(c => c.Title.ToLower() == title.ToLower() && c.ContentTypeId == 1 && !c.IsDeleted, cancellationToken);
 
             if (duplicate)
                 return Result<CreateMovieResponse>.DuplicateRecordError($"A movie with the title '{title}' already exists.");
 
-            var movie = new Movie
+            var content = new Content
             {
+                ContentTypeId = 1,
                 Title = title,
-                Genre = request.Genre?.Trim(),
-                Year = request.ReleaseYear,
                 Description = request.Description?.Trim(),
-                PosterUrl = request.PosterUrl?.Trim(),
-                TmdbId = request.TmdbId,
-                IsManual = request.IsManual,
+                PosterUrl = string.IsNullOrWhiteSpace(request.PosterUrl) ? null : request.PosterUrl.Trim(),
+                ReleaseDate = ToReleaseDate(request.ReleaseYear),
+                Status = "Completed",
                 CreatedAt = DateTime.UtcNow,
                 IsDeleted = false
             };
 
-            _context.Movies.Add(movie);
+            _context.Contents.Add(content);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            await SyncGenresAsync(content, request.Genre, cancellationToken);
+
+            _context.Episodes.Add(new Episode
+            {
+                ContentId = content.ContentId,
+                EpisodeNumber = 1,
+                Title = "Full Movie",
+                Description = content.Description,
+                ThumbnailUrl = content.PosterUrl,
+                Status = "Active",
+                CreatedAt = DateTime.UtcNow,
+                IsDeleted = false
+            });
             await _context.SaveChangesAsync(cancellationToken);
 
             return Result<CreateMovieResponse>.Success(
-                new CreateMovieResponse(ToDetailResponse(movie)));
+                new CreateMovieResponse(ToDetailResponse(content)));
         }
 
         public async Task<Result<UpdateMovieResponse>> UpdateAsync(
@@ -160,12 +185,6 @@ namespace DotNetProject.WebApi.Features.Movies
             if (request.Id <= 0)
                 return Result<UpdateMovieResponse>.ValidationError("Invalid movie ID.");
 
-            var movie = await _context.Movies
-                .FirstOrDefaultAsync(m => m.Id == request.Id && !m.IsDeleted, cancellationToken);
-
-            if (movie == null)
-                return Result<UpdateMovieResponse>.NotFoundError($"Movie with ID {request.Id} was not found.");
-
             var title = request.Title?.Trim();
             if (string.IsNullOrEmpty(title))
                 return Result<UpdateMovieResponse>.ValidationError("Title is required.");
@@ -173,25 +192,32 @@ namespace DotNetProject.WebApi.Features.Movies
             if (title.Length > 255)
                 return Result<UpdateMovieResponse>.ValidationError("Title must not exceed 255 characters.");
 
-            var duplicate = await _context.Movies
-                .AnyAsync(m => m.Title.ToLower() == title.ToLower() && !m.IsDeleted && m.Id != request.Id,
+            var content = await _context.Contents
+                .Include(c => c.ContentGenres)
+                    .ThenInclude(cg => cg.Genre)
+                .FirstOrDefaultAsync(c => c.ContentId == request.Id && c.ContentTypeId == 1 && !c.IsDeleted, cancellationToken);
+
+            if (content == null)
+                return Result<UpdateMovieResponse>.NotFoundError($"Movie with ID {request.Id} was not found.");
+
+            var duplicate = await _context.Contents
+                .AnyAsync(c => c.Title.ToLower() == title.ToLower() && c.ContentTypeId == 1 && !c.IsDeleted && c.ContentId != request.Id,
                     cancellationToken);
 
             if (duplicate)
                 return Result<UpdateMovieResponse>.DuplicateRecordError($"A movie with the title '{title}' already exists.");
 
-            movie.Title = title;
-            movie.Genre = request.Genre?.Trim();
-            movie.Year = request.ReleaseYear;
-            movie.Description = request.Description?.Trim();
-            movie.PosterUrl = request.PosterUrl?.Trim();
-            movie.TmdbId = request.TmdbId;
-            movie.IsManual = request.IsManual;
+            content.Title = title;
+            content.Description = request.Description?.Trim();
+            content.PosterUrl = string.IsNullOrWhiteSpace(request.PosterUrl) ? null : request.PosterUrl.Trim();
+            content.ReleaseDate = ToReleaseDate(request.ReleaseYear);
+            content.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync(cancellationToken);
+            await SyncGenresAsync(content, request.Genre, cancellationToken);
 
             return Result<UpdateMovieResponse>.Success(
-                new UpdateMovieResponse(ToDetailResponse(movie)));
+                new UpdateMovieResponse(ToDetailResponse(content)));
         }
 
         public async Task<Result<DeleteMovieResponse>> DeleteAsync(
@@ -201,24 +227,95 @@ namespace DotNetProject.WebApi.Features.Movies
             if (request.Id <= 0)
                 return Result<DeleteMovieResponse>.ValidationError("Invalid movie ID.");
 
-            var movie = await _context.Movies
-                .FirstOrDefaultAsync(m => m.Id == request.Id, cancellationToken);
+            var content = await _context.Contents
+                .FirstOrDefaultAsync(c => c.ContentId == request.Id && c.ContentTypeId == 1, cancellationToken);
 
-            if (movie == null)
+            if (content == null)
                 return Result<DeleteMovieResponse>.NotFoundError($"Movie with ID {request.Id} was not found.");
 
-            if (movie.IsDeleted)
+            if (content.IsDeleted)
                 return Result<DeleteMovieResponse>.InvalidDataError("Movie is already deleted.");
 
-            movie.IsDeleted = true;
-            movie.DeletedAt = DateTime.UtcNow;
+            content.IsDeleted = true;
+            content.DeletedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync(cancellationToken);
 
             return Result<DeleteMovieResponse>.Success(new DeleteMovieResponse(request.Id, true));
         }
 
-        // -- Private helper -----------------------------------------------------
+        // -- Private helpers ----------------------------------------------------
+
+        private static DateOnly? ToReleaseDate(int? year) =>
+            year is >= 1888 and <= 2100 ? new DateOnly(year.Value, 1, 1) : null;
+
+        private async Task SyncGenresAsync(Content content, string? rawGenres, CancellationToken cancellationToken)
+        {
+            var requestedNames = (rawGenres ?? string.Empty)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            var existingLinks = await _context.ContentGenres
+                .Where(cg => cg.ContentId == content.ContentId)
+                .ToListAsync(cancellationToken);
+
+            if (existingLinks.Count > 0)
+                _context.ContentGenres.RemoveRange(existingLinks);
+
+            content.ContentGenres.Clear();
+            if (requestedNames.Count == 0)
+            {
+                await _context.SaveChangesAsync(cancellationToken);
+                return;
+            }
+
+            var allGenres = await _context.Genres
+                .Where(g => !g.IsDeleted)
+                .ToListAsync(cancellationToken);
+
+            foreach (var name in requestedNames)
+            {
+                var genre = allGenres.FirstOrDefault(g => g.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                if (genre == null)
+                {
+                    genre = new Genre { Name = name, CreatedAt = DateTime.UtcNow, IsDeleted = false };
+                    _context.Genres.Add(genre);
+                    await _context.SaveChangesAsync(cancellationToken);
+                    allGenres.Add(genre);
+                }
+
+                var link = new ContentGenre
+                {
+                    ContentId = content.ContentId,
+                    GenreId = genre.GenreId,
+                    Genre = genre,
+                    IsDeleted = false
+                };
+                _context.ContentGenres.Add(link);
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        private static MovieDetailResponse ToDetailResponse(Content c)
+        {
+            var genres = c.ContentGenres
+                .Where(cg => !cg.IsDeleted && cg.Genre != null && !cg.Genre.IsDeleted)
+                .Select(cg => cg.Genre.Name)
+                .ToList();
+
+            return new MovieDetailResponse(
+                (int)c.ContentId,
+                c.Title,
+                genres.Count > 0 ? string.Join(", ", genres) : null,
+                c.ReleaseDate?.Year,
+                c.Description,
+                c.PosterUrl,
+                null,
+                true,
+                new DateTimeOffset(c.CreatedAt, TimeSpan.Zero));
+        }
 
         private static MovieDetailResponse ToDetailResponse(Movie m) =>
             new MovieDetailResponse(

@@ -69,6 +69,21 @@ app.UseStaticFiles(new StaticFileOptions
     ContentTypeProvider = contentTypeProvider
 });
 
+var appStorageRoot = builder.Configuration["FileStorage:RootPath"] ?? @"D:\AppStorage";
+var storedImagesDir = Path.Combine(appStorageRoot, "images");
+if (!Directory.Exists(storedImagesDir)) Directory.CreateDirectory(storedImagesDir);
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(storedImagesDir),
+    RequestPath = "/images"
+});
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(storedImagesDir),
+    RequestPath = "/storage/images"
+});
+
 var videoProviders = new List<Microsoft.Extensions.FileProviders.IFileProvider>();
 var dramaFolders = new[]
 {

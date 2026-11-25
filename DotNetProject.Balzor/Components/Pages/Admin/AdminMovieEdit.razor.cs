@@ -12,6 +12,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
         [Inject] private AuditLogService AuditLog { get; set; } = default!;
 
         private readonly UpdateMovieRequest _form = new();
+        private UploadedFilePayload? _posterFile;
         private bool _loading = true;
         private string? _loadError;
         private string? _titleError;
@@ -54,7 +55,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
             }
 
             _submitting = true;
-            var result = await ApiClient.UpdateMovieAsync(_form);
+            var result = await ApiClient.UpdateMovieAsync(_form, _posterFile);
             _submitting = false;
 
             if (result?.IsSuccess == true)

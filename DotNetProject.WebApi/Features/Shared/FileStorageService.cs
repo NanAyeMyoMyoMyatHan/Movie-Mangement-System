@@ -62,13 +62,26 @@ namespace DotNetProject.WebApi.Features.Shared
             => DeleteFile("videos", fileName);
 
         /// <summary>
-        /// Returns true when the string looks like a stored local filename (no slashes / http).
-        /// Used to distinguish local filenames ("a7b9.jpg") from external URLs ("https://...").
+        /// Returns true when the value references a file managed in AppStorage (either bare filename "a7b9.jpg"
+        /// or relative storage route "/images/a7b9.jpg" / "/storage/images/a7b9.jpg").
+        /// Ignores external URLs ("https://...") and non-GUID bundled static assets.
         /// </summary>
         public static bool IsLocalFile(string? value)
-            => !string.IsNullOrWhiteSpace(value)
-               && !value.StartsWith("http", StringComparison.OrdinalIgnoreCase)
-               && !value.Contains('/');
+        {
+            if (string.IsNullOrWhiteSpace(value)) return false;
+            if (value.StartsWith("http", StringComparison.OrdinalIgnoreCase)) return false;
+
+            if (!value.Contains('/')) return true;
+
+            if (value.StartsWith("/images/", StringComparison.OrdinalIgnoreCase) ||
+                value.StartsWith("/storage/images/", StringComparison.OrdinalIgnoreCase))
+            {
+                var nameWithoutExt = Path.GetFileNameWithoutExtension(value);
+                return Guid.TryParseExact(nameWithoutExt, "N", out _);
+            }
+
+            return false;
+        }
 
         // ── Internals ──────────────────────────────────────────────────────────
 
@@ -90,7 +103,10 @@ namespace DotNetProject.WebApi.Features.Shared
         private void DeleteFile(string subFolder, string? fileName)
         {
             if (string.IsNullOrWhiteSpace(fileName)) return;
-            var fullPath = Path.Combine(_rootPath, subFolder, fileName);
+            var safeFileName = Path.GetFileName(fileName);
+            if (string.IsNullOrWhiteSpace(safeFileName)) return;
+
+            var fullPath = Path.Combine(_rootPath, subFolder, safeFileName);
             if (File.Exists(fullPath))
                 File.Delete(fullPath);
         }

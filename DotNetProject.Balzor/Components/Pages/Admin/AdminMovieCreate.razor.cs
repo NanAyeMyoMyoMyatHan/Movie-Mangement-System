@@ -10,7 +10,8 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
         [Inject] private NavigationManager Nav { get; set; } = default!;
         [Inject] private AuditLogService AuditLog { get; set; } = default!;
 
-        private readonly CreateMovieRequest _form = new();
+        private readonly CreateMovieRequest _form = new() { IsManual = true };
+        private UploadedFilePayload? _posterFile;
         private string? _titleError;
         private string? _success;
         private string? _error;
@@ -29,7 +30,7 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
             }
 
             _submitting = true;
-            var result = await ApiClient.CreateMovieAsync(_form);
+            var result = await ApiClient.CreateMovieAsync(_form, _posterFile);
             _submitting = false;
 
             if (result?.IsSuccess == true)

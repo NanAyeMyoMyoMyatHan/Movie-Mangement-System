@@ -75,6 +75,11 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(imageDir),
     RequestPath = "/images"
 });
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(imageDir),
+    RequestPath = "/storage/images"
+});
 
 var videoProviders = new List<Microsoft.Extensions.FileProviders.IFileProvider>();
 var videosDir = Path.Combine(storagePath, "videos");

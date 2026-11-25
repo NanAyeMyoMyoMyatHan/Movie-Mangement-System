@@ -99,7 +99,8 @@
                                 <td>
                                     @if (!string.IsNullOrWhiteSpace(c.PosterUrl))
                                     {
-                                        <img src="@c.PosterUrl" alt="@c.Title" class="admin-thumb" />
+                                        <img src="@c.PosterUrl" alt="@c.Title" class="admin-thumb"
+                                             onerror="this.onerror=null;this.src='/images/poster_fallback.svg';" />
                                     }
                                     else
                                     {
