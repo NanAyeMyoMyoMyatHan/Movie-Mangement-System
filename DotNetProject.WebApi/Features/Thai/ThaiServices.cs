@@ -29,8 +29,8 @@ namespace DotNetProject.WebApi.Features.Thai
             }
             var totalCount = await query.CountAsync(cancellationToken);
             var items = await query
-                .OrderByDescending(c => c.Title)
-                .ThenBy(c => c.ContentId)
+                .OrderByDescending(c => c.CreatedAt)
+                .ThenByDescending(c => c.ContentId)
                 .Skip((pageNo - 1) * pageSize)
                 .Take(pageSize)
                 .Select(c => new ThaiListItemResponse(

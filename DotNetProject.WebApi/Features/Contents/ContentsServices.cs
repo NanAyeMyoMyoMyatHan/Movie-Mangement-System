@@ -71,6 +71,8 @@ namespace DotNetProject.WebApi.Features.Contents
             var contents = await _db.Contents
                 .Include(x => x.ContentType)
                 .Where(x => x.ContentType.Name == "Movie" && !x.IsDeleted)
+                .OrderByDescending(x => x.CreatedAt)
+                .ThenByDescending(x => x.ContentId)
                 .ToListAsync();
 
             var result = contents.Select(x => new ContentsDto
@@ -95,6 +97,8 @@ namespace DotNetProject.WebApi.Features.Contents
             var contents = await _db.Contents
                 .Include(x => x.ContentType)
                 .Where(x => x.ContentType.Name == "Drama" && !x.IsDeleted)
+                .OrderByDescending(x => x.CreatedAt)
+                .ThenByDescending(x => x.ContentId)
                 .ToListAsync();
 
             var result = contents.Select(x => new ContentsDto
@@ -119,6 +123,8 @@ namespace DotNetProject.WebApi.Features.Contents
             var contents = await _db.Contents
                 .Include(x => x.ContentType)
                 .Where(x => !x.IsDeleted && x.ContentGenres.Any(cg => cg.GenreId == genreId))
+                .OrderByDescending(x => x.CreatedAt)
+                .ThenByDescending(x => x.ContentId)
                 .ToListAsync();
 
             var result = contents.Select(x => new ContentsDto
@@ -143,6 +149,8 @@ namespace DotNetProject.WebApi.Features.Contents
             var contents = await _db.Contents
                 .Include(x => x.ContentType)
                 .Where(x => !x.IsDeleted && x.Title.Contains(keyword))
+                .OrderByDescending(x => x.CreatedAt)
+                .ThenByDescending(x => x.ContentId)
                 .ToListAsync();
 
             var result = contents.Select(x => new ContentsDto
@@ -191,6 +199,7 @@ namespace DotNetProject.WebApi.Features.Contents
 
             var items = await query
                 .OrderByDescending(c => c.CreatedAt)
+                .ThenByDescending(c => c.ContentId)
                 .Skip((pageNo - 1) * pageSize)
                 .Take(pageSize)
                 .Select(c => new ContentListItemResponse(

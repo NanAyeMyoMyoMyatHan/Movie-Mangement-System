@@ -20,7 +20,11 @@ namespace DotNetProject.WebApi.Features.Movies
 
         public async Task<List<MovieModel>> GetAllMoviesAsync()
         {
-            var movies = await _context.Contents.Where(m => !m.IsDeleted && m.ContentTypeId == 1).ToListAsync();
+            var movies = await _context.Contents
+                .Where(m => !m.IsDeleted && m.ContentTypeId == 1)
+                .OrderByDescending(m => m.CreatedAt)
+                .ThenByDescending(m => m.ContentId)
+                .ToListAsync();
             return movies.Select(x => new MovieModel
             {
                 ContentId = x.ContentId,
@@ -82,8 +86,8 @@ namespace DotNetProject.WebApi.Features.Movies
             var totalCount = await query.CountAsync(cancellationToken);
 
             var items = await query
-                .OrderBy(m => m.Title)
-                .ThenBy(m => m.ContentId)
+                .OrderByDescending(m => m.CreatedAt)
+                .ThenByDescending(m => m.ContentId)
                 .Skip((pageNo - 1) * pageSize)
                 .Take(pageSize)
                 .Select(m => new MovieListItemResponse(
