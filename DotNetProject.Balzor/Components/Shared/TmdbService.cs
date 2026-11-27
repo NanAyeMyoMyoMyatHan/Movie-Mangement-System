@@ -273,7 +273,7 @@ namespace DotNetProject.Balzor.Components.Shared
                             summary = System.Text.RegularExpressions.Regex.Replace(summary, "<.*?>", "");
 
                             string premiered = GetJsonString(show, "premiered") ?? "";
-                            string posterUrl = "/images/placeholder_poster.jpg";
+                            string posterUrl = "/images/poster_fallback.svg";
                             if (show.TryGetProperty("image", out var img) && img.ValueKind == JsonValueKind.Object)
                             {
                                 posterUrl = GetJsonString(img, "original") ?? posterUrl;
@@ -373,8 +373,8 @@ namespace DotNetProject.Balzor.Components.Shared
                     ContentTypeId = 1,
                     Title = title,
                     Description = details.Description,
-                    PosterUrl = details.PosterUrl ?? "/images/placeholder_poster.jpg",
-                    BannerUrl = details.BannerUrl ?? details.PosterUrl ?? "/images/placeholder_poster.jpg",
+                    PosterUrl = details.PosterUrl ?? "/images/poster_fallback.svg",
+                    BannerUrl = details.BannerUrl ?? details.PosterUrl ?? "/images/poster_fallback.svg",
                     ReleaseDate = details.ReleaseDate,
                     Country = details.Country,
                     Language = details.Language,
@@ -479,7 +479,7 @@ namespace DotNetProject.Balzor.Components.Shared
                     string posterPath = GetJsonString(root, "poster_path") ?? "";
                     string backdropPath = GetJsonString(root, "backdrop_path") ?? "";
 
-                    posterUrl = !string.IsNullOrWhiteSpace(posterPath) ? $"https://image.tmdb.org/t/p/w500{posterPath}" : "/images/placeholder_poster.jpg";
+                    posterUrl = !string.IsNullOrWhiteSpace(posterPath) ? $"https://image.tmdb.org/t/p/w500{posterPath}" : "/images/poster_fallback.svg";
                     bannerUrl = !string.IsNullOrWhiteSpace(backdropPath) ? $"https://image.tmdb.org/t/p/original{backdropPath}" : posterUrl;
 
                     if (DateOnly.TryParse(GetJsonString(root, "first_air_date"), out var d))
@@ -679,7 +679,7 @@ namespace DotNetProject.Balzor.Components.Shared
                 var lang = GetJsonString(el, "original_language") ?? "";
                 var vote = GetJsonDouble(el, "vote_average");
 
-                var posterUrl = !string.IsNullOrWhiteSpace(posterPath) ? $"https://image.tmdb.org/t/p/w500{posterPath}" : "/images/placeholder_poster.jpg";
+                var posterUrl = !string.IsNullOrWhiteSpace(posterPath) ? $"https://image.tmdb.org/t/p/w500{posterPath}" : "/images/poster_fallback.svg";
                 var bannerUrl = !string.IsNullOrWhiteSpace(backdropPath) ? $"https://image.tmdb.org/t/p/original{backdropPath}" : posterUrl;
                 var (country, _) = MapLanguage(lang);
 
