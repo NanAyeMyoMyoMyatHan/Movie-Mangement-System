@@ -53,39 +53,46 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public async Task<T?> ExecuteAsync<T>(string url, EnumHttpMethod method, object? obj = null)
         {
-            HttpResponseMessage? responseMessage = null;
-            HttpContent? content = null;
-
-            if (obj != null)
+            try
             {
-                string jsonString = JsonConvert.SerializeObject(obj);
-                content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-            }
+                HttpResponseMessage? responseMessage = null;
+                HttpContent? content = null;
 
-            var client = _httpClientFactory.CreateClient("Api");
-            switch (method)
+                if (obj != null)
+                {
+                    string jsonString = JsonConvert.SerializeObject(obj);
+                    content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                }
+
+                var client = _httpClientFactory.CreateClient("Api");
+                switch (method)
+                {
+                    case EnumHttpMethod.Get:
+                        responseMessage = await client.GetAsync(url);
+                        break;
+                    case EnumHttpMethod.Post:
+                        responseMessage = await client.PostAsync(url, content);
+                        break;
+                    case EnumHttpMethod.Put:
+                        responseMessage = await client.PutAsync(url, content);
+                        break;
+                    case EnumHttpMethod.Patch:
+                        responseMessage = await client.PatchAsync(url, content);
+                        break;
+                    case EnumHttpMethod.Delete:
+                        responseMessage = await client.DeleteAsync(url);
+                        break;
+                }
+
+                if (responseMessage == null) return default;
+
+                var result = await responseMessage.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(result);
+            }
+            catch
             {
-                case EnumHttpMethod.Get:
-                    responseMessage = await client.GetAsync(url);
-                    break;
-                case EnumHttpMethod.Post:
-                    responseMessage = await client.PostAsync(url, content);
-                    break;
-                case EnumHttpMethod.Put:
-                    responseMessage = await client.PutAsync(url, content);
-                    break;
-                case EnumHttpMethod.Patch:
-                    responseMessage = await client.PatchAsync(url, content);
-                    break;
-                case EnumHttpMethod.Delete:
-                    responseMessage = await client.DeleteAsync(url);
-                    break;
+                return default;
             }
-
-            if (responseMessage == null) return default;
-
-            var result = await responseMessage.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(result);
         }
 
         // --- User Authentication & Profile API client methods ---
@@ -253,9 +260,10 @@ namespace DotNetProject.Balzor.Components.Shared
         {
             if (file == null || file.Data.Length == 0) return;
             var content = new ByteArrayContent(file.Data);
-            content.Headers.ContentType = new MediaTypeHeaderValue(
-                string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType);
-            form.Add(content, name, file.FileName);
+            content.Headers.ContentType = MediaTypeHeaderValue.TryParse(file.ContentType, out var mediaType)
+                ? mediaType
+                : new MediaTypeHeaderValue("application/octet-stream");
+            form.Add(content, name, string.IsNullOrWhiteSpace(file.FileName) ? "upload.bin" : file.FileName);
         }
 
         // --- RBAC API client methods ---

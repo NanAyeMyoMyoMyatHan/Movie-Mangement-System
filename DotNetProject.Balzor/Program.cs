@@ -8,7 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents(options =>
+    {
+        options.DetailedErrors = builder.Environment.IsDevelopment();
+    })
+    .AddHubOptions(options =>
+    {
+        options.MaximumReceiveMessageSize = 10L * 1024 * 1024; // 10 MB
+    });
 
 // Database context for direct database user authentication and data access
 builder.Services.AddDbContext<AppDbContext>(options =>

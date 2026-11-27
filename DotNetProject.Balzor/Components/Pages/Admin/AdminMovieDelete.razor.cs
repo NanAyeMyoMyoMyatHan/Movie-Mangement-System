@@ -18,32 +18,52 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
 
         protected override async Task OnInitializedAsync()
         {
-            var result = await ApiClient.GetMovieDetailAsync(Id);
-            _loading = false;
-
-            if (result?.IsSuccess != true || result.Data == null)
+            try
             {
-                _loadError = result?.Message ?? "Movie not found.";
-                return;
-            }
+                var result = await ApiClient.GetMovieDetailAsync(Id);
+                if (result?.IsSuccess != true || result.Data == null)
+                {
+                    _loadError = result?.Message ?? "Movie not found.";
+                    return;
+                }
 
-            _title = result.Data.Movie.Title;
+                _title = result.Data.Movie.Title;
+            }
+            catch (Exception ex)
+            {
+                _loadError = $"Failed to load movie: {ex.Message}";
+            }
+            finally
+            {
+                _loading = false;
+            }
         }
 
         private async Task ConfirmDelete()
         {
+            _error = null;
             _deleting = true;
-            var result = await ApiClient.DeleteMovieAsync(Id);
-            _deleting = false;
-
-            if (result?.IsSuccess == true)
+            try
             {
-                await AuditLog.LogActionAsync("DELETE_MOVIE", "Movie", Id.ToString(), $"Deleted movie '{_title}' (ID: {Id})");
-                Nav.NavigateTo("/admin/movies");
+                var result = await ApiClient.DeleteMovieAsync(Id);
+                if (result?.IsSuccess == true)
+                {
+                    await AuditLog.LogActionAsync("DELETE_MOVIE", "Movie", Id.ToString(), $"Deleted movie '{_title}' (ID: {Id})");
+                    Nav.NavigateTo("/admin/movies");
+                }
+                else
+                {
+                    _error = result?.Message ?? "Failed to delete movie.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _error = result?.Message ?? "Failed to delete movie.";
+                _error = $"An unexpected error occurred: {ex.Message}";
+            }
+            finally
+            {
+                _deleting = false;
+                StateHasChanged();
             }
         }
     }

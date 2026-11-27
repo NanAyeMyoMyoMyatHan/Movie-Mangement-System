@@ -162,6 +162,27 @@
     {
         _error = null;
         var val = e.Value?.ToString();
+
+        if (!string.IsNullOrWhiteSpace(val))
+        {
+            var trimmed = val.Trim();
+            if (trimmed.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+            {
+                _error = "Base64 data URLs cannot be saved directly. Please use 'Choose Image from PC' or paste an https:// image link.";
+                UrlValue = null;
+                await UrlValueChanged.InvokeAsync(null);
+                return;
+            }
+
+            if (trimmed.Length > 500)
+            {
+                _error = "Image URL must be 500 characters or fewer. Please use 'Choose Image from PC' instead.";
+                UrlValue = trimmed[..500];
+                await UrlValueChanged.InvokeAsync(UrlValue);
+                return;
+            }
+        }
+
         UrlValue = val;
         await UrlValueChanged.InvokeAsync(val);
     }

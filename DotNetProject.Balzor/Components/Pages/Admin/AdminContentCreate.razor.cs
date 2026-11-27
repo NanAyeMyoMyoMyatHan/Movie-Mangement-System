@@ -32,19 +32,31 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
             _form.ReleaseDate = _releaseDateValue;
 
             _submitting = true;
-            var result = await ApiClient.CreateContentAsync(_form, _posterFile, _bannerFile);
-            _submitting = false;
-
-            if (result?.IsSuccess == true)
+            try
             {
-                await AuditLog.LogActionAsync("CREATE_CONTENT", "Content", null, $"Created content '{_form.Title}'");
-                _success = $"\"{_form.Title}\" created successfully!";
-                await Task.Delay(1200);
-                Nav.NavigateTo("/admin/contents");
+                var result = await ApiClient.CreateContentAsync(_form, _posterFile, _bannerFile);
+                if (result?.IsSuccess == true)
+                {
+                    var createdId = result.Data?.Content?.ContentId.ToString();
+                    await AuditLog.LogActionAsync("CREATE_CONTENT", "Content", createdId, $"Created content '{_form.Title}'");
+                    _success = $"\"{_form.Title}\" created successfully!";
+                    StateHasChanged();
+                    await Task.Delay(1000);
+                    Nav.NavigateTo("/admin/contents");
+                }
+                else
+                {
+                    _error = result?.Message ?? "Failed to create content.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _error = result?.Message ?? "Failed to create content.";
+                _error = $"An unexpected error occurred: {ex.Message}";
+            }
+            finally
+            {
+                _submitting = false;
+                StateHasChanged();
             }
         }
     }

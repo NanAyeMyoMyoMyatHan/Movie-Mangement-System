@@ -18,32 +18,52 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
 
         protected override async Task OnInitializedAsync()
         {
-            var result = await ApiClient.GetContentDetailAsync(Id);
-            _loading = false;
-
-            if (result?.IsSuccess != true || result.Data?.Content == null)
+            try
             {
-                _loadError = result?.Message ?? "Content not found.";
-                return;
-            }
+                var result = await ApiClient.GetContentDetailAsync(Id);
+                if (result?.IsSuccess != true || result.Data?.Content == null)
+                {
+                    _loadError = result?.Message ?? "Content not found.";
+                    return;
+                }
 
-            _title = result.Data.Content.Title;
+                _title = result.Data.Content.Title;
+            }
+            catch (Exception ex)
+            {
+                _loadError = $"Failed to load content: {ex.Message}";
+            }
+            finally
+            {
+                _loading = false;
+            }
         }
 
         private async Task ConfirmDelete()
         {
+            _error = null;
             _deleting = true;
-            var result = await ApiClient.DeleteContentAsync(Id);
-            _deleting = false;
-
-            if (result?.IsSuccess == true)
+            try
             {
-                await AuditLog.LogActionAsync("DELETE_CONTENT", "Content", Id.ToString(), $"Deleted content '{_title}' (ID: {Id})");
-                Nav.NavigateTo("/admin/contents");
+                var result = await ApiClient.DeleteContentAsync(Id);
+                if (result?.IsSuccess == true)
+                {
+                    await AuditLog.LogActionAsync("DELETE_CONTENT", "Content", Id.ToString(), $"Deleted content '{_title}' (ID: {Id})");
+                    Nav.NavigateTo("/admin/contents");
+                }
+                else
+                {
+                    _error = result?.Message ?? "Failed to delete content.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _error = result?.Message ?? "Failed to delete content.";
+                _error = $"An unexpected error occurred: {ex.Message}";
+            }
+            finally
+            {
+                _deleting = false;
+                StateHasChanged();
             }
         }
     }

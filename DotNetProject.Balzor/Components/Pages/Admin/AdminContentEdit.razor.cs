@@ -27,31 +27,40 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
             _posterFile = null;
             _bannerFile = null;
 
-            var res = await ApiClient.GetContentDetailAsync(Id);
-
-            if (res?.IsSuccess == true && res.Data?.Content != null)
+            try
             {
-                var c = res.Data.Content;
-                _form = new UpdateContentRequest
+                var res = await ApiClient.GetContentDetailAsync(Id);
+
+                if (res?.IsSuccess == true && res.Data?.Content != null)
                 {
-                    ContentId     = c.ContentId,
-                    ContentTypeId = c.ContentTypeId,
-                    Title         = c.Title,
-                    Description   = c.Description,
-                    PosterUrl     = c.PosterUrl,
-                    BannerUrl     = c.BannerUrl,
-                    Country       = c.Country,
-                    Language      = c.Language,
-                    ReleaseDate   = c.ReleaseDate,
-                    Status        = c.Status
-                };
+                    var c = res.Data.Content;
+                    _form = new UpdateContentRequest
+                    {
+                        ContentId     = c.ContentId,
+                        ContentTypeId = c.ContentTypeId,
+                        Title         = c.Title,
+                        Description   = c.Description,
+                        PosterUrl     = c.PosterUrl,
+                        BannerUrl     = c.BannerUrl,
+                        Country       = c.Country,
+                        Language      = c.Language,
+                        ReleaseDate   = c.ReleaseDate,
+                        Status        = c.Status
+                    };
+                }
+                else
+                {
+                    _loadError = res?.Message ?? "Content not found.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _loadError = res?.Message ?? "Content not found.";
+                _loadError = $"Failed to load content: {ex.Message}";
             }
-
-            _loading = false;
+            finally
+            {
+                _loading = false;
+            }
         }
 
         private async Task SubmitAsync()
@@ -66,19 +75,30 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
             }
 
             _submitting = true;
-            var result = await ApiClient.UpdateContentAsync(_form, _posterFile, _bannerFile);
-            _submitting = false;
-
-            if (result?.IsSuccess == true)
+            try
             {
-                await AuditLog.LogActionAsync("UPDATE_CONTENT", "Content", _form.ContentId.ToString(), $"Updated content '{_form.Title}' (ID: {_form.ContentId})");
-                _success = $"\"{_form.Title}\" updated successfully!";
-                await Task.Delay(1200);
-                Nav.NavigateTo("/admin/contents");
+                var result = await ApiClient.UpdateContentAsync(_form, _posterFile, _bannerFile);
+                if (result?.IsSuccess == true)
+                {
+                    await AuditLog.LogActionAsync("UPDATE_CONTENT", "Content", _form.ContentId.ToString(), $"Updated content '{_form.Title}' (ID: {_form.ContentId})");
+                    _success = $"\"{_form.Title}\" updated successfully!";
+                    StateHasChanged();
+                    await Task.Delay(1000);
+                    Nav.NavigateTo("/admin/contents");
+                }
+                else
+                {
+                    _error = result?.Message ?? "Failed to update content.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _error = result?.Message ?? "Failed to update content.";
+                _error = $"An unexpected error occurred: {ex.Message}";
+            }
+            finally
+            {
+                _submitting = false;
+                StateHasChanged();
             }
         }
     }
