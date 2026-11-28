@@ -95,7 +95,7 @@ namespace DotNetProject.Balzor.Components.Pages.Auth
             const long maxFileSize = 5 * 1024 * 1024; // 5 MB
             if (file.Size > maxFileSize)
             {
-                StatusMessage = "Avatar image must be smaller than 5 MB.";
+                StatusMessage = "Profile photo must be smaller than 5 MB.";
                 IsStatusSuccess = false;
                 return;
             }
@@ -120,7 +120,7 @@ namespace DotNetProject.Balzor.Components.Pages.Auth
                     if (UserProfile != null) UserProfile.AvatarUrl = uploadedUrl;
                     AuthService.UpdateAvatar(uploadedUrl);
 
-                    StatusMessage = "Avatar uploaded successfully!";
+                    StatusMessage = "Profile photo uploaded successfully!";
                     IsStatusSuccess = true;
                 }
                 else
@@ -129,13 +129,13 @@ namespace DotNetProject.Balzor.Components.Pages.Auth
                     ms.Position = 0;
                     var base64 = Convert.ToBase64String(ms.ToArray());
                     PreviewAvatarUrl = $"data:{file.ContentType};base64,{base64}";
-                    StatusMessage = "Avatar updated locally!";
+                    StatusMessage = "Profile photo updated locally!";
                     IsStatusSuccess = true;
                 }
             }
             catch (Exception ex)
             {
-                StatusMessage = $"Avatar upload failed: {ex.Message}";
+                StatusMessage = $"Profile photo upload failed: {ex.Message}";
                 IsStatusSuccess = false;
             }
             finally

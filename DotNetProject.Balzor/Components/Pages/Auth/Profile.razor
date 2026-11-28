@@ -23,13 +23,13 @@
     }
 
     <div class="profile-grid">
-        <!-- Left Column: Avatar & Quick Info Card -->
+        <!-- Left Column: Profile Photo & Quick Info Card -->
         <div class="profile-card avatar-card">
             <h2 class="card-heading">Profile Picture</h2>
             <div class="avatar-preview-wrapper">
                 @if (!string.IsNullOrWhiteSpace(PreviewAvatarUrl ?? UserProfile?.AvatarUrl))
                 {
-                    <img src="@(PreviewAvatarUrl ?? UserProfile?.AvatarUrl)" alt="User Avatar" class="profile-avatar-large" />
+                    <img src="@(PreviewAvatarUrl ?? UserProfile?.AvatarUrl)" alt="Profile Photo" class="profile-avatar-large" />
                 }
                 else
                 {
@@ -42,7 +42,7 @@
             <div class="avatar-upload-box">
                 <label class="custom-file-upload">
                     <InputFile OnChange="HandleAvatarFileSelected" accept="image/png,image/jpeg,image/webp" />
-                    <span>📷 Upload New Avatar</span>
+                    <span>📷 Upload Profile Photo</span>
                 </label>
                 <small class="upload-hint">Supported formats: JPG, PNG, WEBP (Max 5MB)</small>
                 @if (IsUploadingAvatar)
