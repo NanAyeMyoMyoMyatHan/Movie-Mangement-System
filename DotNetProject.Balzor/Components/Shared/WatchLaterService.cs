@@ -1,6 +1,4 @@
-using DotNetProject.Database.AppDbModels;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using DotNetProject.Domain.Features.WatchLater;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,34 +8,20 @@ using System.Threading.Tasks;
 
 namespace DotNetProject.Balzor.Components.Shared
 {
-    public class WatchLaterItem
-    {
-        public long Id { get; set; }
-        public bool IsContent { get; set; } = true;
-        public string Title { get; set; } = string.Empty;
-        public string? PosterUrl { get; set; }
-        public string? Category { get; set; } = "Korean Drama";
-        public string? Description { get; set; }
-        public int TotalEpisodes { get; set; } = 16;
-        public int CurrentEpisode { get; set; } = 1;
-        public string Status { get; set; } = "Want to Watch";
-        public DateTime AddedAt { get; set; } = DateTime.UtcNow;
-    }
-
     public class WatchLaterService : IDisposable
     {
         private readonly AuthService _authService;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly HttpClientService _api;
         private readonly List<WatchLaterItem> _items = new();
         private string _activeUserKey = "guest";
         private int _activeUserId = 0;
 
         public event Action? OnChange;
 
-        public WatchLaterService(AuthService authService, IServiceProvider serviceProvider)
+        public WatchLaterService(AuthService authService, HttpClientService api)
         {
             _authService = authService;
-            _serviceProvider = serviceProvider;
+            _api = api;
             _activeUserKey = _authService.GetCurrentUserKey();
             _activeUserId = _authService.CurrentUser.Id;
             _authService.OnAuthStateChanged += HandleAuthStateChanged;
@@ -108,50 +92,24 @@ namespace DotNetProject.Balzor.Components.Shared
         {
             _items.Clear();
 
-            // When user is not authenticated (Guest), personal lists are strictly 0 items. No dummy seeds.
             if (_activeUserId <= 0 || !_authService.IsAuthenticated())
             {
                 return;
             }
 
-            // 1. If authenticated, load exclusively from SQL Server UserWatchLater table
             try
             {
-                using var scope = _serviceProvider.CreateScope();
-                var db = scope.ServiceProvider.GetService<AppDbContext>();
-                if (db != null)
+                var apiItems = await _api.GetWatchLaterAsync(_activeUserId);
+                if (apiItems != null && apiItems.Any())
                 {
-                    var dbRows = await db.UserWatchLaters
-                        .Where(w => w.UserId == _activeUserId && !w.IsDeleted)
-                        .OrderByDescending(w => w.AddedAt)
-                        .ToListAsync();
-
-                    if (dbRows.Any())
-                    {
-                        foreach (var r in dbRows)
-                        {
-                            _items.Add(new WatchLaterItem
-                            {
-                                Id = r.ContentId,
-                                IsContent = r.IsContent,
-                                Title = r.Title,
-                                PosterUrl = r.PosterUrl,
-                                Category = r.Category,
-                                Description = r.Description,
-                                TotalEpisodes = r.TotalEpisodes,
-                                CurrentEpisode = r.CurrentEpisode,
-                                Status = r.Status,
-                                AddedAt = r.AddedAt
-                            });
-                        }
-                        SaveToFile();
-                        return;
-                    }
+                    _items.AddRange(apiItems);
+                    SaveToFile();
+                    return;
                 }
             }
             catch { }
 
-            // 2. Fallback to per-user JSON file if db was temporarily unreachable
+            // Fallback to per-user JSON file if API was temporarily unreachable
             var filePath = GetStoragePath(_activeUserKey);
             if (File.Exists(filePath))
             {
@@ -168,7 +126,7 @@ namespace DotNetProject.Balzor.Components.Shared
             }
         }
 
-        public async Task<List<WatchLaterItem>> GetItemsAsync(string? categoryFilter = null, string? statusFilter = null)
+        public async Task<List<WatchLaterItem>> GetItemsAsync(string? categoryFilter = null, string? statusFilter = null, string? sortBy = null)
         {
             if (!_authService.IsAuthenticated() || _activeUserId <= 0)
             {
@@ -203,7 +161,20 @@ namespace DotNetProject.Balzor.Components.Shared
                 query = query.Where(i => i.Status.Equals(statusFilter, StringComparison.OrdinalIgnoreCase));
             }
 
-            return query.OrderByDescending(i => i.AddedAt).ToList();
+            if (sortBy == "title")
+            {
+                query = query.OrderBy(i => i.Title);
+            }
+            else if (sortBy == "episodes")
+            {
+                query = query.OrderByDescending(i => i.TotalEpisodes);
+            }
+            else
+            {
+                query = query.OrderByDescending(i => i.AddedAt);
+            }
+
+            return query.ToList();
         }
 
         public async Task<int> GetCountAsync()
@@ -220,7 +191,7 @@ namespace DotNetProject.Balzor.Components.Shared
             return _items.Count;
         }
 
-        public async Task<bool> IsInWatchLaterAsync(long id, bool isContent = true)
+        public async Task<bool> IsWatchLaterAsync(long id, bool isContent = true)
         {
             if (!_authService.IsAuthenticated() || _activeUserId <= 0)
             {
@@ -234,6 +205,10 @@ namespace DotNetProject.Balzor.Components.Shared
             return _items.Any(i => i.Id == id && i.IsContent == isContent);
         }
 
+        public Task<bool> IsInWatchLaterAsync(long id, bool isContent = true) => IsWatchLaterAsync(id, isContent);
+
+        public Task RemoveItemAsync(long id, bool isContent = true) => RemoveAsync(id, isContent);
+
         public async Task<bool> ToggleWatchLaterAsync(WatchLaterItem item)
         {
             if (!_authService.IsAuthenticated() || _activeUserId <= 0)
@@ -244,114 +219,24 @@ namespace DotNetProject.Balzor.Components.Shared
             var existing = _items.FirstOrDefault(i => i.Id == item.Id && i.IsContent == item.IsContent);
             if (existing != null)
             {
-                await RemoveItemAsync(item.Id, item.IsContent);
+                _items.Remove(existing);
+                SaveToFile();
+                OnChange?.Invoke();
+                _ = _api.RemoveWatchLaterAsync(_activeUserId, item.Id, item.IsContent);
                 return false;
             }
             else
             {
-                await AddItemAsync(item);
+                item.AddedAt = DateTime.UtcNow;
+                _items.Insert(0, item);
+                SaveToFile();
+                OnChange?.Invoke();
+                _ = _api.AddWatchLaterAsync(_activeUserId, item);
                 return true;
             }
         }
 
-        public async Task AddItemAsync(WatchLaterItem item)
-        {
-            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
-            {
-                return;
-            }
-
-            if (!_items.Any(i => i.Id == item.Id && i.IsContent == item.IsContent))
-            {
-                item.AddedAt = DateTime.UtcNow;
-                _items.Insert(0, item);
-                SaveToFile();
-
-                // Direct SQL Server insertion
-                try
-                {
-                    using var scope = _serviceProvider.CreateScope();
-                    var db = scope.ServiceProvider.GetService<AppDbContext>();
-                    if (db != null)
-                    {
-                        var dbItem = await db.UserWatchLaters.FirstOrDefaultAsync(w =>
-                            w.UserId == _activeUserId &&
-                            w.ContentId == item.Id &&
-                            w.IsContent == item.IsContent);
-
-                        if (dbItem != null)
-                        {
-                            dbItem.IsDeleted = false;
-                            dbItem.AddedAt = DateTime.UtcNow;
-                            dbItem.Status = item.Status;
-                            dbItem.CurrentEpisode = item.CurrentEpisode;
-                        }
-                        else
-                        {
-                            db.UserWatchLaters.Add(new UserWatchLater
-                            {
-                                UserId = _activeUserId,
-                                ContentId = item.Id,
-                                IsContent = item.IsContent,
-                                Title = item.Title,
-                                PosterUrl = item.PosterUrl,
-                                Category = item.Category,
-                                Description = item.Description,
-                                TotalEpisodes = item.TotalEpisodes,
-                                CurrentEpisode = item.CurrentEpisode,
-                                Status = item.Status,
-                                AddedAt = DateTime.UtcNow,
-                                IsDeleted = false
-                            });
-                        }
-                        await db.SaveChangesAsync();
-                    }
-                }
-                catch { }
-
-                OnChange?.Invoke();
-            }
-        }
-
-        public async Task RemoveItemAsync(long id, bool isContent = true)
-        {
-            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
-            {
-                return;
-            }
-
-            var removed = _items.RemoveAll(i => i.Id == id && i.IsContent == isContent);
-            if (removed > 0)
-            {
-                SaveToFile();
-
-                // Direct SQL Server soft-delete
-                try
-                {
-                    using var scope = _serviceProvider.CreateScope();
-                    var db = scope.ServiceProvider.GetService<AppDbContext>();
-                    if (db != null)
-                    {
-                        var dbItem = await db.UserWatchLaters.FirstOrDefaultAsync(w =>
-                            w.UserId == _activeUserId &&
-                            w.ContentId == id &&
-                            w.IsContent == isContent &&
-                            !w.IsDeleted);
-
-                        if (dbItem != null)
-                        {
-                            dbItem.IsDeleted = true;
-                            await db.SaveChangesAsync();
-                        }
-                    }
-                }
-                catch { }
-
-                OnChange?.Invoke();
-            }
-        }
-
-        public async Task UpdateStatusAsync(long id, string newStatus, bool isContent = true)
+        public async Task UpdateStatusAsync(long id, bool isContent, string newStatus)
         {
             if (!_authService.IsAuthenticated() || _activeUserId <= 0)
             {
@@ -363,33 +248,12 @@ namespace DotNetProject.Balzor.Components.Shared
             {
                 item.Status = newStatus;
                 SaveToFile();
-
-                try
-                {
-                    using var scope = _serviceProvider.CreateScope();
-                    var db = scope.ServiceProvider.GetService<AppDbContext>();
-                    if (db != null)
-                    {
-                        var dbItem = await db.UserWatchLaters.FirstOrDefaultAsync(w =>
-                            w.UserId == _activeUserId &&
-                            w.ContentId == id &&
-                            w.IsContent == isContent &&
-                            !w.IsDeleted);
-
-                        if (dbItem != null)
-                        {
-                            dbItem.Status = newStatus;
-                            await db.SaveChangesAsync();
-                        }
-                    }
-                }
-                catch { }
-
                 OnChange?.Invoke();
+                _ = _api.AddWatchLaterAsync(_activeUserId, item);
             }
         }
 
-        public async Task UpdateEpisodeProgressAsync(long id, int currentEpisode, bool isContent = true)
+        public async Task RemoveAsync(long id, bool isContent = true)
         {
             if (!_authService.IsAuthenticated() || _activeUserId <= 0)
             {
@@ -399,40 +263,10 @@ namespace DotNetProject.Balzor.Components.Shared
             var item = _items.FirstOrDefault(i => i.Id == id && i.IsContent == isContent);
             if (item != null)
             {
-                item.CurrentEpisode = currentEpisode;
-                if (currentEpisode >= item.TotalEpisodes)
-                {
-                    item.Status = "Completed";
-                }
-                else if (currentEpisode > 1)
-                {
-                    item.Status = "Watching";
-                }
+                _items.Remove(item);
                 SaveToFile();
-
-                try
-                {
-                    using var scope = _serviceProvider.CreateScope();
-                    var db = scope.ServiceProvider.GetService<AppDbContext>();
-                    if (db != null)
-                    {
-                        var dbItem = await db.UserWatchLaters.FirstOrDefaultAsync(w =>
-                            w.UserId == _activeUserId &&
-                            w.ContentId == id &&
-                            w.IsContent == isContent &&
-                            !w.IsDeleted);
-
-                        if (dbItem != null)
-                        {
-                            dbItem.CurrentEpisode = item.CurrentEpisode;
-                            dbItem.Status = item.Status;
-                            await db.SaveChangesAsync();
-                        }
-                    }
-                }
-                catch { }
-
                 OnChange?.Invoke();
+                _ = _api.RemoveWatchLaterAsync(_activeUserId, id, isContent);
             }
         }
 

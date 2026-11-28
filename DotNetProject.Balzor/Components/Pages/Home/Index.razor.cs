@@ -1,7 +1,10 @@
 using DotNetProject.Balzor.Components.Shared;
 using DotNetProject.Domain.Features.Contents;
+using DotNetProject.Domain.Features.Favorites;
 using DotNetProject.Domain.Features.Movies;
 using DotNetProject.Domain.Features.Thai;
+using DotNetProject.Domain.Features.WatchHistory;
+using DotNetProject.Domain.Features.WatchLater;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;

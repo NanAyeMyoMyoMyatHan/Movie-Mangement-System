@@ -128,15 +128,29 @@ DotNetProject.Database/
 DotNetProject.Domain/
 └── Features/
     ├── Users/                            # Profile DTOs and interfaces
-    └── Audit/                            # Audit DTOs and interfaces
+    ├── Audit/                            # Audit DTOs and interfaces
+    ├── Tmdb/                             # TMDB DTOs and ITmdbService
+    ├── Favorites/                        # Favorites DTOs and IFavoriteService
+    ├── WatchLater/                       # WatchLater DTOs and IWatchLaterService
+    └── WatchHistory/                     # WatchHistory DTOs and IWatchHistoryService
 DotNetProject.WebApi/
 └── Features/
     ├── Users/                            # User profile and password change endpoints
-    └── Audit/                            # Audit log retrieval and insertion endpoints
+    ├── Audit/                            # Audit log retrieval and insertion endpoints
+    ├── Tmdb/                             # TmdbService & TmdbController
+    ├── Favorites/                        # FavoriteService & FavoritesController
+    ├── WatchLater/                       # WatchLaterService & WatchLaterController
+    └── WatchHistory/                     # WatchHistoryService & WatchHistoryController
+DotNetProject.Balzor/
+└── Components/
+    └── Shared/                           # UI-only presentation services calling WebApi via HTTP
 ```
 
 **Structure Decision**:
-Follows the established feature-slice architecture in `DotNetProject.Domain`, `DotNetProject.WebApi`, and `DotNetProject.Balzor`, keeping data access centralized in `DotNetProject.Database` while reusing existing services (`WatchHistoryService`, `AuthService`, `HttpClientService`).
+Follows RULES.md clean architecture principles:
+- **Domain**: Contains business models, DTOs, and interfaces.
+- **WebApi**: Contains database contexts, service implementations, and API controllers.
+- **Blazor**: Dedicated exclusively to UI presentation. Interacts with the backend solely via HttpClient. No direct database dependencies.
 
 ---
 

@@ -345,6 +345,21 @@ namespace DotNetProject.WebApi.Features.Contents
             return Result<DeleteContentResponse>.Success(new DeleteContentResponse(request.ContentId, true));
         }
 
+        public async Task<Result<bool>> UpdateEpisodeUrlAsync(UpdateEpisodeUrlRequest request, CancellationToken cancellationToken = default)
+        {
+            var ep = await _db.Episodes.FirstOrDefaultAsync(e => e.EpisodeId == request.EpisodeId && !e.IsDeleted, cancellationToken);
+            if (ep == null)
+            {
+                return Result<bool>.NotFoundError("Episode not found.");
+            }
+
+            if (request.VideoUrl != null) ep.VideoUrl = request.VideoUrl;
+            if (request.SubtitleUrl != null) ep.SubtitleUrl = request.SubtitleUrl;
+            await _db.SaveChangesAsync(cancellationToken);
+
+            return Result<bool>.Success(true, "Episode URLs updated successfully.");
+        }
+
         private static ContentDetailResponse ToDetailResponse(Content c) =>
             new ContentDetailResponse(
                 c.ContentId,

@@ -155,5 +155,11 @@ namespace DotNetProject.WebApi.Features.Contents
             [FromBody] DeleteContentRequest request,
             CancellationToken cancellationToken) =>
             ToActionResult(await _contentInterface.DeleteAsync(request, cancellationToken));
+
+        [HttpPost("episode/quick-url")]
+        public async Task<IActionResult> UpdateEpisodeQuickUrl(
+            [FromBody] UpdateEpisodeUrlRequest request,
+            CancellationToken cancellationToken) =>
+            ToActionResult(await _contentInterface.UpdateEpisodeUrlAsync(request, cancellationToken));
     }
 }

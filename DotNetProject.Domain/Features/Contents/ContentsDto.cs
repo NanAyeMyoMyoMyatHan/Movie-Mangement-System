@@ -136,4 +136,11 @@ namespace DotNetProject.Domain.Features.Contents
     public sealed record CreateContentResponse(ContentDetailResponse Content);
     public sealed record UpdateContentResponse(ContentDetailResponse Content);
     public sealed record DeleteContentResponse(long ContentId, bool IsDeleted);
+
+    public class UpdateEpisodeUrlRequest
+    {
+        public long EpisodeId { get; set; }
+        public string? VideoUrl { get; set; }
+        public string? SubtitleUrl { get; set; }
+    }
 }

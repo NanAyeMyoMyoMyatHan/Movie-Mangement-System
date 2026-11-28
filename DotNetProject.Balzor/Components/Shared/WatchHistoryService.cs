@@ -1,6 +1,4 @@
-using DotNetProject.Database.AppDbModels;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using DotNetProject.Domain.Features.WatchHistory;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,36 +8,20 @@ using System.Threading.Tasks;
 
 namespace DotNetProject.Balzor.Components.Shared
 {
-    public class WatchHistoryItem
-    {
-        public long ContentId { get; set; }
-        public bool IsContent { get; set; } = true;
-        public string Title { get; set; } = string.Empty;
-        public string? Description { get; set; }
-        public string? PosterUrl { get; set; }
-        public int EpisodeNumber { get; set; } = 1;
-        public int TotalEpisodes { get; set; } = 16;
-        public string? VideoUrl { get; set; }
-        public int ProgressPercentage { get; set; } = 45;
-        public int ProgressSeconds { get; set; } = 0;
-        public int DurationSeconds { get; set; } = 0;
-        public DateTime LastWatchedAt { get; set; } = DateTime.UtcNow;
-    }
-
     public class WatchHistoryService : IDisposable
     {
         private readonly AuthService _authService;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly HttpClientService _api;
         private readonly List<WatchHistoryItem> _history = new();
         private string _activeUserKey = "guest";
         private int _activeUserId = 0;
 
         public event Action? OnChange;
 
-        public WatchHistoryService(AuthService authService, IServiceProvider serviceProvider)
+        public WatchHistoryService(AuthService authService, HttpClientService api)
         {
             _authService = authService;
-            _serviceProvider = serviceProvider;
+            _api = api;
             _activeUserKey = _authService.GetCurrentUserKey();
             _activeUserId = _authService.CurrentUser.Id;
             _authService.OnAuthStateChanged += HandleAuthStateChanged;
@@ -110,53 +92,24 @@ namespace DotNetProject.Balzor.Components.Shared
         {
             _history.Clear();
 
-            // When user is not authenticated (Guest), continue watching is strictly 0 items. No dummy seeds.
             if (_activeUserId <= 0 || !_authService.IsAuthenticated())
             {
                 return;
             }
 
-            // 1. If authenticated, load from SQL Server UserContinueWatching table
             try
             {
-                using var scope = _serviceProvider.CreateScope();
-                var db = scope.ServiceProvider.GetService<AppDbContext>();
-                if (db != null)
+                var apiItems = await _api.GetWatchHistoryAsync(_activeUserId);
+                if (apiItems != null && apiItems.Any())
                 {
-                    var dbRows = await db.UserContinueWatchings
-                        .Where(w => w.UserId == _activeUserId && !w.IsDeleted)
-                        .OrderByDescending(w => w.LastWatchedAt)
-                        .Take(20)
-                        .ToListAsync();
-
-                    if (dbRows.Any())
-                    {
-                        foreach (var r in dbRows)
-                        {
-                            int pct = r.DurationSeconds > 0 
-                                ? (int)Math.Min(100, Math.Round((double)r.ProgressSeconds / r.DurationSeconds * 100))
-                                : (r.ProgressSeconds > 0 ? 50 : 35);
-
-                            _history.Add(new WatchHistoryItem
-                            {
-                                ContentId = r.ContentId,
-                                IsContent = r.IsContent,
-                                Title = r.Title,
-                                PosterUrl = r.PosterUrl,
-                                EpisodeNumber = r.EpisodeNumber,
-                                TotalEpisodes = r.TotalEpisodes > 0 ? r.TotalEpisodes : 16,
-                                ProgressPercentage = pct,
-                                LastWatchedAt = r.LastWatchedAt
-                            });
-                        }
-                        SaveToFile();
-                        return;
-                    }
+                    _history.AddRange(apiItems);
+                    SaveToFile();
+                    return;
                 }
             }
             catch { }
 
-            // 2. Fallback to per-user JSON file if db was temporarily unreachable
+            // Fallback to local JSON file
             var filePath = GetStoragePath(_activeUserKey);
             if (File.Exists(filePath))
             {
@@ -173,7 +126,7 @@ namespace DotNetProject.Balzor.Components.Shared
             }
         }
 
-        public async Task<List<WatchHistoryItem>> GetHistoryAsync(int limit = 10)
+        public async Task<List<WatchHistoryItem>> GetHistoryAsync(string? categoryFilter = null)
         {
             if (!_authService.IsAuthenticated() || _activeUserId <= 0)
             {
@@ -185,10 +138,39 @@ namespace DotNetProject.Balzor.Components.Shared
                 await LoadHistoryForActiveUserAsync();
             }
 
-            return _history
-                .OrderByDescending(h => h.LastWatchedAt)
-                .Take(limit)
-                .ToList();
+            var query = _history.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(categoryFilter) && categoryFilter != "All")
+            {
+                if (categoryFilter.Equals("Korean Drama", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(i => i.Description != null && i.Description.Contains("Korean", StringComparison.OrdinalIgnoreCase));
+                }
+                else if (categoryFilter.Equals("Thai BL", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(i => i.Description != null && i.Description.Contains("Thai", StringComparison.OrdinalIgnoreCase));
+                }
+                else if (categoryFilter.Equals("Movies", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(i => !i.IsContent || (i.Description != null && i.Description.Contains("Movie", StringComparison.OrdinalIgnoreCase)));
+                }
+            }
+
+            return query.OrderByDescending(i => i.LastWatchedAt).ToList();
+        }
+
+        public async Task<List<WatchHistoryItem>> GetHistoryAsync(int limit)
+        {
+            var list = await GetHistoryAsync((string?)null);
+            return limit > 0 ? list.Take(limit).ToList() : list;
+        }
+
+        public async Task<int> GetSavedTimestampAsync(long contentId, int episodeNumber)
+        {
+            var item = await GetItemAsync(contentId, true, episodeNumber);
+            if (item == null) return 0;
+            if (item.ProgressPercentage >= 90) return 0;
+            return item.ProgressSeconds;
         }
 
         public async Task RecordWatchAsync(
@@ -197,200 +179,153 @@ namespace DotNetProject.Balzor.Components.Shared
             string? description,
             string? posterUrl,
             int episodeNumber,
-            int totalEpisodes = 16,
-            string? videoUrl = null,
+            int totalEpisodes,
+            string? videoUrl,
             bool isContent = true,
-            int progressPercentage = 40)
+            int progressPercentage = 0)
+        {
+            int duration = 3600;
+            int progressSec = (int)(duration * (progressPercentage / 100.0));
+            await RecordProgressAsync(contentId, isContent, title, posterUrl, description, episodeNumber, totalEpisodes, progressSec, duration, videoUrl);
+        }
+
+        public async Task RecordWatchProgressAsync(
+            long contentId,
+            int episodeNumber,
+            int currentSeconds,
+            int durationSeconds,
+            bool isContent = true)
+        {
+            var existing = await GetItemAsync(contentId, isContent, episodeNumber);
+            string title = existing?.Title ?? $"Content {contentId}";
+            string? poster = existing?.PosterUrl;
+            string? desc = existing?.Description;
+            int totalEps = existing?.TotalEpisodes ?? 16;
+            string? videoUrl = existing?.VideoUrl;
+
+            await RecordProgressAsync(contentId, isContent, title, poster, desc, episodeNumber, totalEps, currentSeconds, durationSeconds, videoUrl);
+        }
+
+        public async Task<int> GetCountAsync()
+        {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return 0;
+            }
+
+            if (!_history.Any())
+            {
+                await LoadHistoryForActiveUserAsync();
+            }
+            return _history.Count;
+        }
+
+        public async Task<WatchHistoryItem?> GetItemAsync(long contentId, bool isContent = true, int episodeNumber = 1)
+        {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return null;
+            }
+
+            var cached = _history.FirstOrDefault(i => i.ContentId == contentId && i.IsContent == isContent && i.EpisodeNumber == episodeNumber);
+            if (cached != null) return cached;
+
+            try
+            {
+                var apiItem = await _api.GetWatchHistoryItemAsync(_activeUserId, contentId, isContent, episodeNumber);
+                if (apiItem != null)
+                {
+                    _history.RemoveAll(i => i.ContentId == contentId && i.IsContent == isContent && i.EpisodeNumber == episodeNumber);
+                    _history.Insert(0, apiItem);
+                    return apiItem;
+                }
+            }
+            catch { }
+
+            return null;
+        }
+
+        public async Task RecordProgressAsync(
+            long contentId,
+            bool isContent,
+            string title,
+            string? posterUrl,
+            string? description,
+            int episodeNumber,
+            int totalEpisodes,
+            int progressSeconds,
+            int durationSeconds,
+            string? videoUrl = null)
         {
             if (!_authService.IsAuthenticated() || _activeUserId <= 0)
             {
                 return;
             }
 
-            // 1. Update in-memory
-            var existing = _history.FirstOrDefault(h => h.ContentId == contentId && h.IsContent == isContent);
-            if (existing != null)
+            int percent = 0;
+            if (durationSeconds > 0 && progressSeconds > 0)
             {
-                existing.EpisodeNumber = episodeNumber;
-                existing.TotalEpisodes = totalEpisodes > 0 ? totalEpisodes : existing.TotalEpisodes;
-                existing.LastWatchedAt = DateTime.UtcNow;
-                existing.ProgressPercentage = progressPercentage;
-                if (!string.IsNullOrWhiteSpace(posterUrl)) existing.PosterUrl = posterUrl;
-                if (!string.IsNullOrWhiteSpace(videoUrl)) existing.VideoUrl = videoUrl;
+                percent = (int)Math.Min(100, Math.Round((double)progressSeconds / durationSeconds * 100));
+            }
+
+            var item = new WatchHistoryItem
+            {
+                ContentId = contentId,
+                IsContent = isContent,
+                Title = title,
+                PosterUrl = posterUrl,
+                Description = description,
+                EpisodeNumber = episodeNumber,
+                TotalEpisodes = totalEpisodes,
+                ProgressSeconds = progressSeconds,
+                DurationSeconds = durationSeconds,
+                ProgressPercentage = percent,
+                VideoUrl = videoUrl,
+                LastWatchedAt = DateTime.UtcNow
+            };
+
+            var existingIndex = _history.FindIndex(i => i.ContentId == contentId && i.IsContent == isContent && i.EpisodeNumber == episodeNumber);
+            if (existingIndex >= 0)
+            {
+                _history[existingIndex] = item;
             }
             else
             {
-                _history.Insert(0, new WatchHistoryItem
-                {
-                    ContentId = contentId,
-                    IsContent = isContent,
-                    Title = title,
-                    Description = description,
-                    PosterUrl = posterUrl,
-                    EpisodeNumber = episodeNumber,
-                    TotalEpisodes = totalEpisodes > 0 ? totalEpisodes : 16,
-                    VideoUrl = videoUrl,
-                    ProgressPercentage = progressPercentage,
-                    LastWatchedAt = DateTime.UtcNow
-                });
+                _history.Insert(0, item);
             }
 
             SaveToFile();
-
-            // 2. Save directly to SQL Server UserContinueWatching table
-            try
-            {
-                using var scope = _serviceProvider.CreateScope();
-                var db = scope.ServiceProvider.GetService<AppDbContext>();
-                if (db != null)
-                {
-                    var dbItem = await db.UserContinueWatchings.FirstOrDefaultAsync(w =>
-                        w.UserId == _activeUserId &&
-                        w.ContentId == contentId &&
-                        w.IsContent == isContent &&
-                        !w.IsDeleted);
-
-                    if (dbItem != null)
-                    {
-                        dbItem.EpisodeNumber = episodeNumber;
-                        dbItem.TotalEpisodes = totalEpisodes > 0 ? totalEpisodes : dbItem.TotalEpisodes;
-                        dbItem.ProgressSeconds = progressPercentage;
-                        dbItem.DurationSeconds = 100;
-                        dbItem.LastWatchedAt = DateTime.UtcNow;
-                        if (!string.IsNullOrWhiteSpace(posterUrl)) dbItem.PosterUrl = posterUrl;
-                    }
-                    else
-                    {
-                        db.UserContinueWatchings.Add(new UserContinueWatching
-                        {
-                            UserId = _activeUserId,
-                            ContentId = contentId,
-                            IsContent = isContent,
-                            Title = title,
-                            PosterUrl = posterUrl,
-                            EpisodeNumber = episodeNumber,
-                            TotalEpisodes = totalEpisodes > 0 ? totalEpisodes : 16,
-                            ProgressSeconds = progressPercentage,
-                            DurationSeconds = 100,
-                            LastWatchedAt = DateTime.UtcNow,
-                            IsDeleted = false
-                        });
-                    }
-
-                    await db.SaveChangesAsync();
-                }
-            }
-            catch { }
-
             OnChange?.Invoke();
+
+            _ = _api.SaveWatchProgressAsync(_activeUserId, item);
         }
 
-        public async Task RecordWatchProgressAsync(long contentId, int episodeNumber, int currentSeconds, int durationSeconds, bool isContent = true)
-        {
-            if (!_authService.IsAuthenticated() || _activeUserId <= 0) return;
-
-            int progressPct = durationSeconds > 0 ? (int)((double)currentSeconds / durationSeconds * 100) : 0;
-            int savedSeconds = (durationSeconds > 0 && currentSeconds >= (durationSeconds * 0.90)) ? 0 : currentSeconds;
-
-            var existing = _history.FirstOrDefault(h => h.ContentId == contentId && h.IsContent == isContent);
-            if (existing != null)
-            {
-                existing.EpisodeNumber = episodeNumber;
-                existing.ProgressSeconds = savedSeconds;
-                existing.DurationSeconds = durationSeconds;
-                existing.ProgressPercentage = progressPct;
-                existing.LastWatchedAt = DateTime.UtcNow;
-                SaveToFile();
-            }
-
-            try
-            {
-                using var scope = _serviceProvider.CreateScope();
-                var db = scope.ServiceProvider.GetService<AppDbContext>();
-                if (db != null)
-                {
-                    var dbItem = await db.UserContinueWatchings.FirstOrDefaultAsync(w =>
-                        w.UserId == _activeUserId &&
-                        w.ContentId == contentId &&
-                        w.IsContent == isContent &&
-                        !w.IsDeleted);
-
-                    if (dbItem != null)
-                    {
-                        dbItem.EpisodeNumber = episodeNumber;
-                        dbItem.ProgressSeconds = savedSeconds;
-                        dbItem.DurationSeconds = durationSeconds;
-                        dbItem.LastWatchedAt = DateTime.UtcNow;
-                        await db.SaveChangesAsync();
-                    }
-                }
-            }
-            catch { }
-        }
-
-        public async Task<int> GetSavedTimestampAsync(long contentId, int episodeNumber, bool isContent = true)
-        {
-            var inMem = _history.FirstOrDefault(h => h.ContentId == contentId && h.IsContent == isContent);
-            if (inMem != null && inMem.EpisodeNumber == episodeNumber && inMem.ProgressSeconds > 0)
-            {
-                return inMem.ProgressSeconds;
-            }
-
-            try
-            {
-                using var scope = _serviceProvider.CreateScope();
-                var db = scope.ServiceProvider.GetService<AppDbContext>();
-                if (db != null && _activeUserId > 0)
-                {
-                    var dbItem = await db.UserContinueWatchings.AsNoTracking().FirstOrDefaultAsync(w =>
-                        w.UserId == _activeUserId &&
-                        w.ContentId == contentId &&
-                        w.IsContent == isContent &&
-                        !w.IsDeleted);
-
-                    if (dbItem != null && dbItem.EpisodeNumber == episodeNumber)
-                    {
-                        return dbItem.ProgressSeconds;
-                    }
-                }
-            }
-            catch { }
-
-            return 0;
-        }
-
-        public async Task RemoveFromHistoryAsync(long contentId, bool isContent = true)
+        public async Task RemoveAsync(long contentId, bool isContent = true)
         {
             if (!_authService.IsAuthenticated() || _activeUserId <= 0)
             {
                 return;
             }
 
-            _history.RemoveAll(h => h.ContentId == contentId && h.IsContent == isContent);
+            _history.RemoveAll(i => i.ContentId == contentId && i.IsContent == isContent);
             SaveToFile();
-
-            try
-            {
-                using var scope = _serviceProvider.CreateScope();
-                var db = scope.ServiceProvider.GetService<AppDbContext>();
-                if (db != null)
-                {
-                    var dbItem = await db.UserContinueWatchings.FirstOrDefaultAsync(w =>
-                        w.UserId == _activeUserId &&
-                        w.ContentId == contentId &&
-                        w.IsContent == isContent &&
-                        !w.IsDeleted);
-
-                    if (dbItem != null)
-                    {
-                        dbItem.IsDeleted = true;
-                        await db.SaveChangesAsync();
-                    }
-                }
-            }
-            catch { }
-
             OnChange?.Invoke();
+
+            _ = _api.RemoveWatchHistoryAsync(_activeUserId, contentId, isContent);
+        }
+
+        public async Task ClearAllAsync()
+        {
+            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
+            {
+                return;
+            }
+
+            _history.Clear();
+            SaveToFile();
+            OnChange?.Invoke();
+
+            _ = _api.ClearWatchHistoryAsync(_activeUserId);
         }
 
         public void Dispose()

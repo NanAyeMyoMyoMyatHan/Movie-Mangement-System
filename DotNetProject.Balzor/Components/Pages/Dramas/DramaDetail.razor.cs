@@ -1,6 +1,9 @@
 using DotNetProject.Balzor.Components.Shared;
 using DotNetProject.Balzor.Helpers;
 using DotNetProject.Domain.Features.Contents;
+using DotNetProject.Domain.Features.Favorites;
+using DotNetProject.Domain.Features.WatchHistory;
+using DotNetProject.Domain.Features.WatchLater;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -28,9 +31,6 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
 
         [Inject]
         public AuthService AuthService { get; set; } = default!;
-
-        [Inject]
-        private DotNetProject.Database.AppDbModels.AppDbContext Db { get; set; } = default!;
 
         [Parameter]
         public long Id { get; set; }
@@ -264,24 +264,30 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
 
             try
             {
-                var dbEp = await Db.Episodes.FindAsync(ActiveEpisodeId);
-                if (dbEp != null)
+                var newUrl = (QuickModalVideoUrl ?? "").Trim();
+                var res = await ApiClient.UpdateEpisodeQuickUrlAsync(new UpdateEpisodeUrlRequest
                 {
-                    dbEp.VideoUrl = (QuickModalVideoUrl ?? "").Trim();
-                    dbEp.UpdatedAt = DateTime.UtcNow;
-                    await Db.SaveChangesAsync();
+                    EpisodeId = ActiveEpisodeId,
+                    VideoUrl = newUrl
+                });
 
+                if (res?.IsSuccess == true)
+                {
                     var inMem = Episodes.FirstOrDefault(e => e.EpisodeId == ActiveEpisodeId);
                     if (inMem != null)
                     {
-                        inMem.VideoUrl = dbEp.VideoUrl;
+                        inMem.VideoUrl = newUrl;
                     }
-                    ActiveVideoUrl = dbEp.VideoUrl;
+                    ActiveVideoUrl = newUrl;
                     UseDemoStream = false;
                     QuickModalMessage = "Saved successfully!";
                     await Task.Delay(400);
                     ShowQuickUrlModal = false;
                     StateHasChanged();
+                }
+                else
+                {
+                    QuickModalMessage = res?.Message ?? "Failed to update episode URL.";
                 }
             }
             catch (Exception ex)

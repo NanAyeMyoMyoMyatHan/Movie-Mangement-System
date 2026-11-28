@@ -1,8 +1,6 @@
 using DotNetProject.Balzor.Components;
 using DotNetProject.Balzor.Components.Shared;
-using DotNetProject.Database.AppDbModels;
 using DotNetProject.Domain.Features.Rbac;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +14,6 @@ builder.Services.AddRazorComponents()
     {
         options.MaximumReceiveMessageSize = 10L * 1024 * 1024; // 10 MB
     });
-
-// Database context for direct database user authentication and data access
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? "Server=localhost;Database=MyFlixDb;User Id=sa;Password=sasa@123;TrustServerCertificate=True;"));
 
 builder.Services.AddHttpClient("Api", client =>
 {

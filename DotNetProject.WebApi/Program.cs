@@ -1,21 +1,29 @@
 using DotNetProject.Database.AppDbModels;
 using DotNetProject.Domain.Features.Contents;
+using DotNetProject.Domain.Features.Favorites;
 using DotNetProject.Domain.Features.Movies;
 using DotNetProject.Domain.Features.Ratings;
 using DotNetProject.Domain.Features.Rbac;
+using DotNetProject.Domain.Features.Thai;
+using DotNetProject.Domain.Features.Tmdb;
 using DotNetProject.Domain.Features.Users;
+using DotNetProject.Domain.Features.WatchHistory;
+using DotNetProject.Domain.Features.WatchLater;
 using DotNetProject.Domain.Features.WatchList;
 using DotNetProject.WebApi.Features.Contents;
+using DotNetProject.WebApi.Features.Favorites;
 using DotNetProject.WebApi.Features.Movies;
 using DotNetProject.WebApi.Features.Ratings;
 using DotNetProject.WebApi.Features.Rbac;
-using DotNetProject.WebApi.Features.Users;
-using DotNetProject.WebApi.Features.WatchList;
-using DotNetProject.WebApi.Features.Thai;
-using DotNetProject.Domain.Features.Thai;
 using DotNetProject.WebApi.Features.Shared;
-using Microsoft.EntityFrameworkCore;
+using DotNetProject.WebApi.Features.Thai;
+using DotNetProject.WebApi.Features.Tmdb;
+using DotNetProject.WebApi.Features.Users;
+using DotNetProject.WebApi.Features.WatchHistory;
+using DotNetProject.WebApi.Features.WatchLater;
+using DotNetProject.WebApi.Features.WatchList;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +40,7 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<IMoviesInterface, MovieServices>();
 builder.Services.AddScoped<IUserInterface, UserServices>();
 builder.Services.AddScoped<IWatchListInterface, WatchListServices>();
@@ -40,6 +49,10 @@ builder.Services.AddScoped<IContent, ContentsServices>();
 builder.Services.AddScoped<IThaiInterface, ThaiServices>();
 builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
 builder.Services.AddScoped<DotNetProject.Domain.Features.Audit.IAuditInterface, DotNetProject.WebApi.Features.Audit.AuditServices>();
+builder.Services.AddScoped<ITmdbService, TmdbService>();
+builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+builder.Services.AddScoped<IWatchLaterService, WatchLaterService>();
+builder.Services.AddScoped<IWatchHistoryService, WatchHistoryService>();
 
 // File storage service (singleton — stateless, holds only the configured root path)
 builder.Services.AddSingleton<FileStorageService>();

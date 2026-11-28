@@ -47,6 +47,10 @@ namespace DotNetProject.Balzor.Components.Pages.Admin
                     _error = result?.Message ?? "Failed to create movie.";
                 }
             }
+            catch (NavigationException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 _error = $"An unexpected error occurred: {ex.Message}";

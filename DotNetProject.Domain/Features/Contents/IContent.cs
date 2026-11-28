@@ -29,5 +29,8 @@ namespace DotNetProject.Domain.Features.Contents
 
         Task<Result<DeleteContentResponse>> DeleteAsync(
             DeleteContentRequest request, CancellationToken cancellationToken);
+
+        Task<Result<bool>> UpdateEpisodeUrlAsync(
+            UpdateEpisodeUrlRequest request, CancellationToken cancellationToken = default);
     }
 }

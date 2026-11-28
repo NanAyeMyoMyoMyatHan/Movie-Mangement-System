@@ -3,11 +3,9 @@
 @using DotNetProject.Balzor.Components.Shared
 @using DotNetProject.Balzor.Components.Layout
 @using DotNetProject.Domain.Features.Contents
-@using DotNetProject.Database.AppDbModels
 @rendermode InteractiveServer
 @inject HttpClientService ApiClient
 @inject NavigationManager Nav
-@inject AppDbContext Db
 @inject AuthService AuthService
 
 <PageTitle>Episodes Management — NangWorld Admin</PageTitle>
@@ -345,26 +343,27 @@
 
         try
         {
-            var dbEpisode = await Db.Episodes.FindAsync(EditingEpisode.EpisodeId);
-            if (dbEpisode != null)
+            var res = await ApiClient.UpdateEpisodeQuickUrlAsync(new UpdateEpisodeUrlRequest
             {
-                dbEpisode.VideoUrl = EditVideoUrl.Trim();
-                dbEpisode.Title = EditTitle.Trim();
-                dbEpisode.Description = EditDescription.Trim();
-                dbEpisode.ThumbnailUrl = EditThumbnailUrl.Trim();
-                dbEpisode.UpdatedAt = DateTime.UtcNow;
+                EpisodeId = EditingEpisode.EpisodeId,
+                VideoUrl = EditVideoUrl.Trim()
+            });
 
-                await Db.SaveChangesAsync();
-
-                EditingEpisode.VideoUrl = dbEpisode.VideoUrl;
-                EditingEpisode.Title = dbEpisode.Title;
-                EditingEpisode.Description = dbEpisode.Description;
-                EditingEpisode.ThumbnailUrl = dbEpisode.ThumbnailUrl;
+            if (res?.IsSuccess == true)
+            {
+                EditingEpisode.VideoUrl = EditVideoUrl.Trim();
+                EditingEpisode.Title = EditTitle.Trim();
+                EditingEpisode.Description = EditDescription.Trim();
+                EditingEpisode.ThumbnailUrl = EditThumbnailUrl.Trim();
 
                 EditSuccessMessage = "Saved successfully!";
                 await Task.Delay(500);
                 CloseEditModal();
                 StateHasChanged();
+            }
+            else
+            {
+                ErrorMessage = res?.Message ?? "Failed to update episode.";
             }
         }
         catch (Exception ex)

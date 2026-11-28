@@ -1,6 +1,4 @@
-using DotNetProject.Database.AppDbModels;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using DotNetProject.Domain.Features.Favorites;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,34 +8,20 @@ using System.Threading.Tasks;
 
 namespace DotNetProject.Balzor.Components.Shared
 {
-    public class FavoriteItem
-    {
-        public long Id { get; set; }
-        public bool IsContent { get; set; } = true; // true = Drama / Series, false = Movie
-        public string Title { get; set; } = string.Empty;
-        public string? PosterUrl { get; set; }
-        public string? Category { get; set; } = "Korean Drama"; // "Korean Drama", "Thai BL", "Movie"
-        public string? Description { get; set; }
-        public string Year { get; set; } = "2024";
-        public double Rating { get; set; } = 9.0;
-        public int TotalEpisodes { get; set; } = 16;
-        public DateTime AddedAt { get; set; } = DateTime.UtcNow;
-    }
-
     public class FavoriteService : IDisposable
     {
         private readonly AuthService _authService;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly HttpClientService _api;
         private readonly List<FavoriteItem> _favorites = new();
         private string _activeUserKey = "guest";
         private int _activeUserId = 0;
 
         public event Action? OnChange;
 
-        public FavoriteService(AuthService authService, IServiceProvider serviceProvider)
+        public FavoriteService(AuthService authService, HttpClientService api)
         {
             _authService = authService;
-            _serviceProvider = serviceProvider;
+            _api = api;
             _activeUserKey = _authService.GetCurrentUserKey();
             _activeUserId = _authService.CurrentUser.Id;
             _authService.OnAuthStateChanged += HandleAuthStateChanged;
@@ -108,50 +92,24 @@ namespace DotNetProject.Balzor.Components.Shared
         {
             _favorites.Clear();
 
-            // When user is not authenticated (Guest), personal lists are strictly 0 items. No dummy seeds.
             if (_activeUserId <= 0 || !_authService.IsAuthenticated())
             {
                 return;
             }
 
-            // 1. If authenticated, load exclusively from SQL Server UserFavorites table
             try
             {
-                using var scope = _serviceProvider.CreateScope();
-                var db = scope.ServiceProvider.GetService<AppDbContext>();
-                if (db != null)
+                var apiItems = await _api.GetFavoritesAsync(_activeUserId);
+                if (apiItems != null && apiItems.Any())
                 {
-                    var dbRows = await db.UserFavorites
-                        .Where(f => f.UserId == _activeUserId && !f.IsDeleted)
-                        .OrderByDescending(f => f.AddedAt)
-                        .ToListAsync();
-
-                    if (dbRows.Any())
-                    {
-                        foreach (var r in dbRows)
-                        {
-                            _favorites.Add(new FavoriteItem
-                            {
-                                Id = r.ContentId,
-                                IsContent = r.IsContent,
-                                Title = r.Title,
-                                PosterUrl = r.PosterUrl,
-                                Category = r.Category,
-                                Description = r.Description,
-                                Year = r.Year ?? "2024",
-                                Rating = r.Rating,
-                                TotalEpisodes = r.TotalEpisodes,
-                                AddedAt = r.AddedAt
-                            });
-                        }
-                        SaveToFile();
-                        return;
-                    }
+                    _favorites.AddRange(apiItems);
+                    SaveToFile();
+                    return;
                 }
             }
             catch { }
 
-            // 2. Fallback to per-user JSON file if db was temporarily unreachable
+            // Fallback to per-user JSON file if API is temporarily unreachable
             var filePath = GetStoragePath(_activeUserKey);
             if (File.Exists(filePath))
             {
@@ -252,70 +210,20 @@ namespace DotNetProject.Balzor.Components.Shared
             var existing = _favorites.FirstOrDefault(i => i.Id == item.Id && i.IsContent == item.IsContent);
             if (existing != null)
             {
-                await RemoveFavoriteAsync(item.Id, item.IsContent);
+                _favorites.Remove(existing);
+                SaveToFile();
+                OnChange?.Invoke();
+                _ = _api.RemoveFavoriteAsync(_activeUserId, item.Id, item.IsContent);
                 return false;
             }
             else
             {
-                await AddFavoriteAsync(item);
-                return true;
-            }
-        }
-
-        public async Task AddFavoriteAsync(FavoriteItem item)
-        {
-            if (!_authService.IsAuthenticated() || _activeUserId <= 0)
-            {
-                return;
-            }
-
-            if (!_favorites.Any(i => i.Id == item.Id && i.IsContent == item.IsContent))
-            {
                 item.AddedAt = DateTime.UtcNow;
                 _favorites.Insert(0, item);
                 SaveToFile();
-
-                // Direct SQL Server insertion
-                try
-                {
-                    using var scope = _serviceProvider.CreateScope();
-                    var db = scope.ServiceProvider.GetService<AppDbContext>();
-                    if (db != null)
-                    {
-                        var dbItem = await db.UserFavorites.FirstOrDefaultAsync(f =>
-                            f.UserId == _activeUserId &&
-                            f.ContentId == item.Id &&
-                            f.IsContent == item.IsContent);
-
-                        if (dbItem != null)
-                        {
-                            dbItem.IsDeleted = false;
-                            dbItem.AddedAt = DateTime.UtcNow;
-                        }
-                        else
-                        {
-                            db.UserFavorites.Add(new UserFavorite
-                            {
-                                UserId = _activeUserId,
-                                ContentId = item.Id,
-                                IsContent = item.IsContent,
-                                Title = item.Title,
-                                PosterUrl = item.PosterUrl,
-                                Category = item.Category,
-                                Description = item.Description,
-                                Year = item.Year,
-                                Rating = item.Rating,
-                                TotalEpisodes = item.TotalEpisodes,
-                                AddedAt = DateTime.UtcNow,
-                                IsDeleted = false
-                            });
-                        }
-                        await db.SaveChangesAsync();
-                    }
-                }
-                catch { }
-
                 OnChange?.Invoke();
+                _ = _api.AddFavoriteAsync(_activeUserId, item);
+                return true;
             }
         }
 
@@ -326,34 +234,13 @@ namespace DotNetProject.Balzor.Components.Shared
                 return;
             }
 
-            var removed = _favorites.RemoveAll(i => i.Id == id && i.IsContent == isContent);
-            if (removed > 0)
+            var item = _favorites.FirstOrDefault(i => i.Id == id && i.IsContent == isContent);
+            if (item != null)
             {
+                _favorites.Remove(item);
                 SaveToFile();
-
-                // Direct SQL Server soft-delete
-                try
-                {
-                    using var scope = _serviceProvider.CreateScope();
-                    var db = scope.ServiceProvider.GetService<AppDbContext>();
-                    if (db != null)
-                    {
-                        var dbItem = await db.UserFavorites.FirstOrDefaultAsync(f =>
-                            f.UserId == _activeUserId &&
-                            f.ContentId == id &&
-                            f.IsContent == isContent &&
-                            !f.IsDeleted);
-
-                        if (dbItem != null)
-                        {
-                            dbItem.IsDeleted = true;
-                            await db.SaveChangesAsync();
-                        }
-                    }
-                }
-                catch { }
-
                 OnChange?.Invoke();
+                _ = _api.RemoveFavoriteAsync(_activeUserId, id, isContent);
             }
         }
 

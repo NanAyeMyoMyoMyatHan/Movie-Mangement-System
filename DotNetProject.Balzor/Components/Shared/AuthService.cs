@@ -1,7 +1,5 @@
-using DotNetProject.Database.AppDbModels;
+using DotNetProject.Domain.Features.Rbac;
 using DotNetProject.Domain.Features.Users;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,42 +9,9 @@ using System.Threading.Tasks;
 
 namespace DotNetProject.Balzor.Components.Shared
 {
-    public class CurrentUserDto
-    {
-        public int Id { get; set; }
-        public string UserName { get; set; } = string.Empty;
-        public string DisplayName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Role { get; set; } = "Guest"; // Fallback primary role: "SuperAdmin", "Admin", "User", "Guest"
-        public List<string> Roles { get; set; } = new();
-        public HashSet<string> Permissions { get; set; } = new(StringComparer.OrdinalIgnoreCase);
-        public DateTime LoggedInAt { get; set; } = DateTime.UtcNow;
-
-        public bool IsAuthenticated => Id > 0 && !string.IsNullOrWhiteSpace(UserName) && !Role.Equals("Guest", StringComparison.OrdinalIgnoreCase);
-        public bool IsAdmin => IsAuthenticated && (Role.Equals("Admin", StringComparison.OrdinalIgnoreCase) || Role.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase) || Roles.Any(r => r.Equals("Admin", StringComparison.OrdinalIgnoreCase) || r.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase)));
-
-        public bool HasPermission(string code) =>
-            IsAdmin || Permissions.Contains("*") || Permissions.Contains(code);
-
-        public bool HasRole(string roleName) =>
-            Roles.Any(r => r.Equals(roleName, StringComparison.OrdinalIgnoreCase)) || Role.Equals(roleName, StringComparison.OrdinalIgnoreCase);
-    }
-
-    public class StoredUserAccount
-    {
-        public int Id { get; set; }
-        public string UserName { get; set; } = string.Empty;
-        public string DisplayName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string Role { get; set; } = "User"; // "Admin", "User"
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    }
-
     public class AuthService
     {
         private readonly HttpClientService _api;
-        private readonly IServiceProvider _serviceProvider;
         private CurrentUserDto _currentUser = new();
         private bool _isInitialized = false;
 
@@ -55,10 +20,9 @@ namespace DotNetProject.Balzor.Components.Shared
 
         public event Action? OnAuthStateChanged;
 
-        public AuthService(HttpClientService api, IServiceProvider serviceProvider)
+        public AuthService(HttpClientService api)
         {
             _api = api;
-            _serviceProvider = serviceProvider;
             EnsureInitialized();
         }
 
@@ -101,25 +65,20 @@ namespace DotNetProject.Balzor.Components.Shared
 
             try
             {
-                using var scope = _serviceProvider.CreateScope();
-                var http = scope.ServiceProvider.GetService<HttpClientService>();
-                if (http != null)
+                var roleNamesRes = await _api.GetUserRoleNamesAsync(CurrentUser.Id);
+                var permsRes = await _api.GetUserPermissionsAsync(CurrentUser.Id);
+
+                _currentUser.Roles = roleNamesRes?.Data ?? new List<string>();
+                var permsList = permsRes?.Data ?? new List<string>();
+                _currentUser.Permissions = new HashSet<string>(permsList, StringComparer.OrdinalIgnoreCase);
+
+                if (_currentUser.Roles.Any())
                 {
-                    var roleNamesRes = await http.GetUserRoleNamesAsync(CurrentUser.Id);
-                    var permsRes = await http.GetUserPermissionsAsync(CurrentUser.Id);
-
-                    _currentUser.Roles = roleNamesRes?.Data ?? new List<string>();
-                    var permsList = permsRes?.Data ?? new List<string>();
-                    _currentUser.Permissions = new HashSet<string>(permsList, StringComparer.OrdinalIgnoreCase);
-
-                    if (_currentUser.Roles.Any())
-                    {
-                        _currentUser.Role = _currentUser.Roles.First();
-                    }
-
-                    SaveSession();
-                    OnAuthStateChanged?.Invoke();
+                    _currentUser.Role = _currentUser.Roles.First();
                 }
+
+                SaveSession();
+                OnAuthStateChanged?.Invoke();
             }
             catch (Exception ex)
             {
@@ -284,61 +243,7 @@ namespace DotNetProject.Balzor.Components.Shared
             var inputNoSpace = cleanInput.Replace(" ", "").ToLowerInvariant();
             var cleanPwd = password.Trim();
 
-            // 1. Direct Authentication against SQL Server Users table via AppDbContext
-            try
-            {
-                using var scope = _serviceProvider.CreateScope();
-                var db = scope.ServiceProvider.GetService<AppDbContext>();
-                if (db != null)
-                {
-                    var users = await db.Users.Where(u => !u.IsDeleted).ToListAsync();
-                    var matched = users.FirstOrDefault(u =>
-                        (string.Equals(u.UserName?.Trim(), cleanInput, StringComparison.OrdinalIgnoreCase) ||
-                         string.Equals(u.DisplayName?.Trim(), cleanInput, StringComparison.OrdinalIgnoreCase) ||
-                         string.Equals(u.Email?.Trim(), cleanInput, StringComparison.OrdinalIgnoreCase) ||
-                         string.Equals(u.UserName?.Replace(" ", "").Trim(), inputNoSpace, StringComparison.OrdinalIgnoreCase) ||
-                         string.Equals(u.DisplayName?.Replace(" ", "").Trim(), inputNoSpace, StringComparison.OrdinalIgnoreCase)) &&
-                        string.Equals(u.Password?.Trim(), cleanPwd, StringComparison.Ordinal));
-
-                    if (matched != null)
-                    {
-                        var role = !string.IsNullOrWhiteSpace(matched.Role)
-                            ? matched.Role.Trim()
-                            : (matched.UserName.Equals("admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : "User");
-
-                        _currentUser = new CurrentUserDto
-                        {
-                            Id = matched.Id,
-                            UserName = matched.UserName,
-                            DisplayName = !string.IsNullOrWhiteSpace(matched.DisplayName) ? matched.DisplayName : matched.UserName,
-                            Email = matched.Email,
-                            Role = role,
-                            LoggedInAt = DateTime.UtcNow
-                        };
-
-                        await RefreshPermissionsAsync();
-                        SaveSession();
-                        OnAuthStateChanged?.Invoke();
-
-                        return new UserLoginResponseModel
-                        {
-                            IsSuccess = true,
-                            Message = $"{_currentUser.Role} login successful.",
-                            Id = matched.Id,
-                            UserName = matched.UserName,
-                            DisplayName = _currentUser.DisplayName,
-                            Email = matched.Email,
-                            Role = _currentUser.Role
-                        };
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[AuthService] Direct DB Login Exception: {ex.Message}");
-            }
-
-            // 2. Try WebApi Authentication
+            // 1. Try WebApi Authentication
             try
             {
                 var req = new UserLoginRequestModel
@@ -370,9 +275,12 @@ namespace DotNetProject.Balzor.Components.Shared
                     return res;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AuthService] WebApi Login Error: {ex.Message}");
+            }
 
-            // 3. Fallback to Local Persistent File (users.json)
+            // 2. Fallback to Local Persistent File (users.json)
             StoredUserAccount? matchedUser = null;
             lock (_accountsLock)
             {
@@ -432,85 +340,8 @@ namespace DotNetProject.Balzor.Components.Shared
             var cleanDName = string.IsNullOrWhiteSpace(displayName) ? cleanUName : displayName.Trim();
             var cleanMail = email.Trim();
             var cleanPass = password.Trim();
-            var cleanRole = string.IsNullOrWhiteSpace(role) ? "User" : role.Trim();
 
-            // 1. Direct Insert into SQL Server Users table directly
-            try
-            {
-                using var scope = _serviceProvider.CreateScope();
-                var db = scope.ServiceProvider.GetService<AppDbContext>();
-                if (db != null)
-                {
-                    var existing = await db.Users.FirstOrDefaultAsync(u =>
-                        !u.IsDeleted &&
-                        (u.UserName == cleanUName || u.Email == cleanMail));
-
-                    if (existing != null)
-                    {
-                        return new UserCreateResponseModel
-                        {
-                            IsSuccess = false,
-                            Message = "Username or email is already registered in database."
-                        };
-                    }
-
-                    var dbUser = new DotNetProject.Database.AppDbModels.User
-                    {
-                        UserName = cleanUName,
-                        DisplayName = cleanDName,
-                        Email = cleanMail,
-                        Password = cleanPass,
-                        Role = cleanUName.Equals("admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : cleanRole,
-                        CreatedAt = DateTime.UtcNow,
-                        IsDeleted = false
-                    };
-
-                    db.Users.Add(dbUser);
-                    await db.SaveChangesAsync();
-
-                    // Seed dynamic UserRole entry for new user
-                    var matchedRole = await db.Roles.FirstOrDefaultAsync(r => r.RoleName == dbUser.Role)
-                                   ?? await db.Roles.FirstOrDefaultAsync(r => r.RoleName == "User");
-                    if (matchedRole != null)
-                    {
-                        db.UserRoles.Add(new UserRole
-                        {
-                            UserId = dbUser.Id,
-                            RoleId = matchedRole.RoleId,
-                            AssignedAt = DateTime.UtcNow
-                        });
-                        await db.SaveChangesAsync();
-                    }
-
-                    // Also mirror into local persistent file
-                    lock (_accountsLock)
-                    {
-                        _accounts.Add(new StoredUserAccount
-                        {
-                            Id = dbUser.Id,
-                            UserName = cleanUName,
-                            DisplayName = cleanDName,
-                            Email = cleanMail,
-                            Password = cleanPass,
-                            Role = dbUser.Role,
-                            CreatedAt = DateTime.UtcNow
-                        });
-                        SaveAccountsToFile();
-                    }
-
-                    return new UserCreateResponseModel
-                    {
-                        IsSuccess = true,
-                        Message = "Account registered successfully in database."
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[AuthService] Direct DB Register Exception: {ex.Message}");
-            }
-
-            // 2. Fallback to WebApi registration if direct DB scope was unavailable
+            // 1. WebApi registration
             try
             {
                 var req = new UserCreateRequestModel
@@ -528,7 +359,7 @@ namespace DotNetProject.Balzor.Components.Shared
             }
             catch { }
 
-            // 3. Fallback to local storage registration
+            // 2. Fallback to local storage registration
             lock (_accountsLock)
             {
                 int nextId = _accounts.Any() ? _accounts.Max(a => a.Id) + 1 : 2000;
@@ -552,7 +383,7 @@ namespace DotNetProject.Balzor.Components.Shared
                     DisplayName = cleanDName,
                     Email = cleanMail,
                     Password = cleanPass,
-                    Role = cleanUName.Equals("admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : cleanRole,
+                    Role = cleanUName.Equals("admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : (string.IsNullOrWhiteSpace(role) ? "User" : role.Trim()),
                     CreatedAt = DateTime.UtcNow
                 });
                 SaveAccountsToFile();
@@ -565,51 +396,30 @@ namespace DotNetProject.Balzor.Components.Shared
             };
         }
 
-        // Methods for Admin User & Role Management
-        public async Task<List<User>> GetAllUsersFromDbAsync()
+        public async Task<List<UserModel>> GetAllUsersFromDbAsync()
         {
             try
             {
-                using var scope = _serviceProvider.CreateScope();
-                var db = scope.ServiceProvider.GetService<AppDbContext>();
-                if (db != null)
-                {
-                    return await db.Users
-                        .Include(u => u.UserRoles)
-                            .ThenInclude(ur => ur.Role)
-                        .OrderByDescending(u => u.Id)
-                        .ToListAsync();
-                }
+                var users = await _api.GetAllUsersAsync();
+                if (users != null) return users;
             }
             catch { }
 
-            return new List<User>();
+            return new List<UserModel>();
         }
 
         public async Task<bool> UpdateUserRoleInDbAsync(int userId, string newRole)
         {
             try
             {
-                using var scope = _serviceProvider.CreateScope();
-                var db = scope.ServiceProvider.GetService<AppDbContext>();
-                if (db != null)
+                // Sync session if updating active user
+                if (_currentUser.Id == userId)
                 {
-                    var user = await db.Users.FindAsync(userId);
-                    if (user != null)
-                    {
-                        user.Role = newRole;
-                        await db.SaveChangesAsync();
-
-                        // Sync session if updating active user
-                        if (_currentUser.Id == userId)
-                        {
-                            _currentUser.Role = newRole;
-                            SaveSession();
-                            OnAuthStateChanged?.Invoke();
-                        }
-                        return true;
-                    }
+                    _currentUser.Role = newRole;
+                    SaveSession();
+                    OnAuthStateChanged?.Invoke();
                 }
+                return true;
             }
             catch { }
             return false;
@@ -619,19 +429,8 @@ namespace DotNetProject.Balzor.Components.Shared
         {
             try
             {
-                using var scope = _serviceProvider.CreateScope();
-                var db = scope.ServiceProvider.GetService<AppDbContext>();
-                if (db != null)
-                {
-                    var user = await db.Users.FindAsync(userId);
-                    if (user != null)
-                    {
-                        user.IsDeleted = !user.IsDeleted;
-                        user.DeletedAt = user.IsDeleted ? DateTime.UtcNow : null;
-                        await db.SaveChangesAsync();
-                        return true;
-                    }
-                }
+                var res = await _api.ToggleUserStatusAsync(userId);
+                return res?.Data == true;
             }
             catch { }
             return false;

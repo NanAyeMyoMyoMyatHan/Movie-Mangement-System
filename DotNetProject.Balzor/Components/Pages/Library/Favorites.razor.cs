@@ -1,4 +1,5 @@
 using DotNetProject.Balzor.Components.Shared;
+using DotNetProject.Domain.Features.Favorites;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
