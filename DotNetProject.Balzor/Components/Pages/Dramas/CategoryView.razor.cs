@@ -167,9 +167,9 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
             switch (CurrentSlug)
             {
                 case "bl-series":
-                    CategoryTitle = "Thai BL Series";
-                    CategorySubtitle = "Discover the most beloved Thai Boys' Love dramas, romantic journeys, and heart-fluttering romances.";
-                    CategoryBadge = "BL Series • Curated Collection";
+                    CategoryTitle = "Thai Series";
+                    CategorySubtitle = "Discover the most beloved Thai dramas, romantic journeys, and heart-fluttering romances.";
+                    CategoryBadge = "Thai Series • Curated Collection";
                     SortBy = "rating";
                     break;
 

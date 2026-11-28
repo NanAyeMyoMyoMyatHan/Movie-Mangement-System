@@ -92,7 +92,7 @@
         <span>🇰🇷 Korean Drama</span>
     </button>
     <button type="button" class="myflix-filter-pill @(SelectedFilter == "Thai BL" ? "active" : "")" @onclick='() => SelectFilter("Thai BL")'>
-        <span>🇹🇭 Thai BL Series</span>
+        <span>🇹🇭 Thai Series</span>
     </button>
     <button type="button" class="myflix-filter-pill @(SelectedFilter == "Movies" ? "active" : "")" @onclick='() => SelectFilter("Movies")'>
         <span>🎬 Movies &amp; Anime</span>
@@ -272,14 +272,14 @@
     </section>
 }
 
-<!-- Thai BL Series Section -->
+<!-- Thai Series Section -->
 @if (!HasSearch && (SelectedFilter == "All" || SelectedFilter == "Thai BL" || SelectedFilter == "Trending"))
 {
     <section class="myflix-section-block">
         <div class="myflix-section-header">
             <h2>
                 <span class="section-flag">🇹🇭</span>
-                <span>Thai BL Series</span>
+                <span>Thai Series</span>
             </h2>
             <a href="/category/bl-series" class="myflix-see-all">
                 <span>Explore All</span>
