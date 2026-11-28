@@ -56,7 +56,7 @@ else if (Drama != null)
                 <div class="drama-player-bar">
                     <div class="drama-player-title" style="color: #2E1065 !important; font-weight: 700; display: flex; align-items: center; gap: 10px;">
                         <span style="color: #2E1065 !important; font-weight: 800; font-size: 15px;">@ActiveVideoTitle</span>
-                        <span class="drama-ep-badge">EP @ActiveEpisodeNumber</span>
+                        <span class="drama-ep-badge">@(IsTrailerOnly ? "TRAILER" : $"EP {ActiveEpisodeNumber}")</span>
                         @if (!string.IsNullOrWhiteSpace(ResumeToast))
                         {
                             <span class="drama-resume-toast">
@@ -137,7 +137,7 @@ else if (Drama != null)
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                 <polygon points="6 4 19 12 6 20 6 4"></polygon>
                             </svg>
-                            <span>Play</span>
+                            <span>@(IsTrailerOnly ? "Watch Trailer" : "Play")</span>
                         </button>
                     }
                     else
@@ -201,9 +201,30 @@ else if (Drama != null)
 
         <!-- Episodes Section Header -->
         <div class="drama-episodes-header-row">
-            <h2 class="drama-episodes-h2">Episodes</h2>
+            <h2 class="drama-episodes-h2">@(IsTrailerOnly ? "Official Trailer" : "Episodes")</h2>
             <span class="drama-episodes-total-count">@DramaTotalEpisodesText</span>
         </div>
+
+        @if (IsTrailerOnly && !string.IsNullOrWhiteSpace(GetTelegramLink()))
+        {
+            <!-- Telegram Full Episodes Callout Banner -->
+            <div class="drama-tg-channel-banner">
+                <div class="tg-banner-left">
+                    <div class="tg-banner-badge">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.52 2.77-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="tg-banner-heading">Watch Full Episodes on Telegram</h3>
+                        <p class="tg-banner-sub">This title currently has an official trailer on this server. Stream or download all full episodes in HD with Myanmar subtitles on @@WEAREALLTRYINGHEREMM.</p>
+                    </div>
+                </div>
+                <div class="tg-banner-actions">
+                    <button type="button" class="btn-tg-action-primary" @onclick="OpenTelegramQrModal">
+                        <span>📲 Open Telegram / Scan QR</span>
+                    </button>
+                </div>
+            </div>
+        }
 
         <!-- Episodes Rows List -->
         <div class="drama-episodes-list">
@@ -226,7 +247,7 @@ else if (Drama != null)
                                 </div>
                             </div>
                             <div class="drama-ep-text-col">
-                                <h4 class="drama-ep-title-h4">@currentEp.EpisodeNumber. @(string.IsNullOrWhiteSpace(currentEp.Title) ? $"{Drama.Title} S1: Episode {currentEp.EpisodeNumber}" : currentEp.Title)</h4>
+                                <h4 class="drama-ep-title-h4">@(IsTrailerOnly ? "Official Trailer" : $"{currentEp.EpisodeNumber}. {(string.IsNullOrWhiteSpace(currentEp.Title) ? $"{Drama.Title} S1: Episode {currentEp.EpisodeNumber}" : currentEp.Title)}")</h4>
                                 <p class="drama-ep-desc-p">@(string.IsNullOrWhiteSpace(currentEp.Description) ? Drama.Description : currentEp.Description)</p>
                             </div>
                         </div>

@@ -45,6 +45,7 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
         protected List<EpisodeDto> Episodes { get; set; } = new();
         protected bool IsLoading { get; set; } = true;
         protected string? ErrorMessage { get; set; }
+        protected bool IsTrailerOnly { get; set; } = false;
 
         protected bool IsPlayingVideo { get; set; } = false;
         protected bool IsWatchlisted { get; set; } = false;
@@ -111,19 +112,53 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
                     DramaGenres = (Drama.Genres != null && Drama.Genres.Any()) ? string.Join(", ", Drama.Genres) : "Romance, Fantasy, Action";
 
                     bool isMovie = Drama.ContentType?.Equals("Movie", StringComparison.OrdinalIgnoreCase) == true;
-                    if (Episodes.Count == 0)
-                    {
-                        Episodes = GenerateFallbackEpisodes(Drama.Title, isMovie ? 1 : 16);
-                    }
 
-                    if (isMovie)
+                    // Check if local video files exist (e.g. video file on server or direct storage URL, not just YouTube or empty)
+                    bool hasLocalEpisodes = Episodes.Any(e => !string.IsNullOrWhiteSpace(e.VideoUrl) && !IsYoutubeUrl(e.VideoUrl));
+
+                    // If not available locally (local mar ma shi):
+                    // "the drama tw local mar ma shi tae har ko trailer bae shi yin trailer bae tae,ep tw ma add nae,tg link shi yin tae pay,movie lae ae lo bae youtube link shi yin add,youtube ka trailer bae shi yin trailer add."
+                    if (!hasLocalEpisodes)
                     {
-                        var movieEp = Episodes.FirstOrDefault();
-                        DramaTotalEpisodesText = movieEp?.Duration.HasValue == true ? FormatEpisodeDuration(movieEp.Duration) : "Full Movie";
+                        // Find trailer URL from existing episodes or fallback
+                        var trailerUrl = Episodes.FirstOrDefault(e => !string.IsNullOrWhiteSpace(e.VideoUrl))?.VideoUrl;
+                        if (string.IsNullOrWhiteSpace(trailerUrl))
+                        {
+                            trailerUrl = GetFallbackYoutubeUrl(Drama.Title);
+                        }
+
+                        // Only add/show the trailer! DO NOT add or generate 16 dummy episodes!
+                        Episodes = new List<EpisodeDto>
+                        {
+                            new EpisodeDto
+                            {
+                                EpisodeId = Episodes.FirstOrDefault()?.EpisodeId ?? 1,
+                                ContentId = Drama.ContentId,
+                                EpisodeNumber = 1,
+                                Title = isMovie ? "Official Trailer" : "Official Trailer",
+                                Description = $"Official Trailer for {Drama.Title}. Watch all full episodes with Myanmar subtitles on our Telegram Channel.",
+                                ThumbnailUrl = Drama.PosterUrl,
+                                VideoUrl = trailerUrl,
+                                Duration = 3,
+                                Status = "Active"
+                            }
+                        };
+
+                        IsTrailerOnly = true;
+                        DramaTotalEpisodesText = isMovie ? "Trailer" : "Trailer Only";
                     }
                     else
                     {
-                        DramaTotalEpisodesText = $"{Episodes.Count} Episodes";
+                        IsTrailerOnly = false;
+                        if (isMovie)
+                        {
+                            var movieEp = Episodes.FirstOrDefault();
+                            DramaTotalEpisodesText = movieEp?.Duration.HasValue == true ? FormatEpisodeDuration(movieEp.Duration) : "Full Movie";
+                        }
+                        else
+                        {
+                            DramaTotalEpisodesText = $"{Episodes.Count} Episodes";
+                        }
                     }
                     ConfigureDramaCredits(Drama.Title);
 
@@ -229,11 +264,8 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
 
         protected string? GetTelegramLink()
         {
-            if (Drama?.Title != null && (Drama.Title.Contains("Queen", StringComparison.OrdinalIgnoreCase) || Drama.Title.Contains("Tears", StringComparison.OrdinalIgnoreCase)))
-            {
-                return "https://t.me/WEAREALLTRYINGHEREMM";
-            }
-            return null;
+            // Provide official Telegram channel link for streaming full episodes
+            return "https://t.me/WEAREALLTRYINGHEREMM";
         }
 
         protected void PlayTestStream()
@@ -963,19 +995,17 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
         private List<EpisodeDto> GenerateFallbackEpisodes(string seriesTitle, int count)
         {
             var fallbackUrl = GetFallbackYoutubeUrl(seriesTitle);
-            var list = new List<EpisodeDto>();
-            for (int i = 1; i <= count; i++)
+            return new List<EpisodeDto>
             {
-                list.Add(new EpisodeDto
+                new EpisodeDto
                 {
-                    EpisodeNumber = i,
-                    Title = $"Episode {i}",
-                    Description = $"Follow the dramatic events and shocking revelations in Episode {i} of {seriesTitle}.",
-                    Duration = 65 + (i % 15),
+                    EpisodeNumber = 1,
+                    Title = "Official Trailer",
+                    Description = $"Official Trailer for {seriesTitle}. Watch full episodes on our Telegram channel.",
+                    Duration = 3,
                     VideoUrl = fallbackUrl
-                });
-            }
-            return list;
+                }
+            };
         }
     }
 }

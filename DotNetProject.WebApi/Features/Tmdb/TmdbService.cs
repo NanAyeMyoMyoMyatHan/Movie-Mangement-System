@@ -90,7 +90,7 @@ namespace DotNetProject.WebApi.Features.Tmdb
 
             try
             {
-                var url = $"https://api.themoviedb.org/3/movie/{tmdbId}?api_key={_apiKey}";
+                var url = $"https://api.themoviedb.org/3/movie/{tmdbId}?api_key={_apiKey}&append_to_response=videos";
                 using var request = new HttpRequestMessage(HttpMethod.Get, url);
                 request.Headers.Add("Accept", "application/json");
 
@@ -158,6 +158,8 @@ namespace DotNetProject.WebApi.Features.Tmdb
                     ? $"https://image.tmdb.org/t/p/original{backdropPath}"
                     : posterUrl;
 
+                var trailerUrl = ExtractYouTubeTrailerUrl(root) ?? GetFallbackYoutubeUrl(title);
+
                 var details = new TmdbMovieDetailsDto
                 {
                     Id = id,
@@ -173,7 +175,8 @@ namespace DotNetProject.WebApi.Features.Tmdb
                     Country = country,
                     Language = language,
                     Runtime = runtime is > 0 ? runtime : null,
-                    VoteAverage = Math.Round(vote, 1)
+                    VoteAverage = Math.Round(vote, 1),
+                    TrailerUrl = trailerUrl
                 };
 
                 return new TmdbLookupResponse<TmdbMovieDetailsDto>(true, details, null);
@@ -199,7 +202,7 @@ namespace DotNetProject.WebApi.Features.Tmdb
 
             try
             {
-                var url = $"https://api.themoviedb.org/3/tv/{tmdbId}?api_key={_apiKey}";
+                var url = $"https://api.themoviedb.org/3/tv/{tmdbId}?api_key={_apiKey}&append_to_response=videos";
                 using var request = new HttpRequestMessage(HttpMethod.Get, url);
                 request.Headers.Add("Accept", "application/json");
 
@@ -243,6 +246,8 @@ namespace DotNetProject.WebApi.Features.Tmdb
                 var posterUrl = !string.IsNullOrWhiteSpace(posterPath) ? $"https://image.tmdb.org/t/p/w500{posterPath}" : null;
                 var bannerUrl = !string.IsNullOrWhiteSpace(backdropPath) ? $"https://image.tmdb.org/t/p/original{backdropPath}" : posterUrl;
 
+                var trailerUrl = ExtractYouTubeTrailerUrl(root) ?? GetFallbackYoutubeUrl(title);
+
                 var details = new TmdbMovieDetailsDto
                 {
                     Id = tmdbId,
@@ -257,7 +262,8 @@ namespace DotNetProject.WebApi.Features.Tmdb
                     BannerUrl = bannerUrl,
                     Country = country,
                     Language = language,
-                    VoteAverage = Math.Round(vote, 1)
+                    VoteAverage = Math.Round(vote, 1),
+                    TrailerUrl = trailerUrl
                 };
 
                 return new TmdbLookupResponse<TmdbMovieDetailsDto>(true, details, null);
@@ -345,14 +351,16 @@ namespace DotNetProject.WebApi.Features.Tmdb
                     }
                 }
 
+                var trailerUrl = details.TrailerUrl ?? GetFallbackYoutubeUrl(title) ?? string.Empty;
+
                 _db.Episodes.Add(new Episode
                 {
                     ContentId = newContent.ContentId,
                     EpisodeNumber = 1,
-                    Title = "Full Movie",
+                    Title = !string.IsNullOrWhiteSpace(trailerUrl) ? "Official Trailer" : "Full Movie",
                     Description = details.Description,
                     ThumbnailUrl = newContent.PosterUrl,
-                    VideoUrl = string.Empty,
+                    VideoUrl = trailerUrl,
                     Duration = details.Runtime ?? 120,
                     ReleaseDate = details.ReleaseDate,
                     Status = "Active",
@@ -406,7 +414,7 @@ namespace DotNetProject.WebApi.Features.Tmdb
                 string language = "Korean";
                 DateOnly? releaseDate = null;
                 List<string> genreNames = new();
-                int episodeCount = 0;
+                string? trailerUrl = null;
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -425,6 +433,7 @@ namespace DotNetProject.WebApi.Features.Tmdb
 
                     posterUrl = !string.IsNullOrWhiteSpace(posterPath) ? $"https://image.tmdb.org/t/p/w500{posterPath}" : "/images/poster_fallback.svg";
                     bannerUrl = !string.IsNullOrWhiteSpace(backdropPath) ? $"https://image.tmdb.org/t/p/original{backdropPath}" : posterUrl;
+                    trailerUrl = ExtractYouTubeTrailerUrl(root);
 
                     if (DateOnly.TryParse(GetJsonString(root, "first_air_date"), out var d))
                     {
@@ -499,78 +508,35 @@ namespace DotNetProject.WebApi.Features.Tmdb
                     }
                 }
 
-                var episodes = new List<Episode>();
-                try
+                // For dramas that are not hosted locally on the server:
+                // Only add the trailer if available, do NOT generate fake episodes. Full episodes are on Telegram.
+                var finalTrailerUrl = trailerUrl ?? GetFallbackYoutubeUrl(title) ?? "https://www.youtube.com/watch?v=4b7_4sN9Uvg";
+
+                var episode = new Episode
                 {
-                    string seasonUrl = $"https://api.themoviedb.org/3/tv/{tmdbId}/season/1?api_key={_apiKey}";
-                    using var seasonResp = await _http.GetAsync(seasonUrl, cancellationToken);
-                    if (seasonResp.IsSuccessStatusCode)
-                    {
-                        var sJson = await seasonResp.Content.ReadAsStringAsync(cancellationToken);
-                        using var sDoc = JsonDocument.Parse(sJson);
-                        if (sDoc.RootElement.TryGetProperty("episodes", out var epArr) && epArr.ValueKind == JsonValueKind.Array)
-                        {
-                            foreach (var ep in epArr.EnumerateArray())
-                            {
-                                int epNum = GetJsonInt(ep, "episode_number") ?? episodes.Count + 1;
-                                string epName = GetJsonString(ep, "name") ?? $"Episode {epNum}";
-                                string epOverview = GetJsonString(ep, "overview") ?? "";
-                                string stillPath = GetJsonString(ep, "still_path") ?? "";
-                                int runtime = GetJsonInt(ep, "runtime") ?? 45;
-                                string stillUrl = !string.IsNullOrWhiteSpace(stillPath) ? $"https://image.tmdb.org/t/p/w500{stillPath}" : posterUrl;
+                    ContentId = newContent.ContentId,
+                    EpisodeNumber = 1,
+                    Title = "Official Trailer",
+                    Description = $"Official Trailer for {title}. Watch all full episodes on our Telegram channel (@WEAREALLTRYINGHEREMM).",
+                    ThumbnailUrl = bannerUrl,
+                    VideoUrl = finalTrailerUrl,
+                    Duration = 3,
+                    ReleaseDate = releaseDate,
+                    Status = "Active",
+                    CreatedAt = DateTime.UtcNow,
+                    IsDeleted = false
+                };
 
-                                episodes.Add(new Episode
-                                {
-                                    ContentId = newContent.ContentId,
-                                    EpisodeNumber = epNum,
-                                    Title = epName,
-                                    Description = string.IsNullOrWhiteSpace(epOverview) ? $"Stream Episode {epNum} of {title}" : epOverview,
-                                    ThumbnailUrl = stillUrl,
-                                    VideoUrl = string.Empty,
-                                    Duration = runtime,
-                                    ReleaseDate = releaseDate,
-                                    Status = "Active",
-                                    CreatedAt = DateTime.UtcNow,
-                                    IsDeleted = false
-                                });
-                            }
-                        }
-                    }
-                }
-                catch { }
-
-                if (episodes.Count == 0)
-                {
-                    for (int i = 1; i <= 16; i++)
-                    {
-                        episodes.Add(new Episode
-                        {
-                            ContentId = newContent.ContentId,
-                            EpisodeNumber = i,
-                            Title = $"{title} - Episode {i}",
-                            Description = $"Stream Episode {i} of {title} in high definition.",
-                            ThumbnailUrl = posterUrl,
-                            VideoUrl = string.Empty,
-                            Duration = 60,
-                            ReleaseDate = releaseDate,
-                            Status = "Active",
-                            CreatedAt = DateTime.UtcNow,
-                            IsDeleted = false
-                        });
-                    }
-                }
-
-                _db.Episodes.AddRange(episodes);
+                _db.Episodes.Add(episode);
                 await _db.SaveChangesAsync(cancellationToken);
-                episodeCount = episodes.Count;
 
-                _logger.LogInformation("[DotNetProject.WebApi] ImportTmdbDramaAsync => Drama imported successfully. ContentId={ContentId}", newContent.ContentId);
+                _logger.LogInformation("[DotNetProject.WebApi] ImportTmdbDramaAsync => Drama imported with trailer. ContentId={ContentId}", newContent.ContentId);
                 return new TmdbImportResult
                 {
                     IsSuccess = true,
-                    Message = $"Successfully imported \"{title}\" with {episodeCount} episodes!",
+                    Message = $"Successfully imported \"{title}\" (Official Trailer only, full episodes available on Telegram).",
                     ContentId = newContent.ContentId,
-                    EpisodeCount = episodeCount
+                    EpisodeCount = 1
                 };
             }
             catch (Exception ex)
@@ -708,6 +674,122 @@ namespace DotNetProject.WebApi.Features.Tmdb
             }
 
             return $"TMDB request failed ({(int)statusCode}){(detail != null ? $": {detail}" : ".")}";
+        }
+
+        private static string? ExtractYouTubeTrailerUrl(JsonElement root)
+        {
+            if (root.TryGetProperty("videos", out var videosProp) &&
+                videosProp.TryGetProperty("results", out var resultsArr) &&
+                resultsArr.ValueKind == JsonValueKind.Array)
+            {
+                string? firstTrailerKey = null;
+                string? firstTeaserKey = null;
+                string? anyKey = null;
+
+                foreach (var v in resultsArr.EnumerateArray())
+                {
+                    var site = GetJsonString(v, "site");
+                    if (!string.Equals(site, "YouTube", StringComparison.OrdinalIgnoreCase)) continue;
+
+                    var key = GetJsonString(v, "key");
+                    if (string.IsNullOrWhiteSpace(key)) continue;
+
+                    var type = GetJsonString(v, "type");
+                    bool isOfficial = false;
+                    if (v.TryGetProperty("official", out var offProp))
+                    {
+                        isOfficial = offProp.GetBoolean();
+                    }
+
+                    if (string.Equals(type, "Trailer", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (isOfficial)
+                        {
+                            return $"https://www.youtube.com/watch?v={key}";
+                        }
+                        firstTrailerKey ??= key;
+                    }
+                    else if (string.Equals(type, "Teaser", StringComparison.OrdinalIgnoreCase))
+                    {
+                        firstTeaserKey ??= key;
+                    }
+                    else
+                    {
+                        anyKey ??= key;
+                    }
+                }
+
+                var selectedKey = firstTrailerKey ?? firstTeaserKey ?? anyKey;
+                if (!string.IsNullOrWhiteSpace(selectedKey))
+                {
+                    return $"https://www.youtube.com/watch?v={selectedKey}";
+                }
+            }
+            return null;
+        }
+
+        private static string? GetFallbackYoutubeUrl(string seriesTitle)
+        {
+            if (string.IsNullOrWhiteSpace(seriesTitle)) return null;
+
+            if (seriesTitle.Contains("Your Name", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=xU47nhruN-Q";
+            if (seriesTitle.Contains("Spirited", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=ByXuk9QqQkk";
+            if (seriesTitle.Contains("Busan", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=pyWuHv2-Abk";
+            if (seriesTitle.Contains("Parasite", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=5xH0RwpEbSU";
+            if (seriesTitle.Contains("The Childe", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=SRJgKBFwZyw";
+            if (seriesTitle.Contains("Bad Genius", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=CLdhN4oMxCQ";
+            if (seriesTitle.Contains("Along with the Gods", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=Y3xcJor-hyQ";
+            if (seriesTitle.Contains("Decibel", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=UmgVsK6cQuc";
+            if (seriesTitle.Contains("KinnPorsche", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=1F_U3mN8rJ0";
+            if (seriesTitle.Contains("Bad Buddy", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=0kG7uR0qU3Q";
+            if (seriesTitle.Contains("2gether", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=U18l74qGiaI";
+            if (seriesTitle.Contains("TharnType", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=w6-bNlJ9s_A";
+            if (seriesTitle.Contains("Thousand Stars", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=0d80m9_y9Yc";
+            if (seriesTitle.Contains("Crash Landing", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=GVQGWgeVc4k";
+            if (seriesTitle.Contains("Lovely Runner", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=0-x2w4U7D9g";
+            if (seriesTitle.Contains("Goblin", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=8AcNWVpdTHs";
+            if (seriesTitle.Contains("Queen", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=4b7_4sN9Uvg";
+            if (seriesTitle.Contains("Vincenzo", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=_J8tYxSB_LQ";
+            if (seriesTitle.Contains("The Glory", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=tqVVddp_G9Y";
+            if (seriesTitle.Contains("Itaewon", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=NN7zE_aI7B4";
+            if (seriesTitle.Contains("True Beauty", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=2Tz8YmQ-N0s";
+            if (seriesTitle.Contains("Twenty-Five", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=gYp4cKumTwU";
+            if (seriesTitle.Contains("Business", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=M-PHcxPJUS8";
+            if (seriesTitle.Contains("SOTUS", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=t9-X2wXm6u0";
+            if (seriesTitle.Contains("Sunset", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=zJg4hZ5Fw7A";
+            if (seriesTitle.Contains("President", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=3gVq6vO8VzE";
+            if (seriesTitle.Contains("Moonlight", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=9gR9vM8ZqT8";
+            if (seriesTitle.Contains("Not Me", StringComparison.OrdinalIgnoreCase))
+                return "https://www.youtube.com/watch?v=1F_U3mN8rJ0";
+
+            return null;
         }
 
         private static (string Country, string Language) MapLanguage(

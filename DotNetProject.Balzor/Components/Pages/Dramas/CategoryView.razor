@@ -257,7 +257,7 @@ else
 
                     <!-- Episode / Category Tag bottom-right -->
                     <span class="cat-ep-tag">
-                        @(item.TotalEpisodes > 1 ? $"{item.TotalEpisodes} Eps" : "Movie")
+                        @(item.TotalEpisodes > 1 ? $"{item.TotalEpisodes} Eps" : (item.Category.Contains("Movie", StringComparison.OrdinalIgnoreCase) ? "Movie" : "Trailer"))
                     </span>
                 </div>
 

@@ -42,6 +42,7 @@ namespace DotNetProject.Domain.Features.Tmdb
         public string Language { get; set; } = "English";
         public int? Runtime { get; set; }
         public double VoteAverage { get; set; }
+        public string? TrailerUrl { get; set; }
     }
 
     public sealed record TmdbLookupResponse<T>(bool IsSuccess, T? Data, string? ErrorMessage);
