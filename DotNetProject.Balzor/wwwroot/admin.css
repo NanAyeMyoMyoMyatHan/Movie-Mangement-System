@@ -318,6 +318,7 @@ a.admin-nav-item.admin-nav-active svg,
     justify-content: center;
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
     flex-shrink: 0;
+    overflow: hidden;
 }
 
 .admin-user-info {

@@ -42,6 +42,13 @@ namespace DotNetProject.Balzor.Components.Shared
             CurrentUser.IsAdmin || CurrentUser.Permissions.Contains("*") || codes.Any(c => CurrentUser.Permissions.Contains(c));
         public bool HasRole(string roleName) => CurrentUser.HasRole(roleName);
 
+        public void UpdateAvatar(string avatarUrl)
+        {
+            _currentUser.AvatarUrl = avatarUrl;
+            SaveSession();
+            OnAuthStateChanged?.Invoke();
+        }
+
         public bool CanAccessAdmin()
         {
             if (!IsAuthenticated()) return false;
@@ -266,6 +273,7 @@ namespace DotNetProject.Balzor.Components.Shared
                         DisplayName = !string.IsNullOrWhiteSpace(res.DisplayName) ? res.DisplayName : (res.UserName ?? cleanInput),
                         Email = res.Email ?? cleanInput,
                         Role = isAdmin ? "Admin" : "User",
+                        AvatarUrl = res.AvatarUrl,
                         LoggedInAt = DateTime.UtcNow
                     };
 

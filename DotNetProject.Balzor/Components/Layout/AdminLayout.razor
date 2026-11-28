@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@implements IDisposable
 @using DotNetProject.Balzor.Components.Shared
 @inject AuthService AuthService
 @inject NavigationManager Nav
@@ -165,7 +166,14 @@ else
             <div class="admin-sidebar-bottom">
                 <div class="admin-user-card">
                     <div class="admin-avatar">
-                        @(string.IsNullOrWhiteSpace(AuthService.CurrentUser.DisplayName) ? "A" : AuthService.CurrentUser.DisplayName.Substring(0, 1).ToUpper())
+                        @if (!string.IsNullOrWhiteSpace(AuthService.CurrentUser.AvatarUrl))
+                        {
+                            <img src="@AuthService.CurrentUser.AvatarUrl" alt="Avatar" class="user-avatar-img" />
+                        }
+                        else
+                        {
+                            @(string.IsNullOrWhiteSpace(AuthService.CurrentUser.DisplayName) ? "A" : AuthService.CurrentUser.DisplayName.Substring(0, 1).ToUpper())
+                        }
                     </div>
                     <div class="admin-user-info">
                         <span class="admin-user-name">@(string.IsNullOrWhiteSpace(AuthService.CurrentUser.DisplayName) ? "Admin" : AuthService.CurrentUser.DisplayName)</span>
@@ -201,6 +209,11 @@ else
 @code {
     private bool CanAccessAdminPanel => AuthService.CanAccessAdmin();
 
+    protected override void OnInitialized()
+    {
+        AuthService.OnAuthStateChanged += StateHasChanged;
+    }
+
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender && !CanAccessAdminPanel)
@@ -213,5 +226,10 @@ else
     {
         await AuthService.LogoutAsync();
         Nav.NavigateTo("/login", forceLoad: true);
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnAuthStateChanged -= StateHasChanged;
     }
 }

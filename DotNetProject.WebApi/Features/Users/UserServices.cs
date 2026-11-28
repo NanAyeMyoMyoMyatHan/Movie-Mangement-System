@@ -182,6 +182,7 @@ namespace DotNetProject.WebApi.Features.Users
                 Id = user.Id,
                 UserName = user.UserName,
                 DisplayName = user.DisplayName ?? user.UserName,
+                AvatarUrl = user.AvatarUrl,
                 Email = user.Email,
                 Role = isAdmin ? "Admin" : "User"
             };

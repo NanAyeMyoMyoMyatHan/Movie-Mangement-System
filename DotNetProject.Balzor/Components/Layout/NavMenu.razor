@@ -138,7 +138,14 @@
             <!-- User Status Card in Sidebar -->
             <NavLink href="/profile" class="nav-user-box text-decoration-none" title="View & Edit Profile">
                 <div class="nav-user-avatar">
-                    @(string.IsNullOrWhiteSpace(AuthService.CurrentUser.DisplayName) ? "U" : AuthService.CurrentUser.DisplayName.Substring(0, 1).ToUpper())
+                    @if (!string.IsNullOrWhiteSpace(AuthService.CurrentUser.AvatarUrl))
+                    {
+                        <img src="@AuthService.CurrentUser.AvatarUrl" alt="Avatar" class="user-avatar-img" />
+                    }
+                    else
+                    {
+                        @(string.IsNullOrWhiteSpace(AuthService.CurrentUser.DisplayName) ? "U" : AuthService.CurrentUser.DisplayName.Substring(0, 1).ToUpper())
+                    }
                 </div>
                 <div class="nav-user-details">
                     <span class="nav-user-name">@AuthService.CurrentUser.DisplayName</span>
@@ -215,3 +222,4 @@
         AuthService.OnAuthStateChanged -= HandleAuthChange;
     }
 }
+

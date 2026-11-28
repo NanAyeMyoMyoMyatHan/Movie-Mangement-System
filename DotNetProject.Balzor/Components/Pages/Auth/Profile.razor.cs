@@ -118,6 +118,7 @@ namespace DotNetProject.Balzor.Components.Pages.Auth
                 {
                     PreviewAvatarUrl = uploadedUrl;
                     if (UserProfile != null) UserProfile.AvatarUrl = uploadedUrl;
+                    AuthService.UpdateAvatar(uploadedUrl);
 
                     StatusMessage = "Avatar uploaded successfully!";
                     IsStatusSuccess = true;

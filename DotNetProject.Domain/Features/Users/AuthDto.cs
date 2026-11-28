@@ -14,6 +14,7 @@ namespace DotNetProject.Domain.Features.Users
         public List<string> Roles { get; set; } = new();
         public HashSet<string> Permissions { get; set; } = new(StringComparer.OrdinalIgnoreCase);
         public DateTime LoggedInAt { get; set; } = DateTime.UtcNow;
+        public string? AvatarUrl { get; set; }
 
         public bool IsAuthenticated => Id > 0 && !string.IsNullOrWhiteSpace(UserName) && !Role.Equals("Guest", StringComparison.OrdinalIgnoreCase);
         public bool IsAdmin => IsAuthenticated && (Role.Equals("Admin", StringComparison.OrdinalIgnoreCase) || Role.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase) || Roles.Any(r => r.Equals("Admin", StringComparison.OrdinalIgnoreCase) || r.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase)));
