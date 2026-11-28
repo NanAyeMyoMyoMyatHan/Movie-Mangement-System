@@ -136,6 +136,18 @@ description: "Task list for platform enhancements feature implementation"
 
 ---
 
+## Phase 9: Clean Architecture Layering & UI Decoupling (RULES.md Compliance)
+
+**Purpose**: Enforce strict separation of responsibilities per RULES.md: Models & Interfaces in Domain, DbContext & Controllers/Services in WebApi, and Blazor as pure UI.
+
+- [X] T039 [P] Define Domain models and service interfaces in `DotNetProject.Domain` (`TmdbDto`, `ITmdbService`, `FavoriteDto`, `IFavoriteService`, `WatchLaterDto`, `IWatchLaterService`, `WatchHistoryDto`, `IWatchHistoryService`, `AuthDto`, `UpdateEpisodeUrlRequest`).
+- [X] T040 Implement services and API controllers in `DotNetProject.WebApi` (`TmdbService`, `TmdbController`, `FavoriteService`, `FavoritesController`, `WatchLaterService`, `WatchLaterController`, `WatchHistoryService`, `WatchHistoryController`, `ContentsServices.UpdateEpisodeUrlAsync`, `ContentsController.UpdateEpisodeQuickUrl`) and register in `Program.cs`.
+- [X] T041 Refactor Blazor client services in `DotNetProject.Balzor/Components/Shared/` (`HttpClientService`, `TmdbService`, `FavoriteService`, `WatchLaterService`, `WatchHistoryService`, `AuditLogService`, `AuthService`) to remove `AppDbContext` and delegate persistence through WebApi HTTP endpoints.
+- [X] T042 Decouple `DotNetProject.Balzor` completely by removing `<ProjectReference Include="..\DotNetProject.Database\DotNetProject.Database.csproj" />`, removing `AddDbContext` from `Program.cs`, and refactoring `AdminEpisodes.razor` and `DramaDetail.razor.cs` to use API client.
+- [X] T043 Compile and verify entire solution end-to-end with `dotnet build` (0 errors).
+
+---
+
 ## Dependencies & Execution Order
 
 ```mermaid
