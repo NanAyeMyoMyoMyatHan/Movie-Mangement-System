@@ -32,6 +32,9 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
         [Inject]
         public AuthService AuthService { get; set; } = default!;
 
+        [Inject]
+        private Microsoft.Extensions.Configuration.IConfiguration Configuration { get; set; } = default!;
+
         [Parameter]
         public long Id { get; set; }
 
@@ -262,10 +265,76 @@ namespace DotNetProject.Balzor.Components.Pages.Dramas
             return !string.IsNullOrWhiteSpace(ActiveVideoUrl);
         }
 
-        protected string? GetTelegramLink()
+        protected string GetTelegramLink()
         {
-            // Provide official Telegram channel link for streaming full episodes
-            return "https://t.me/WEAREALLTRYINGHEREMM";
+            var title = Drama?.Title ?? "";
+            var lang = DramaLanguage ?? "";
+            bool isMovie = Drama?.ContentType?.Equals("Movie", StringComparison.OrdinalIgnoreCase) == true;
+
+            // 1. Per-title specific custom channel in config if provided
+            var specificConfig = Configuration[$"TelegramChannels:Titles:{title}"];
+            if (!string.IsNullOrWhiteSpace(specificConfig)) return specificConfig;
+
+            // 2. Thai Series Channel
+            if (lang.Contains("Thai", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Fool In Love", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("KinnPorsche", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Bad Buddy", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("2gether", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("TharnType", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Khemjira", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Daung", StringComparison.OrdinalIgnoreCase))
+            {
+                return Configuration["TelegramChannels:ThaiSeries"] ?? "https://t.me/ThaiSeriesMMChannel";
+            }
+
+            // 3. Movies Channel
+            if (isMovie ||
+                title.Contains("Parasite", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Train to Busan", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Spirited Away", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Your Name", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("The Childe", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Decibel", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Bad Genius", StringComparison.OrdinalIgnoreCase))
+            {
+                return Configuration["TelegramChannels:Movies"] ?? "https://t.me/CinemaWorldMM";
+            }
+
+            // 4. Korean Drama Channel
+            if (lang.Contains("Korean", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Alchemy", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Kingdom", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Runner", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Crash Landing", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Vincenzo", StringComparison.OrdinalIgnoreCase) ||
+                title.Contains("Glory", StringComparison.OrdinalIgnoreCase))
+            {
+                return Configuration["TelegramChannels:KoreanDrama"] ?? "https://t.me/KDramaStreamMM";
+            }
+
+            // 5. Default Channel
+            return Configuration["TelegramChannels:Default"] ?? "https://t.me/WEAREALLTRYINGHEREMM";
+        }
+
+        protected string GetTelegramHandle()
+        {
+            var link = GetTelegramLink();
+            if (string.IsNullOrWhiteSpace(link)) return "@WEAREALLTRYINGHEREMM";
+            var clean = link.TrimEnd('/');
+            var idx = clean.LastIndexOf('/');
+            if (idx >= 0 && idx < clean.Length - 1)
+            {
+                var name = clean.Substring(idx + 1);
+                return name.StartsWith("@") ? name : "@" + name;
+            }
+            return "@" + clean;
+        }
+
+        protected string GetTelegramQrUrl()
+        {
+            var link = GetTelegramLink();
+            return $"https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={Uri.EscapeDataString(link)}";
         }
 
         protected void PlayTestStream()

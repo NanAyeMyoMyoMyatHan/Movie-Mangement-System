@@ -177,7 +177,7 @@ else if (Drama != null)
 
                     @if (!string.IsNullOrWhiteSpace(GetTelegramLink()))
                     {
-                        <button type="button" class="drama-btn-action-hero" @onclick="OpenTelegramQrModal" style="color: #2AABEE; border-color: rgba(42, 171, 238, 0.4);" title="Watch on Telegram Channel @@WEAREALLTRYINGHEREMM">
+                        <button type="button" class="drama-btn-action-hero" @onclick="OpenTelegramQrModal" style="color: #2AABEE; border-color: rgba(42, 171, 238, 0.4);" title="Watch on Telegram Channel @GetTelegramHandle()">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.52 2.77-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
                             </svg>
@@ -215,7 +215,7 @@ else if (Drama != null)
                     </div>
                     <div>
                         <h3 class="tg-banner-heading">Watch Full Episodes on Telegram</h3>
-                        <p class="tg-banner-sub">This title currently has an official trailer on this server. Stream or download all full episodes in HD with Myanmar subtitles on @@WEAREALLTRYINGHEREMM.</p>
+                        <p class="tg-banner-sub">This title currently has an official trailer on this server. Stream or download all full episodes in HD with Myanmar subtitles on @GetTelegramHandle().</p>
                     </div>
                 </div>
                 <div class="tg-banner-actions">
@@ -311,12 +311,12 @@ else if (Drama != null)
                     @(Drama?.Title ?? "Asian Drama")
                 </h3>
                 <p style="font-size: 0.95rem; color: #0284C7; font-weight: 700; margin: 0 0 16px 0;">
-                    @@WEAREALLTRYINGHEREMM
+                    @GetTelegramHandle()
                 </p>
 
                 <!-- Clay QR Code Frame -->
                 <div style="background: #FFFFFF; padding: 12px; border-radius: 20px; display: inline-block; box-shadow: 0 12px 30px rgba(139, 92, 246, 0.15), inset 0 0 0 1px rgba(167, 139, 250, 0.2); margin-bottom: 16px;">
-                    <img src="/images/telegram_channel_qr.jpg" alt="Telegram Channel QR" style="width: 200px; height: 200px; object-fit: contain; display: block; border-radius: 12px;" />
+                    <img src="@GetTelegramQrUrl()" onerror="this.onerror=null;this.src='/images/telegram_channel_qr.jpg';" alt="Telegram Channel QR" style="width: 200px; height: 200px; object-fit: contain; display: block; border-radius: 12px;" />
                 </div>
 
                 <p style="font-size: 0.85rem; color: #6B5B95; line-height: 1.5; margin: 0 0 20px 0; padding: 0 10px;">
@@ -324,7 +324,7 @@ else if (Drama != null)
                 </p>
 
                 <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                    <a href="https://t.me/WEAREALLTRYINGHEREMM" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #0284C7 0%, #38BDF8 100%); color: #FFF; border: none; padding: 10px 24px; border-radius: 9999px; font-weight: 700; text-decoration: none; font-size: 0.9rem; box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35); display: inline-flex; align-items: center; gap: 8px;">
+                    <a href="@GetTelegramLink()" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #0284C7 0%, #38BDF8 100%); color: #FFF; border: none; padding: 10px 24px; border-radius: 9999px; font-weight: 700; text-decoration: none; font-size: 0.9rem; box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35); display: inline-flex; align-items: center; gap: 8px;">
                         <span>Open in Telegram ↗</span>
                     </a>
                     <button type="button" @onclick="CloseTelegramQrModal" style="background: #F3E8FF; border: 1.5px solid rgba(167, 139, 250, 0.35); color: #4C1D95; padding: 10px 20px; border-radius: 9999px; font-weight: 700; cursor: pointer; font-size: 0.9rem;">
