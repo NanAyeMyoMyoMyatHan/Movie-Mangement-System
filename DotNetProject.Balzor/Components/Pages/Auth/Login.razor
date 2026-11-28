@@ -158,11 +158,11 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group pwd-form-group @(IsPasswordFocused ? "is-focused" : "")">
                     <label class="form-label">Password</label>
                     <div class="input-wrap">
                         <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        <input type="@(ShowRegPassword ? "text" : "password")" class="form-input" placeholder="Create password" @bind="RegPassword" @bind:event="oninput" autocomplete="new-password" required />
+                        <input type="@(ShowRegPassword ? "text" : "password")" class="form-input" placeholder="Create password" @bind="RegPassword" @bind:event="oninput" @onfocus="() => IsPasswordFocused = true" @onblur="() => IsPasswordFocused = false" autocomplete="new-password" required />
                         <button type="button" class="btn-toggle-eye" @onclick="() => ShowRegPassword = !ShowRegPassword" tabindex="-1" title="@(ShowRegPassword ? "Hide password" : "Show password")">
                             @if (ShowRegPassword)
                             {
@@ -174,6 +174,40 @@
                             }
                         </button>
                     </div>
+
+                    <!-- Password Requirements Box (only appears when user focuses on pwd input box) -->
+                    <div class="pwd-rules-container">
+                        <div class="pwd-rules-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            <span>Password Requirements:</span>
+                        </div>
+                        <ul class="pwd-rules-list">
+                            <li class="pwd-rule-item @(HasMinLength ? "is-met" : "")">
+                                <span class="pwd-rule-bullet">@(HasMinLength ? "✓" : "○")</span>
+                                <span>Minimum 8 characters</span>
+                            </li>
+                            <li class="pwd-rule-item @(HasUpper ? "is-met" : "")">
+                                <span class="pwd-rule-bullet">@(HasUpper ? "✓" : "○")</span>
+                                <span>At least one uppercase letter (A–Z)</span>
+                            </li>
+                            <li class="pwd-rule-item @(HasLower ? "is-met" : "")">
+                                <span class="pwd-rule-bullet">@(HasLower ? "✓" : "○")</span>
+                                <span>At least one lowercase letter (a–z)</span>
+                            </li>
+                            <li class="pwd-rule-item @(HasDigit ? "is-met" : "")">
+                                <span class="pwd-rule-bullet">@(HasDigit ? "✓" : "○")</span>
+                                <span>At least one digit (0–9)</span>
+                            </li>
+                            <li class="pwd-rule-item @(HasSpecial ? "is-met" : "")">
+                                <span class="pwd-rule-bullet">@(HasSpecial ? "✓" : "○")</span>
+                                <span>At least one special character (!@@#$%^&*)</span>
+                            </li>
+                            <li class="pwd-rule-item @(HasNoSpaces ? "is-met" : "")">
+                                <span class="pwd-rule-bullet">@(HasNoSpaces ? "✓" : "○")</span>
+                                <span>No spaces allowed</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -182,47 +216,23 @@
                         <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         <input type="@(ShowRegPassword ? "text" : "password")" class="form-input" placeholder="Confirm password" @bind="RegConfirmPassword" @bind:event="oninput" autocomplete="new-password" required />
                     </div>
-                </div>
-
-                <!-- Password Rules & Guidance -->
-                <div class="pwd-rules-container">
-                    <div class="pwd-rules-title">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                        <span>Password Requirements:</span>
-                    </div>
-                    <ul class="pwd-rules-list">
-                        <li class="pwd-rule-item @(HasMinLength ? "is-met" : "")">
-                            <span class="pwd-rule-bullet">@(HasMinLength ? "✓" : "○")</span>
-                            <span>Minimum 8 characters</span>
-                        </li>
-                        <li class="pwd-rule-item @(HasUpper ? "is-met" : "")">
-                            <span class="pwd-rule-bullet">@(HasUpper ? "✓" : "○")</span>
-                            <span>At least one uppercase letter (A–Z)</span>
-                        </li>
-                        <li class="pwd-rule-item @(HasLower ? "is-met" : "")">
-                            <span class="pwd-rule-bullet">@(HasLower ? "✓" : "○")</span>
-                            <span>At least one lowercase letter (a–z)</span>
-                        </li>
-                        <li class="pwd-rule-item @(HasDigit ? "is-met" : "")">
-                            <span class="pwd-rule-bullet">@(HasDigit ? "✓" : "○")</span>
-                            <span>At least one digit (0–9)</span>
-                        </li>
-                        <li class="pwd-rule-item @(HasSpecial ? "is-met" : "")">
-                            <span class="pwd-rule-bullet">@(HasSpecial ? "✓" : "○")</span>
-                            <span>At least one special character (!@@#$%^&*)</span>
-                        </li>
-                        <li class="pwd-rule-item @(HasNoSpaces ? "is-met" : "")">
-                            <span class="pwd-rule-bullet">@(HasNoSpaces ? "✓" : "○")</span>
-                            <span>No spaces allowed</span>
-                        </li>
-                        @if (!string.IsNullOrEmpty(RegConfirmPassword))
+                    @if (!string.IsNullOrEmpty(RegConfirmPassword))
+                    {
+                        @if (PasswordsMatch)
                         {
-                            <li class="pwd-rule-item @(PasswordsMatch ? "is-met" : "is-mismatch")">
-                                <span class="pwd-rule-bullet">@(PasswordsMatch ? "✓" : "✕")</span>
-                                <span>@(PasswordsMatch ? "Passwords match" : "Passwords do not match")</span>
-                            </li>
+                            <div class="pwd-match-hint valid">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Passwords match</span>
+                            </div>
                         }
-                    </ul>
+                        else
+                        {
+                            <div class="pwd-match-hint invalid">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                <span>Passwords do not match</span>
+                            </div>
+                        }
+                    }
                 </div>
 
                 <button type="submit" class="btn-login-submit" disabled="@IsSubmitting">
@@ -554,15 +564,33 @@
         color: #EC4899;
     }
 
-    /* Password Rules Helper Card */
+    /* Password Rules Helper Card - only appears on focus */
     .pwd-rules-container {
+        display: none;
         background: #F8F5FF;
         border: 1.5px solid rgba(167, 139, 250, 0.35);
         border-radius: 14px;
         padding: 12px 14px;
         font-size: 12px;
-        margin-top: -4px;
-        margin-bottom: 4px;
+        margin-top: 8px;
+        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.1);
+    }
+
+    .pwd-form-group:focus-within .pwd-rules-container,
+    .pwd-form-group.is-focused .pwd-rules-container {
+        display: block;
+        animation: pwdRulesFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @@keyframes pwdRulesFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-5px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .pwd-rules-title {
@@ -612,13 +640,22 @@
         color: #10B981;
     }
 
-    .pwd-rule-item.is-mismatch {
-        color: #DC2626;
+    /* Confirm Password Match Hint */
+    .pwd-match-hint {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11.5px;
         font-weight: 600;
+        margin-top: 4px;
     }
 
-    .pwd-rule-item.is-mismatch .pwd-rule-bullet {
-        color: #EF4444;
+    .pwd-match-hint.valid {
+        color: #059669;
+    }
+
+    .pwd-match-hint.invalid {
+        color: #DC2626;
     }
 </style>
 
@@ -640,6 +677,7 @@
     private string RegPassword = "";
     private string RegConfirmPassword = "";
     private bool ShowRegPassword = false;
+    private bool IsPasswordFocused = false;
 
     // Password complexity rules evaluation
     private bool HasMinLength => (RegPassword?.Length ?? 0) >= 8;
@@ -683,6 +721,7 @@
         LoginPassword = "";
         RegPassword = "";
         RegConfirmPassword = "";
+        IsPasswordFocused = false;
         ErrorMessage = null;
         SuccessMessage = null;
     }
