@@ -162,8 +162,67 @@
                     <label class="form-label">Password</label>
                     <div class="input-wrap">
                         <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        <input type="password" class="form-input" placeholder="Create password" @bind="RegPassword" autocomplete="new-password" required />
+                        <input type="@(ShowRegPassword ? "text" : "password")" class="form-input" placeholder="Create password" @bind="RegPassword" @bind:event="oninput" autocomplete="new-password" required />
+                        <button type="button" class="btn-toggle-eye" @onclick="() => ShowRegPassword = !ShowRegPassword" tabindex="-1" title="@(ShowRegPassword ? "Hide password" : "Show password")">
+                            @if (ShowRegPassword)
+                            {
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            }
+                            else
+                            {
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            }
+                        </button>
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <input type="@(ShowRegPassword ? "text" : "password")" class="form-input" placeholder="Confirm password" @bind="RegConfirmPassword" @bind:event="oninput" autocomplete="new-password" required />
+                    </div>
+                </div>
+
+                <!-- Password Rules & Guidance -->
+                <div class="pwd-rules-container">
+                    <div class="pwd-rules-title">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        <span>Password Requirements:</span>
+                    </div>
+                    <ul class="pwd-rules-list">
+                        <li class="pwd-rule-item @(HasMinLength ? "is-met" : "")">
+                            <span class="pwd-rule-bullet">@(HasMinLength ? "✓" : "○")</span>
+                            <span>Minimum 8 characters</span>
+                        </li>
+                        <li class="pwd-rule-item @(HasUpper ? "is-met" : "")">
+                            <span class="pwd-rule-bullet">@(HasUpper ? "✓" : "○")</span>
+                            <span>At least one uppercase letter (A–Z)</span>
+                        </li>
+                        <li class="pwd-rule-item @(HasLower ? "is-met" : "")">
+                            <span class="pwd-rule-bullet">@(HasLower ? "✓" : "○")</span>
+                            <span>At least one lowercase letter (a–z)</span>
+                        </li>
+                        <li class="pwd-rule-item @(HasDigit ? "is-met" : "")">
+                            <span class="pwd-rule-bullet">@(HasDigit ? "✓" : "○")</span>
+                            <span>At least one digit (0–9)</span>
+                        </li>
+                        <li class="pwd-rule-item @(HasSpecial ? "is-met" : "")">
+                            <span class="pwd-rule-bullet">@(HasSpecial ? "✓" : "○")</span>
+                            <span>At least one special character (!@@#$%^&*)</span>
+                        </li>
+                        <li class="pwd-rule-item @(HasNoSpaces ? "is-met" : "")">
+                            <span class="pwd-rule-bullet">@(HasNoSpaces ? "✓" : "○")</span>
+                            <span>No spaces allowed</span>
+                        </li>
+                        @if (!string.IsNullOrEmpty(RegConfirmPassword))
+                        {
+                            <li class="pwd-rule-item @(PasswordsMatch ? "is-met" : "is-mismatch")">
+                                <span class="pwd-rule-bullet">@(PasswordsMatch ? "✓" : "✕")</span>
+                                <span>@(PasswordsMatch ? "Passwords match" : "Passwords do not match")</span>
+                            </li>
+                        }
+                    </ul>
                 </div>
 
                 <button type="submit" class="btn-login-submit" disabled="@IsSubmitting">
@@ -494,6 +553,73 @@
     .login-guest-link:hover {
         color: #EC4899;
     }
+
+    /* Password Rules Helper Card */
+    .pwd-rules-container {
+        background: #F8F5FF;
+        border: 1.5px solid rgba(167, 139, 250, 0.35);
+        border-radius: 14px;
+        padding: 12px 14px;
+        font-size: 12px;
+        margin-top: -4px;
+        margin-bottom: 4px;
+    }
+
+    .pwd-rules-title {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+        color: #5B21B6;
+        margin-bottom: 8px;
+        font-size: 12.5px;
+    }
+
+    .pwd-rules-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .pwd-rule-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #7E6B9B;
+        font-size: 12px;
+        line-height: 1.3;
+        transition: color 0.15s ease;
+    }
+
+    .pwd-rule-bullet {
+        font-weight: 800;
+        width: 16px;
+        text-align: center;
+        font-size: 12px;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    .pwd-rule-item.is-met {
+        color: #059669;
+        font-weight: 600;
+    }
+
+    .pwd-rule-item.is-met .pwd-rule-bullet {
+        color: #10B981;
+    }
+
+    .pwd-rule-item.is-mismatch {
+        color: #DC2626;
+        font-weight: 600;
+    }
+
+    .pwd-rule-item.is-mismatch .pwd-rule-bullet {
+        color: #EF4444;
+    }
 </style>
 
 @code {
@@ -512,6 +638,18 @@
     private string RegDisplayName = "";
     private string RegEmail = "";
     private string RegPassword = "";
+    private string RegConfirmPassword = "";
+    private bool ShowRegPassword = false;
+
+    // Password complexity rules evaluation
+    private bool HasMinLength => (RegPassword?.Length ?? 0) >= 8;
+    private bool HasUpper => !string.IsNullOrEmpty(RegPassword) && RegPassword.Any(char.IsUpper);
+    private bool HasLower => !string.IsNullOrEmpty(RegPassword) && RegPassword.Any(char.IsLower);
+    private bool HasDigit => !string.IsNullOrEmpty(RegPassword) && RegPassword.Any(char.IsDigit);
+    private bool HasSpecial => !string.IsNullOrEmpty(RegPassword) && RegPassword.Any(c => "!@#$%^&*".Contains(c));
+    private bool HasNoSpaces => !string.IsNullOrEmpty(RegPassword) && !RegPassword.Any(char.IsWhiteSpace);
+    private bool PasswordsMatch => !string.IsNullOrEmpty(RegPassword) && !string.IsNullOrEmpty(RegConfirmPassword) && RegPassword == RegConfirmPassword;
+    private bool IsPasswordValid => HasMinLength && HasUpper && HasLower && HasDigit && HasSpecial && HasNoSpaces;
 
     private string? ErrorMessage;
     private string? SuccessMessage;
@@ -543,6 +681,8 @@
         IsRegisterMode = isRegister;
         LoginUsername = "";
         LoginPassword = "";
+        RegPassword = "";
+        RegConfirmPassword = "";
         ErrorMessage = null;
         SuccessMessage = null;
     }
@@ -615,6 +755,25 @@
     {
         ErrorMessage = null;
         SuccessMessage = null;
+
+        if (string.IsNullOrWhiteSpace(RegUsername) || string.IsNullOrWhiteSpace(RegEmail))
+        {
+            ErrorMessage = "Please fill in all required fields.";
+            return;
+        }
+
+        if (!IsPasswordValid)
+        {
+            ErrorMessage = "Password does not meet the complexity requirements. Please follow all rules shown below.";
+            return;
+        }
+
+        if (RegPassword != RegConfirmPassword)
+        {
+            ErrorMessage = "Passwords do not match. Please ensure both passwords are identical.";
+            return;
+        }
+
         IsSubmitting = true;
 
         try

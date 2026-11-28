@@ -58,6 +58,31 @@ namespace DotNetProject.WebApi.Features.Users
             var cleanUserName = model.UserName.Trim();
             var cleanEmail = model.Email.Trim();
 
+            if (string.IsNullOrWhiteSpace(model.Password))
+            {
+                return new UserCreateResponseModel
+                {
+                    IsSuccess = false,
+                    Message = "Password is required."
+                };
+            }
+
+            var pwd = model.Password;
+            const string specialChars = "!@#$%^&*";
+            if (pwd.Length < 8 ||
+                !pwd.Any(char.IsUpper) ||
+                !pwd.Any(char.IsLower) ||
+                !pwd.Any(char.IsDigit) ||
+                !pwd.Any(c => specialChars.Contains(c)) ||
+                pwd.Any(char.IsWhiteSpace))
+            {
+                return new UserCreateResponseModel
+                {
+                    IsSuccess = false,
+                    Message = "Password must be at least 8 characters, contain at least one uppercase letter (A-Z), one lowercase letter (a-z), one number (0-9), one special character (!@#$%^&*), and no spaces."
+                };
+            }
+
             var existing = await _db.Users.FirstOrDefaultAsync(u =>
                 !u.IsDeleted &&
                 (u.UserName == cleanUserName || u.Email == cleanEmail));
